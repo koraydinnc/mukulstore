@@ -7,6 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Admin {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model User {
   id        String   @id @default(cuid())
   username  String   @unique
@@ -20,15 +28,55 @@ model User {
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  price       Float
-  image       String?
-  stock       Int
-  orders      OrderItem[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                 Int          @id @default(autoincrement())
+  title              String
+  description        String
+  price              Float
+  discountPercentage Float?
+  discountedPrice    Float?
+  image              String?
+  images             String[]
+  stock              Int
+  type               ProductType
+  featured           Boolean      @default(false)
+  isPopular          Boolean      @default(false)
+  category           Category     @relation(fields: [categoryId], references: [id])
+  categoryId         Int
+  status             ProductStatus @default(ACTIVE)
+  orderItems         OrderItem[]
+  sizes              ProductSize[]
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+}
+
+model ProductSize {
+  id        Int      @id @default(autoincrement())
+  size      String
+  stock     Int
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  OUT_OF_STOCK
+  COMING_SOON
+}
+
+enum ProductType {
+  CLOTHING
+  FOOTWEAR
+  ACCESSORY
+  OTHER
 }
 
 model Order {
@@ -37,7 +85,7 @@ model Order {
   userId    String
   items     OrderItem[]
   total     Float
-  status    String
+  status    OrderStatus @default(PENDING)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 }
@@ -50,4 +98,12 @@ model OrderItem {
   productId Int
   quantity  Int
   price     Float
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
 }

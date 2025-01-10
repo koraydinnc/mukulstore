@@ -1,37 +1,36 @@
-import { Metadata } from 'next'
+"use client"
 import Header from './components/header'
 import BannerCampaign from './components/bannerCampaign'
-import CarouselWelcome from './components/carouselWelcome';
+import CarouselWelcome from './components/carouselWelcome'
+import TrendProducts from './components/trendProducts'
+import { useGetPopularProductsQuery } from '@/store/services/user/productUserApi'
 
 
-export const metadata = {
-  title: 'Ana Sayfa |  Mukul Store',
-  description: 'Mukul Store',
-  keywords: 'Mukul Store, Giyim, Erkek, Kadın, Çocuk, Aksesuar', 
-  openGraph: {
-    title: 'Ana Sayfa |  Mukul Store',
-    description: 'Mukul Store',
-    url: 'https://www.mukulstore.com',
-    siteName: 'www.mukulstore.com',
-   
-    locale: 'tr_TR',
-    type: 'website',
-  },
-}
 
 export default function Home() {
-  return (
-    <main className='overflow-x-hidden'>
-      <div>
-        <Header />
-      </div>
-      <div>
-        <BannerCampaign />
-      </div>
-      <div>
-         <CarouselWelcome/>
-        </div>
 
+
+   const {data, error, isLoading, refetch} = useGetPopularProductsQuery()
+  
+   data && console.log(data,'data')
+ 
+  return (
+    <main className='overflow-x-hidden bg-white min-h-screen'>
+      <section>
+        <Header />
+      </section>
+      
+      <section>
+        <BannerCampaign />
+      </section>
+      
+      <section >
+        <CarouselWelcome />
+      </section>
+      
+      <section >
+        <TrendProducts  data={data} refetch={refetch}/>
+      </section>
     </main>
-  );
+  )
 }

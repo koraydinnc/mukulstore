@@ -155,19 +155,19 @@ const Header = () => {
 
         {/* Sağ Kısım - Sepet ve Kullanıcı */}
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="text-white hover:text-black/80">
+          <Button variant="ghost" size="icon" className="text-white hover:text-wihte/80">
             <Search className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="relative text-white hover:text-black/80">
+          <Button variant="ghost" size="icon" className="relative text-white hover:text-white/80">
             <ShoppingCart className="h-5 w-5" />
             <Badge 
               variant="destructive" 
-              className="absolute -right-2 -top-2 h-5 w-5 flex justify-center rounded-full p-0 text-xs"
+              className="absolute -right-2 -top-2 h-5 w-5 flex bg-white text-black justify-center rounded-full p-0 text-xs"
             >
               3
             </Badge>
           </Button>
-          <Button variant="ghost" size="icon" className="text-white hover:text-black/80">
+          <Button variant="ghost" size="icon" className="text-white hover:text-white/80">
             <User className="h-5 w-5" />
           </Button>
         </div>

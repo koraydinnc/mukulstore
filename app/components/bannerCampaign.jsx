@@ -5,15 +5,13 @@ import { motion } from 'framer-motion'
 
 const BannerCampaign = () => {
 
- 
-
   return (
     <div className="bg-gradient-to-r from-black to-blue-600 py-3 shadow-lg">
       <motion.div
         initial={{ x: "100%" }}
         animate={{ x: "-100%" }}
         transition={{
-          duration: window.innerWidth < 768 ? 10 : 45,
+          duration:  50,
           repeat: Infinity,
           ease: "linear",
           repeatType: "loop",
