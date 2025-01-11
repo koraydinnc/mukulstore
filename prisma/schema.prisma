@@ -8,11 +8,11 @@ datasource db {
 }
 
 model Admin {
-  id          String   @id @default(cuid())
-  email       String   @unique
-  password    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model User {
@@ -28,34 +28,26 @@ model User {
 }
 
 model Product {
-  id                 Int          @id @default(autoincrement())
+  id                 Int           @id @default(autoincrement())
   title              String
   description        String
   price              Float
   discountPercentage Float?
   discountedPrice    Float?
-  image              String?
   images             String[]
   stock              Int
-  type               ProductType
-  featured           Boolean      @default(false)
-  isPopular          Boolean      @default(false)
-  category           Category     @relation(fields: [categoryId], references: [id])
+  featured           Boolean       @default(false)
+  isPopular          Boolean       @default(false)
+  category           Category      @relation(fields: [categoryId], references: [id])
   categoryId         Int
   status             ProductStatus @default(ACTIVE)
   orderItems         OrderItem[]
-  sizes              ProductSize[]
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
+  sizes              Json      
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
 }
 
-model ProductSize {
-  id        Int      @id @default(autoincrement())
-  size      String
-  stock     Int
-  product   Product  @relation(fields: [productId], references: [id])
-  productId Int
-}
+
 
 model Category {
   id        Int       @id @default(autoincrement())
@@ -72,13 +64,6 @@ enum ProductStatus {
   COMING_SOON
 }
 
-enum ProductType {
-  CLOTHING
-  FOOTWEAR
-  ACCESSORY
-  OTHER
-}
-
 model Order {
   id        Int         @id @default(autoincrement())
   user      User        @relation(fields: [userId], references: [id])
@@ -91,10 +76,10 @@ model Order {
 }
 
 model OrderItem {
-  id        Int      @id @default(autoincrement())
-  order     Order    @relation(fields: [orderId], references: [id])
+  id        Int     @id @default(autoincrement())
+  order     Order   @relation(fields: [orderId], references: [id])
   orderId   Int
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
   productId Int
   quantity  Int
   price     Float

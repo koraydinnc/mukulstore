@@ -5,16 +5,19 @@ import { PlusOutlined, LoadingOutlined } from "@ant-design/icons";
 import { toast } from "@/hooks/use-toast";
 
 const AdminPhotosAdd = ({ onChange, setImages }) => {
+  
   const [imageList, setImageList] = useState([]);
   const [photosUpload, { isLoading }] = usePhotosUploadMutation();
-
+  
+  
   const handleUpload = async ({ file, onSuccess, onError }) => {
     try {
       const formData = new FormData();
       formData.append("files", file);
-
+  
       const result = await photosUpload(formData).unwrap();
-
+      console.log("Yükleme başarılı, sunucu yanıtı:", result);
+  
       if (result.urls) {
         const newImage = {
           uid: file.uid,
@@ -22,19 +25,23 @@ const AdminPhotosAdd = ({ onChange, setImages }) => {
           status: "done",
           url: result.urls[0],
         };
-
-        setImages((prev) => [...prev, ...result.urls]);
-        setImageList((prev) => [...prev, newImage]);
-        onSuccess();
-        onChange([...imageList, newImage]); // Notify parent with the updated list.
-
+  
+        const newImageList = [...imageList, newImage];
+        setImageList(newImageList);
+        setImages((prev) => [...prev, result.urls[0]]);
+        onChange(newImageList);
+        
+  
         toast({
           title: "Başarılı",
           description: "Fotoğraf yüklendi",
         });
+      } else {
+        throw new Error("Sunucu beklenen yanıtı döndürmedi.");
       }
     } catch (error) {
-      onError();
+      console.error("Yükleme sırasında hata:", error);
+      onError(error); // Ant Design Upload'a hata durumu bildir
       toast({
         variant: "destructive",
         title: "Hata",
@@ -42,6 +49,10 @@ const AdminPhotosAdd = ({ onChange, setImages }) => {
       });
     }
   };
+  
+  
+  
+  
 
   const handleRemove = (file) => {
     const updatedList = imageList.filter((item) => item.uid !== file.uid);
@@ -62,7 +73,7 @@ const AdminPhotosAdd = ({ onChange, setImages }) => {
       listType="picture-card"
       fileList={imageList.map((file) => ({
         ...file,
-        thumbUrl: file.url,
+        thumbUrl: file.url, // Ant Design için gereken thumbUrl
       }))}
       customRequest={handleUpload}
       onRemove={handleRemove}
@@ -70,6 +81,7 @@ const AdminPhotosAdd = ({ onChange, setImages }) => {
       {imageList.length >= 8 ? null : uploadButton}
     </Upload>
   );
+  
 };
 
 export default AdminPhotosAdd;

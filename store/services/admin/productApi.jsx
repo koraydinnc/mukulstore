@@ -4,6 +4,7 @@ const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const productApi = createApi({
   reducerPath: 'productApi',
+  tagTypes: ['Photos'],
   baseQuery: fetchBaseQuery({ baseUrl }),
   endpoints: (builder) => ({
     getProducts: builder.query({
@@ -22,7 +23,9 @@ export const productApi = createApi({
         method: 'POST',
         body: formData,
       }),
+      invalidatesTags: ['Photos'], // Bu cache'yi temizler
     }),
+    
     deleteProduct: builder.mutation({
       query: (id) => ({
         url: '/admin/product/product-delete',
@@ -44,6 +47,7 @@ export const productApi = createApi({
         method: 'DELETE',
         body: { url },
       }),
+      invalidatesTags: ['Photos'], // Silme işlemi sonrası cache'yi güncelle
     }),
   }),
 });

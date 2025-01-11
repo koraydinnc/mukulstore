@@ -1,17 +1,11 @@
-"use client";
+import AdminLayoutClient from "./AdminLayoutClient";
 
-import { useSelector } from "react-redux";
-import AdminMenu from "@/app/components/AdminMenu";
-import { Toaster } from "@/components/ui/toaster";
+
 
 export default function AdminLayout({ children }) {
-  const { isAuthenticated } = useSelector((state) => state.admin); // Redux state'e erişim
-
   return (
-    <div className="flex min-h-screen">
-      {isAuthenticated && <AdminMenu />}
-      <main className="flex-1 p-8">{children}</main>
-      <Toaster />
+    <div className="bg-gray-100 min-h-screen">
+      <AdminLayoutClient>{children}</AdminLayoutClient>
     </div>
   );
 }

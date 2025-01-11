@@ -32,6 +32,8 @@ const TrendProducts = ({ data, refetch }) => {
         );
     }
 
+    console.log(data,'data')
+
     return (
         <div className="min-h-2/3 w-full flex items-center justify-center py-12 bg-gray-50">
             <div className="w-full xl:w-3/4">
@@ -51,20 +53,21 @@ const TrendProducts = ({ data, refetch }) => {
                             {data.data.map((product) => (
                                 <CarouselItem
                                     key={product.id}
-                                    className="basis-full md:basis-1/2 lg:basis-1/4"
+                                    className="basis-full md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
                                 >
                                     <Card className="shadow-lg hover:shadow-2xl transition-all transform rounded-xl bg-white relative overflow-hidden">
                                         <CardHeader className="p-0 relative">
                                             <img
-                                                src={product.images[0] || "/placeholder.jpg"}
+                                                src={product.images?.[0] ? `/uploads/${product.images[0]}` : '/placeholder.jpg'}
                                                 alt={product.title}
-                                                className="w-full h-56 object-cover rounded-t-lg"
+                                                style={{width:'100vw'}}
+                                                className="h-96 rounded-lg"
                                             />
                                             <button
-                                                className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all"
+                                                className="absolute top-2 right-2 p-2 bg-transparent rounded-full shadow-md hover:shadow-lg transition-all"
                                             >
                                                 {favorites.includes(product.id) ? (
-                                                    <HeartIcon className="h-6 w-6 text-red-500" />
+                                                    <HeartIcon className="h-6 w-6 bg-transparent text-red-500" />
                                                 ) : (
                                                     <HeartIcon className="h-6 w-6 text-gray-400 hover:text-red-500 transition-colors" />
                                                 )}
@@ -87,14 +90,15 @@ const TrendProducts = ({ data, refetch }) => {
                                                     />
                                                 </SelectTrigger>
                                                 <SelectContent className="bg-white text-black">
-                                                    {product.sizes?.map((size) => (
-                                                        <SelectItem key={size} value={size}>
-                                                            {size}
-                                                        </SelectItem>
-                                                    ))}
+                                                {product.sizes?.map((size, index) => (
+                                                       <SelectItem className="z-99"  key={index} value={size}>
+                                                           {size.size}
+                                                       </SelectItem>
+                                                   ))}
+
                                                 </SelectContent>
                                             </Select>
-                                            <button className="w-full bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-all">
+                                            <button className="w-full mt-4 bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-all">
                                                 Satın Al
                                             </button>
                                         </CardFooter>

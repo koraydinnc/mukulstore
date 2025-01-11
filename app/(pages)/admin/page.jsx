@@ -2,7 +2,6 @@
 import { useSelector } from 'react-redux'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import AdminLayout from './layout'
 
 export default function Page() {
   const { isAuthenticated } = useSelector((state) => state.admin)

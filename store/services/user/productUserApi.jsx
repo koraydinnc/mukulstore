@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
 
 export const productUserApi = createApi({
-    reducerPath: 'productApi',
+    reducerPath: 'productUserApi',
     baseQuery: fetchBaseQuery({ baseUrl }),
     tagTypes: ['Product'],
     endpoints: (builder) => ({
@@ -12,7 +12,11 @@ export const productUserApi = createApi({
         query: () => 'user/product/popular-list',
         providesTags: ['Product'],
         }),
+        getProductsList: builder.query({
+        query: () => 'user/product/product-list',
+        providesTags: ['Product'],
+        })
     }), 
 })
 
-export const { useGetPopularProductsQuery } = productUserApi
+export const { useGetPopularProductsQuery, useGetProductsListQuery } = productUserApi

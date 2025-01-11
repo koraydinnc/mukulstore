@@ -21,7 +21,7 @@ const CarouselWelcome = () => {
   );
 
   return (
-    <div className="w-full max-w-screen-4xl max-h-screen-md mx-auto mt-2">
+    <div className="w-full max-w-screen-4xl max-h-screen-4xl mx-auto mt-2">
       <Carousel 
        plugins={[
         Autoplay({

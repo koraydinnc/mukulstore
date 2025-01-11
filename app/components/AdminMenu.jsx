@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from 'react';
 import { LayoutDashboard, ShoppingBag, Users, Settings, Boxes, Tags, LogOut, Menu, ChevronLeft, PlusCircle, List } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -19,12 +21,12 @@ const menuItems = [
     subItems: [
       {
         title: 'Ürün Ekle',
-        href: '/admin/products/create-product',
+        href: '/admin/dashboard/products/create-product',
         icon: <PlusCircle className="h-4 w-4" />
       },
       {
         title: 'Ürünler',
-        href: '/admin/products/list-products',
+        href: '/admin/dashboard/products/list-products',
         icon: <List className="h-4 w-4" />
       }
     ]
@@ -32,22 +34,22 @@ const menuItems = [
   {
     title: 'Kategoriler',
     icon: <Tags className="h-4 w-4" />,
-    href: '/admin/categories'
+    href: '/admin/dashboard/categories'
   },
   {
     title: 'Stok',
     icon: <Boxes className="h-4 w-4" />,
-    href: '/admin/inventory'
+    href: '/admin/dashboard/inventory'
   },
   {
     title: 'Kullanıcılar',
     icon: <Users className="h-4 w-4" />,
-    href: '/admin/users'
+    href: '/admin/dashboard/users'
   },
   {
     title: 'Ayarlar',
     icon: <Settings className="h-4 w-4" />,
-    href: '/admin/settings'
+    href: '/admin/dashboard/settings'
   }
 ];
 
