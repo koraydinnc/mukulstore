@@ -1,8 +1,10 @@
 import React from 'react';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { Pagination, Spin, Badge } from 'antd';
+import { useRouter } from 'next/navigation';
 
 const ProductsList = ({ data, isLoading, page, setPage, pageSize = 12 }) => {
+  const router = useRouter();
   if (isLoading) return <div className="flex justify-center py-10"><Spin size="large" /></div>;
 
   const renderStockStatus = (stock) => {
@@ -18,6 +20,10 @@ const ProductsList = ({ data, isLoading, page, setPage, pageSize = 12 }) => {
     }
     return <span className="text-sm text-gray-500">Stok: {stock}</span>;
   };
+
+  const handleProductClick = (id) => {
+         router.push(`/urun/${id}`);
+  }
 
   const renderSizes = (sizes) => {
     if (!sizes || sizes.length === 0) return null;
@@ -57,7 +63,9 @@ const ProductsList = ({ data, isLoading, page, setPage, pageSize = 12 }) => {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 p-12 gap-6">
           {data?.map((product) => (
-            <Card key={product.id} className="shadow-lg hover:shadow-2xl hover:scale-105 transition-all transform rounded-xl bg-white">
+            <Card 
+            onClick={() => handleProductClick(product.id)}
+            key={product.id} className="shadow-lg hover:shadow-2xl cursor-pointer hover:scale-105 transition-all transform rounded-xl bg-white">
               <CardHeader className="p-0">
                 <div className="relative pt-[100%]"> {/* 1:1 aspect ratio */}
                   <img
