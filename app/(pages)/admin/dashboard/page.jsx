@@ -1,21 +1,20 @@
-"use client"
+"use client";
 
-import { useState } from 'react'
-import { 
-  ShoppingBag, 
-  Users, 
-  DollarSign, 
+import { useState } from "react";
+import {
+  ShoppingBag,
+  Users,
+  DollarSign,
   Package,
   TrendingUp,
-  AlertTriangle
-} from 'lucide-react'
+  AlertTriangle,
+} from "lucide-react";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import AdminMenu from '@/app/components/AdminMenu'
+} from "@/components/ui/card";
 
 export default function DashboardPage() {
   const stats = [
@@ -43,16 +42,18 @@ export default function DashboardPage() {
       icon: <Package />,
       trend: "-2%",
     },
-  ]
+  ];
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <div className="flex-1 p-6 space-y-8">
+      <div className="flex-1 p-4 sm:p-6 space-y-8">
+        {/* Başlık */}
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Yönetim Panel</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Yönetim Panel</h1>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        {/* İstatistik Kartları */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {stats.map((stat, index) => (
             <Card key={index}>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -63,7 +64,13 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stat.value}</div>
-                <p className={`text-xs ${stat.trend.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>
+                <p
+                  className={`text-xs ${
+                    stat.trend.startsWith("+")
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
+                >
                   {stat.trend} geçen aya göre
                 </p>
               </CardContent>
@@ -71,13 +78,13 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Grafik ve Son Siparişler */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <Card>
             <CardHeader>
               <CardTitle>Satış Grafiği</CardTitle>
             </CardHeader>
             <CardContent>
-              {/* Add your chart component here */}
               <div className="h-[300px]">
                 {/* Chart placeholder */}
               </div>
@@ -89,15 +96,14 @@ export default function DashboardPage() {
               <CardTitle>Son Siparişler</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {/* Recent orders table */}
+              <div className="space-y-4 overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="text-left">
-                      <th>Sipariş ID</th>
-                      <th>Müşteri</th>
-                      <th>Tutar</th>
-                      <th>Durum</th>
+                      <th className="whitespace-nowrap">Sipariş ID</th>
+                      <th className="whitespace-nowrap">Müşteri</th>
+                      <th className="whitespace-nowrap">Tutar</th>
+                      <th className="whitespace-nowrap">Durum</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -109,14 +115,14 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Stok Uyarıları ve En Çok Satan Ürünler */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <Card>
             <CardHeader>
               <CardTitle>Düşük Stok Uyarıları</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* Low stock alerts */}
                 <div className="flex items-center gap-2 text-orange-500">
                   <AlertTriangle size={20} />
                   <span>5 ürün kritik stok seviyesinde</span>
@@ -130,13 +136,11 @@ export default function DashboardPage() {
               <CardTitle>En Çok Satan Ürünler</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {/* Top selling products */}
-              </div>
+              <div className="space-y-4">{/* Top selling products */}</div>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  )
+  );
 }

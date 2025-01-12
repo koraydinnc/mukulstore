@@ -56,7 +56,7 @@ const ProductsList = ({ data, isLoading, page, setPage, pageSize = 12 }) => {
           Tüm Ürünler
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 p-12 gap-6">
-          {data?.data?.map((product) => (
+          {data?.map((product) => (
             <Card key={product.id} className="shadow-lg hover:shadow-2xl hover:scale-105 transition-all transform rounded-xl bg-white">
               <CardHeader className="p-0">
                 <div className="relative pt-[100%]"> {/* 1:1 aspect ratio */}

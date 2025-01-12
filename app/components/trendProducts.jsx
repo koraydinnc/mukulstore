@@ -32,7 +32,6 @@ const TrendProducts = ({ data, refetch }) => {
         );
     }
 
-    console.log(data,'data')
 
     return (
         <div className="min-h-2/3 w-full flex items-center justify-center py-12 bg-gray-50">
@@ -43,7 +42,7 @@ const TrendProducts = ({ data, refetch }) => {
                 {data.data.length > 0 ? (
                     <Carousel
                         plugins={[plugin.current]}
-                        className="w-full"
+                        className="w-full p-4"
                         opts={{
                             align: "start",
                             loop: true,
