@@ -15,7 +15,7 @@ const categories = [
     subcategories: [
       { name: "Yeni İndirimler", href: "/category/sale/new" },
       { name: "Sezon Sonu", href: "/category/sale/season-end" },
-    ]
+    ],
   },
   {
     name: "Ayakkabı",
@@ -24,12 +24,12 @@ const categories = [
       { name: "Spor Ayakkabı", href: "/category/shoes/sneakers" },
       { name: "Günlük Ayakkabı", href: "/category/shoes/casual" },
       { name: "Bot", href: "/category/shoes/boots" },
-    ]
+    ],
   },
-  { name: "Üst Giyim", href: "/category/tops" },
+  { name: "Üst Giyim", href: "/Kategori/UstGiyim" },
   { name: "Alt Giyim", href: "/category/bottoms" },
-  { name: "Eşofman", href: "/category/sportswear" },
-  { name: "Dış Giyim", href: "/category/outerwear" },
+  { name: "Eşofman", href: "/Kategori/sportswear" },
+  { name: "Hakkımızda", href: "/Hakkimizda" },
 ]
 
 const Header = () => {
@@ -37,12 +37,13 @@ const Header = () => {
   const [openCategories, setOpenCategories] = useState({})
 
   const toggleCategory = (categoryName) => {
-    setOpenCategories(prev => ({
+    setOpenCategories((prev) => ({
       ...prev,
-      [categoryName]: !prev[categoryName]
+      [categoryName]: !prev[categoryName],
     }))
-  }
 
+
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-black text-white">
@@ -51,7 +52,7 @@ const Header = () => {
         <div className="flex items-center flex-1 md:flex-none">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className=" h-24 w-12 text-white hover:text-white/80 hover:bg-transparent">
+              <Button variant="ghost" size="icon" className="h-24 w-12 text-white hover:text-white/80 hover:bg-transparent">
                 <Menu className="h-12 w-12" />
               </Button>
             </SheetTrigger>
@@ -60,27 +61,31 @@ const Header = () => {
                 {/* Header */}
                 <div className="flex justify-start ml-8 items-center h-28 w-full">
                   <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center space-x-2">
-                    <Image src="/logo.png" alt="Logo" width={200} height={200} className="rounded-lg bg-black" />
+                    <Image src="/logo.png" alt="Logo" width={50} height={50} className="rounded-2xl bg-black" />
                   </Link>
                 </div>
 
                 {/* Navigation */}
                 <nav className="flex-1 overflow-y-auto">
-                  <div className="">
+                  <div>
                     {categories.map((category) => (
                       <div key={category.name} className="mb-2">
                         <button
                           onClick={() => toggleCategory(category.name)}
                           className="flex items-center justify-between w-full p-3 text-left text-lg font-medium hover:bg-gray-50 rounded-lg transition-colors"
                         >
-                          <span className="font-sans tracking-wide">{category.name}</span>
-                          <ChevronDown
-                            className={`h-5 w-5 transition-transform ${
-                              openCategories[category.name] ? 'rotate-180' : ''
-                            }`}
-                          />
+                          <Link href={category.href}>
+                           <span>{category.name}</span>
+                          </Link>
+                          {category.subcategories && (
+                            <ChevronDown
+                              className={`h-5 w-5 transition-transform ${
+                                openCategories[category.name] ? "rotate-180" : ""
+                              }`}
+                            />
+                          )}
                         </button>
-                        
+
                         {/* Subcategories */}
                         {openCategories[category.name] && category.subcategories && (
                           <div className="ml-4 mt-2 space-y-2">
@@ -127,13 +132,7 @@ const Header = () => {
           </Sheet>
 
           <Link href="/" className="flex items-center justify-center md:ml-0 ml-auto mr-auto">
-            <Image
-              src="/logo.png"
-              alt="Logo"
-              width={400}
-              height={200}
-              className="md:h-24 h-16 w-auto"
-            />
+            <Image src="/logo.png" alt="Logo" width={400} height={200} className="md:h-24 h-16 w-auto" />
           </Link>
         </div>
 
@@ -160,8 +159,8 @@ const Header = () => {
           </Button>
           <Button variant="ghost" size="icon" className="relative text-white hover:text-white/80">
             <ShoppingCart className="h-5 w-5" />
-            <Badge 
-              variant="destructive" 
+            <Badge
+              variant="destructive"
               className="absolute -right-2 -top-2 h-5 w-5 flex bg-white text-black justify-center rounded-full p-0 text-xs"
             >
               3

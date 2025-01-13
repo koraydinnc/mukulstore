@@ -52,9 +52,9 @@ const TrendProducts = ({ data, refetch }) => {
                             {data.data.map((product) => (
                                 <CarouselItem
                                     key={product.id}
-                                    className="basis-full md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
+                                    className="basis-full md:basis-1/3  lg:basis-1/4 xl:basis-1/5"
                                 >
-                                    <Card className="shadow-lg hover:shadow-2xl transition-all transform rounded-xl bg-white relative overflow-hidden">
+                                    <Card className="shadow-lg hover:shadow-2xl transition-all transform rounded-xl  bg-white relative overflow-hidden">
                                         <CardHeader className="p-0 relative">
                                             <img
                                                 src={product.images?.[0] ? `/uploads/${product.images[0]}` : '/placeholder.jpg'}

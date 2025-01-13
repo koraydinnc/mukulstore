@@ -68,9 +68,6 @@ export default function Home() {
 
   return (
     <main className="overflow-x-hidden bg-white min-h-screen">
-      <section>
-        <Header />
-      </section>
 
       <section>
         <BannerCampaign />

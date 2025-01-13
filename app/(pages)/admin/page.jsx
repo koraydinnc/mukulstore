@@ -18,6 +18,16 @@ export default function Page() {
 
 
   return (
-    <div></div>
+
+    <div>
+
+       <SEO
+        title="Anasayfa"
+        description="Mukul Store | Anasayfa"
+        keywords="anasayfa, ayakkabı,giyim,mukul, mukulstore, mukul store, ürünler"
+        image="/logo.png"
+        url="https://mukulstore.com"
+      />
+    </div>
   )
 }

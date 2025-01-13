@@ -1,19 +1,12 @@
 import { IncomingForm } from 'formidable';
-import AWS from 'aws-sdk';
 import fs from 'fs/promises';
+import path from 'path';
 
 export const config = {
   api: {
-    bodyParser: false,
+    bodyParser: false, // Form verisini kendimiz parse edeceğiz
   },
 };
-
-// AWS S3 yapılandırması
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID, // .env dosyasından alın
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
-});
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -21,7 +14,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    const form = new IncomingForm({ multiples: true, keepExtensions: true });
+    // Public klasöründeki uploads dizinini oluştur
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    await fs.mkdir(uploadDir, { recursive: true });
+
+    // Formidable formu oluştur
+    const form = new IncomingForm({
+      uploadDir, // Dosyalar bu dizine yüklenecek
+      keepExtensions: true, // Dosya uzantılarını koru
+      multiples: true, // Birden fazla dosya yüklenmesine izin ver
+    });
 
     const formData = await new Promise((resolve, reject) => {
       form.parse(req, (err, fields, files) => {
@@ -30,31 +32,18 @@ export default async function handler(req, res) {
       });
     });
 
-    const fileArray = formData.files.files
-      ? Array.isArray(formData.files.files)
-        ? formData.files.files
-        : [formData.files.files]
-      : [];
+    const { files } = formData;
+    const fileArray = files.files ? (Array.isArray(files.files) ? files.files : [files.files]) : [];
 
-    const uploadedUrls = await Promise.all(
-      fileArray.map(async (file) => {
-        const fileContent = await fs.readFile(file.filepath);
-        const uploadParams = {
-          Bucket: process.env.AWS_BUCKET_NAME,
-          Key: `uploads/${file.newFilename}`,
-          Body: fileContent,
-          ContentType: file.mimetype,
-        };
-        
+    const urls = fileArray.map((file) => {
+      // Her bir dosyanın URL'sini oluştur
+      return `/uploads/${path.basename(file.filepath)}`;
+    });
 
-        const uploadResult = await s3.upload(uploadParams).promise();
-        return uploadResult.Location; // Yüklenen dosyanın URL'si
-      })
-    );
-
+    // Başarılı yanıt döndür
     return res.status(200).json({
       success: true,
-      urls: uploadedUrls, // Yüklenen dosyaların URL'lerini döndür
+      urls, // URL'leri içeren bir dizi döndür
     });
   } catch (error) {
     console.error('Upload error:', error);
