@@ -1,10 +1,10 @@
 "use client"
 
 import UrunDetay from '@/app/components/UrunDetay';
-import Loading from '@/app/loading';
 import { useGetProductsListQuery } from '@/store/services/user/productUserApi';
 import { useParams } from 'next/navigation';
 import React from 'react'
+import Loading from '../../loading';
 
 const page = () => {
   const {id} = useParams();

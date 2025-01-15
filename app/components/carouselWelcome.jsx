@@ -1,78 +1,71 @@
 "use client"
-import React from 'react';
+import React, { memo } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import Image from 'next/image';
 import Autoplay from 'embla-carousel-autoplay';
 import useEmblaCarousel from 'embla-carousel-react';
+
+const VideoSlide = memo(({ src }) => (
+  <CarouselItem className="relative justify-center items-center flex">
+    <video 
+      autoPlay 
+      loop 
+      muted 
+      playsInline 
+      loading="lazy"
+      preload="metadata"
+      className="w-full lg:w-[1440px] object-cover rounded-lg lg:h-[1440px]"
+    >
+      <source src={src} type="video/mp4" />
+    </video>
+  </CarouselItem>
+));
+
+VideoSlide.displayName = 'VideoSlide';
 
 const CarouselWelcome = () => {
   const autoplayOptions = {
     delay: 5000,
     stopOnInteraction: false,
-    stopOnMouseEnter: false,
+    stopOnMouseEnter: true, // Battery ve performans için değiştirildi
   };
 
   const [emblaRef] = useEmblaCarousel(
     {
       loop: true,
       align: 'start',
+      skipSnaps: false,
+      inViewThreshold: 0.7,
     },
     [Autoplay(autoplayOptions)]
   );
 
+  const videos = [
+    '/banner/1.mp4',
+    '/banner/2.mp4',
+    '/banner/3.mp4'
+  ];
+
   return (
     <div className="w-full max-w-screen-4xl max-h-screen-4xl mx-auto mt-2">
       <Carousel 
-       plugins={[
-        Autoplay({
-          delay: 4500,
-        }),
-      ]}
-      ref={emblaRef} className="relative w-full">
+        plugins={[
+          Autoplay({
+            delay: 4500,
+          }),
+        ]}
+        ref={emblaRef} 
+        className="relative w-full"
+      >
         <CarouselContent>
-          <CarouselItem className="relative">
-            <Image
-              className="w-full object-contain rounded-lg lg:h-[800px]"
-              src="/banner/1.gif"
-              alt="Gif 1"
-              width={1920}
-              height={600}
-              priority
-            />
-          </CarouselItem>
-          <CarouselItem className="relative">
-            <Image
-              className="w-full object-contain rounded-lg lg:h-[800px]"
-              src="/banner/2.gif"
-              alt="Gif 2"
-              width={1920}
-              height={600}
-            />
-          </CarouselItem>
-          <CarouselItem className="relative">
-            <Image
-              className="w-full object-contain rounded-lg lg:h-[800px]"
-              src="/banner/3.gif"
-              alt="Gif 3"
-              width={1920}
-              height={600}
-            />
-          </CarouselItem>
-          <CarouselItem className="relative">
-            <Image
-              className="w-full object-contain rounded-lg lg:h-[800px]"
-              src="/banner/4.gif"
-              alt="Gif 4"
-              width={1920}
-              height={600}
-            />
-          </CarouselItem>
+          {videos.map((video, index) => (
+            <VideoSlide key={video} src={video} />
+          ))}
         </CarouselContent>
-        <CarouselPrevious className=" hidden lg:flex absolute left-4 xxl:left-96 lg:left-40" />
+        <CarouselPrevious className="hidden lg:flex absolute left-4 xxl:left-96 lg:left-40" />
         <CarouselNext className="absolute right-4 lg:flex hidden xxl:right-96 lg:right-40" />
       </Carousel>
     </div>
   );
 };
 
-export default CarouselWelcome;
+export default memo(CarouselWelcome);

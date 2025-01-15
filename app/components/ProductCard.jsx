@@ -1,0 +1,119 @@
+import React from 'react';
+import { Card, CardHeader, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
+import { Badge, Button } from 'antd';
+import { Heart, ShoppingCart } from 'lucide-react';
+import Image from 'next/image';
+
+const ProductCard = ({ product, onClick }) => {
+  const renderStockStatus = (stock) => {
+    if (stock < 10) {
+      return (
+        <div className="flex flex-col items-end">
+          <span className="text-xs text-red-600 font-semibold animate-pulse">
+            Son {stock} adet!
+          </span>
+        </div>
+      );
+    }
+    return <span className="text-sm text-gray-500">Stok: {stock}</span>;
+  };
+
+  const renderSizes = (sizes) => {
+    if (!sizes || sizes.length === 0) return null;
+    
+    return (
+      <div className="mt-2 w-full">
+        <p className="text-sm  text-gray-600 mb-1">Bedenler:</p>
+        <div className="flex flex-wrap gap-1 max-w-full overflow-x-auto pb-2">
+          {sizes.map((sizeItem, index) => (
+            <Badge
+              key={index}
+              count={sizeItem.stock}
+              showZero
+              overflowCount={99}
+              className="cursor-pointer mr-2 mt-4 my-1 shrink-0"
+            >
+              <span className={`
+                inline-flex items-center justify-center px-2 py-1 text-xs 
+                ${sizeItem.stock > 0 ? 'bg-gray-100 text-gray-800' : 'bg-gray-50 text-gray-400'}
+                rounded border whitespace-nowrap
+                ${sizeItem.stock > 0 ? 'border-gray-200' : 'border-gray-100'}
+              `}>
+                {sizeItem.size}
+              </span>
+            </Badge>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const getImagePath = (imagePath) => {
+    if (!imagePath) return '/placeholder.jpg';
+    if (imagePath.startsWith('http')) return imagePath;
+    if (imagePath.startsWith('/')) return imagePath;
+    return `/uploads/${imagePath}`; // Ensure leading slash for relative paths
+  };
+
+  return (
+    <Card className="h-full cursor-pointer p-2 sm:p-4 flex flex-col hover:shadow-lg transition-shadow duration-200" onClick={onClick}>
+      <CardHeader className="p-0">
+        <div className="relative w-full pt-[133%]"> {/* 4:3 aspect ratio */}
+          <Image
+            src={getImagePath(product.images[0])}
+            alt={product.title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="absolute top-0 left-0 w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+            priority={false}
+            loading="lazy"
+          />
+        </div>
+      </CardHeader>
+      <CardContent className="p-0 pt-4 flex-1 space-y-2">
+        <CardTitle className="text-base sm:text-lg font-bold truncate">{product.title}</CardTitle>
+        <p className="text-gray-600 line-clamp-2 text-xs sm:text-sm">{product.description}</p>
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-bold text-gray-800">₺{product.discountedPrice || product.price}</span>
+            {product.discountPercentage > 0 && (
+              <span className="text-sm line-through text-gray-500">₺{product.price}</span>
+            )}
+          </div>
+          {product.discountPercentage > 0 && (
+            <span className="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded">
+              %{product.discountPercentage} İndirim
+            </span>
+          )}
+        </div>
+        <div className='mt-2 text-start flex'> 
+          {renderStockStatus(product.sizes.reduce((total, size) => total + size.stock, 0))}
+        </div>
+        <div className="mt-0 line-clamp-1">
+          {renderSizes(product.sizes)}
+        </div>
+      </CardContent>
+      <CardFooter className="p-0 pt-4 mt-auto">
+        <div className="flex gap-2 w-full">
+          <Button
+            type="primary"
+            size="default"
+            icon={<ShoppingCart className="w-5 h-5" />}
+            className="flex-1 h-14 bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <span className="hidden sm:inline">Sepete Ekle</span>
+          </Button>
+          <Button
+            size="default"
+            variant="outline"
+            className="aspect-square p-2 h-14"
+          >
+            <Heart className="w-5 h-14" />
+          </Button>
+        </div>
+      </CardFooter>
+    </Card>
+  );
+};
+
+export default ProductCard;

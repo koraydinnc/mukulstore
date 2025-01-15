@@ -1,14 +1,13 @@
 "use client"
 import { useEffect, useState } from 'react';
-import Header from './components/header';
-import BannerCampaign from './components/bannerCampaign';
-import CarouselWelcome from './components/carouselWelcome';
-import TrendProducts from './components/trendProducts';
 import { useGetPopularProductsQuery, useGetProductsListQuery } from '@/store/services/user/productUserApi';
-import ProductsList from './components/ProductsList';
-import ProductsFilter from './components/ProductsFilter';
 import { useGetCategoriesQuery } from '@/store/services/admin/categoryApi';
 import Loading from './loading';
+import BannerCampaign from '../components/bannerCampaign';
+import CarouselWelcome from '../components/carouselWelcome';
+import TrendProducts from '../components/trendProducts';
+import ProductsFilter from '../components/ProductsFilter';
+import ProductsList from '../components/ProductsList';
 
 export default function Home() {
   const [page, setPage] = useState(1);
@@ -40,30 +39,26 @@ export default function Home() {
   }
 
   const handleFilterChange = (filters) => {
-    console.log(filters, 'filters')
-      const filtredProducts = productsData.data.filter((products) => {
-         if(filters.category){
-            return products.category === filters.category
-         }
-          if(filters.priceRange){
-              return products.price >= filters.priceRange[0] && products.price <= filters.priceRange[1]
-          }
-          if (filters?.sizes) {
-             console.log(filters.sizes, 'filters.sizes')
-              const sizesProduct = products.sizes.includes(filters.sizes.map(size => size))
-              console.log(sizesProduct, 'sizesProduct')
-           
-          }
-          if(filters.inStock){
-              return products.inStock === filters.inStock
-          }
-          if(filters.onSale){
-              return products.onSale === filters.onSale 
-          }
-          
-      })
-      setProducts(filtredProducts)
-  }
+    const filteredProducts = productsData.data.filter((product) => {
+      const matchesCategory = filters.category ? product.category === filters.category : true;
+      const matchesPriceRange = filters.priceRange 
+        ? product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1] 
+        : true;
+      const matchesSizes = filters.sizes 
+        ? filters.sizes.every((size) => product.sizes.includes(size)) 
+        : true;
+      const matchesInStock = filters.inStock !== undefined 
+        ? product.inStock === filters.inStock 
+        : true;
+      const matchesOnSale = filters.onSale !== undefined 
+        ? product.onSale === filters.onSale 
+        : true;
+  
+      return matchesCategory && matchesPriceRange && matchesSizes && matchesInStock && matchesOnSale;
+    });
+    setProducts(filteredProducts);
+  };
+  
    console.log(products, 'products')
 
   return (
@@ -77,7 +72,7 @@ export default function Home() {
         <CarouselWelcome />
       </section>
 
-      <section>
+      <section >
         <TrendProducts data={trendData} />
       </section>
 

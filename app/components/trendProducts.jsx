@@ -1,12 +1,8 @@
 "use client";
 
-import React, { useRef } from "react";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardFooter,
-} from "@/components/ui/card";
+import React, { useRef, memo } from "react";
+import Image from "next/image";
+
 import {
     Carousel,
     CarouselContent,
@@ -19,10 +15,14 @@ import { HeartIcon } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSelector } from "react-redux";
 import { Spin } from "antd";
+import ProductCard from "./ProductCard";
+import { useRouter } from "next/navigation";
 
 const TrendProducts = ({ data, refetch }) => {
     const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
     const favorites = useSelector((state) => state.favorites.items);
+ 
+    const router = useRouter();    
 
     if (!data) {
         return (
@@ -32,76 +32,35 @@ const TrendProducts = ({ data, refetch }) => {
         );
     }
 
+    const handleClickRoute = (id) => {
+        router.push(`/urun/${id}`);     
+    }
 
     return (
-        <div className="min-h-2/3 w-full flex items-center justify-center py-12 bg-gray-50">
-            <div className="w-full xl:w-3/4">
+        <div className="min-h-full w-full flex items-center justify-center py-12 bg-gray-50">
+            <div className="w-full min-h-full xl:w-3/4">
                 <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 mb-10">
                     Popüler Ürünler
                 </h2>
                 {data.data.length > 0 ? (
                     <Carousel
                         plugins={[plugin.current]}
-                        className="w-full p-4"
+                        className="w-full h-full p-4"
                         opts={{
                             align: "start",
                             loop: true,
                         }}
                     >
-                        <CarouselContent className="flex gap-4">
+                        <CarouselContent className="flex gap-2 md:gap-4">
                             {data.data.map((product) => (
                                 <CarouselItem
                                     key={product.id}
-                                    className="basis-full md:basis-1/3  lg:basis-1/4 xl:basis-1/5"
+                                    className="basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 px-1 md:px-2"
                                 >
-                                    <Card className="shadow-lg hover:shadow-2xl transition-all transform rounded-xl  bg-white relative overflow-hidden">
-                                        <CardHeader className="p-0 relative">
-                                            <img
-                                                src={product.images?.[0] ? `/uploads/${product.images[0]}` : '/placeholder.jpg'}
-                                                alt={product.title}
-                                                style={{width:'100vw'}}
-                                                className="h-96 rounded-lg"
-                                            />
-                                            <button
-                                                className="absolute top-2 right-2 p-2 bg-transparent rounded-full shadow-md hover:shadow-lg transition-all"
-                                            >
-                                                {favorites.includes(product.id) ? (
-                                                    <HeartIcon className="h-6 w-6 bg-transparent text-red-500" />
-                                                ) : (
-                                                    <HeartIcon className="h-6 w-6 text-gray-400 hover:text-red-500 transition-colors" />
-                                                )}
-                                            </button>
-                                        </CardHeader>
-                                        <CardContent className="p-6">
-                                            <h3 className="text-xl font-semibold text-gray-800">
-                                                {product.title}
-                                            </h3>
-                                            <p className="text-gray-500 text-lg mt-2">
-                                                {product.price.toLocaleString()} ₺
-                                            </p>
-                                        </CardContent>
-                                        <CardFooter className="p-6 flex flex-col items-center">
-                                            <Select className="w-full text-black mb-4">
-                                                <SelectTrigger className="text-black">
-                                                    <SelectValue
-                                                        className="text-black"
-                                                        placeholder="Beden Seçiniz"
-                                                    />
-                                                </SelectTrigger>
-                                                <SelectContent className="bg-white text-black">
-                                                {product.sizes?.map((size, index) => (
-                                                       <SelectItem className="z-99"  key={index} value={size}>
-                                                           {size.size}
-                                                       </SelectItem>
-                                                   ))}
-
-                                                </SelectContent>
-                                            </Select>
-                                            <button className="w-full mt-4 bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-all">
-                                                Satın Al
-                                            </button>
-                                        </CardFooter>
-                                    </Card>
+                                    <ProductCard 
+                                        product={product} 
+                                        onClick={() => {handleClickRoute(product.id)}} // Buraya tıklama işlevini ekleyebilirsiniz
+                                    />
                                 </CarouselItem>
                             ))}
                         </CarouselContent>
@@ -122,4 +81,4 @@ const TrendProducts = ({ data, refetch }) => {
     );
 };
 
-export default TrendProducts;
+export default memo(TrendProducts);

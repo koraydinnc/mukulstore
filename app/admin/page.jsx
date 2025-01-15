@@ -2,6 +2,7 @@
 import { useSelector } from 'react-redux'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import SEO from '@/app/components/SEO'
 
 export default function Page() {
   const { isAuthenticated } = useSelector((state) => state.admin)
