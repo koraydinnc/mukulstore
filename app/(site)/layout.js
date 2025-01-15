@@ -1,8 +1,9 @@
-import { Poppins, Playfair_Display } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "./Providers";
 import Header from "../components/header";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const poppins = Poppins({ 
   weight: ['400', '500', '600', '700'],
@@ -55,6 +56,7 @@ export default function RootLayout({ children }) {
         <Providers>
           <Header/>
           {children}
+          <SpeedInsights />
         </Providers>
         <Toaster />
       </body>
