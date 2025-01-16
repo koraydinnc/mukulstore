@@ -27,10 +27,8 @@ import {
 } from "@/components/ui/select"
 import { Switch as AntSwitch, InputNumber, Spin } from 'antd' // Import Ant Design Switch
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Toast } from '@/components/ui/toast'
 import AdminPhotosAdd from '@/app/components/AdminPhotosAdd'
 import { useCreateProductMutation } from '@/store/services/admin/productApi'
-import { toast } from '@/hooks/use-toast'
 import { useGetCategoriesQuery } from '@/store/services/admin/categoryApi'
 import openNotification from '@/app/components/Toaster'
 
@@ -147,7 +145,7 @@ export default function ProductAddPage() {
       }
     } catch (error) {
       console.error("Hata:", error)
-      toast({
+      openNotification({
         variant: "destructive",
         title: "Hata!",
         description: error?.data?.message || "Bir hata oluştu.",

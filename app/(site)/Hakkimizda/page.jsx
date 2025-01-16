@@ -2,10 +2,39 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Statistic } from 'antd';
+import CountUp from 'react-countup';
+import { ShoppingOutlined, UserOutlined, ShopOutlined, CustomerServiceOutlined } from '@ant-design/icons';
 import Image from 'next/image';
 import PaymentLogo from '@/app/components/PaymentLogo';
 import { Award, Leaf, Lightbulb } from 'lucide-react';
 import SEO from '@/app/components/SEO';
+
+const AnimatedStatistic = ({ value, title, prefix, suffix }) => {
+  return (
+    <Statistic 
+      title={title}
+      value={value}
+      prefix={prefix}
+      suffix={suffix}
+      valueStyle={{ 
+        color: '#1890ff',
+        fontSize: '2rem',
+        fontWeight: 'bold'
+      }}
+      formatter={() => (
+        <CountUp
+          end={value}
+          duration={2.5}
+          separator=","
+          useEasing={true}
+          enableScrollSpy={true}
+          scrollSpyOnce={true}
+        />
+      )}
+    />
+  );
+};
 
 const Page = () => {
   return (
@@ -78,24 +107,52 @@ const Page = () => {
           </div>
         </section>
 
-        {/* Stats */}
+        {/* Stats Section Updated */}
         <section id="stats" className="container mx-auto px-4 py-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { number: "50K+", label: "Mutlu Müşteri" },
-              { number: "1000+", label: "Ürün Çeşidi" },
-              { number: "2+", label: "Mağaza" },
-              { number: "24/7", label: "Müşteri Desteği" }
+              { 
+                number: 50000,
+                label: "Mutlu Müşteri",
+                prefix: <UserOutlined className="mr-2" />,
+                suffix: "+"
+              },
+              { 
+                number: 1000,
+                label: "Ürün Çeşidi",
+                prefix: <ShoppingOutlined className="mr-2" />,
+                suffix: "+"
+              },
+              { 
+                number: 2,
+                label: "Mağaza",
+                prefix: <ShopOutlined className="mr-2" />,
+                suffix: "+"
+              },
+              { 
+                number: 24,
+                label: "Müşteri Desteği",
+                prefix: <CustomerServiceOutlined className="mr-2" />,
+                suffix: "/7"
+              }
             ].map((stat, index) => (
               <motion.div
                 key={index}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.1 * index }}
-                className="p-4"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ 
+                  duration: 0.5,
+                  delay: index * 0.1 
+                }}
+                className="flex flex-col items-center justify-center p-4"
               >
-                <div className="text-3xl font-bold text-blue-600">{stat.number}</div>
-                <div className="text-gray-600">{stat.label}</div>
+                <AnimatedStatistic
+                  value={stat.number}
+                  title={stat.label}
+                  prefix={stat.prefix}
+                  suffix={stat.suffix}
+                />
               </motion.div>
             ))}
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useSelector } from "react-redux";
-import { ShoppingCart, X } from "lucide-react";
+import { ShoppingBag, ShoppingCart, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -52,11 +52,13 @@ const CartItems = () => {
                   className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg"
                 >
                   <div className="relative h-16 w-16 flex-shrink-0">
-                    <Image
-                      alt={item.title}
-                      fill
-                      className="object-cover rounded-md"
-                    />
+                  <Image
+  src={`/uploads/${item.images[0]}` || '/placeholder.jpg'} // Varsayılan görsel
+  alt={item.title}
+  fill
+  className="object-cover rounded-md"
+/>
+
                   </div>
                   <div className="flex-1">
                     <Link
@@ -88,8 +90,9 @@ const CartItems = () => {
                 <span className="text-gray-600">Toplam Tutar:</span>
                 <span className="text-lg font-bold">₺{totalAmount}</span>
               </div>
-              <Link href="/cart" className="w-full">
+              <Link href="/Sepetim" className="w-full">
                 <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                  <ShoppingBag className="h-5 w-5 mr-2" />
                   Sepete Git ({totalQuantity} Ürün)
                 </Button>
               </Link>

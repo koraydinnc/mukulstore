@@ -32,7 +32,7 @@ const Favorites = () => {
             {favorites?.length > 0 && (
               <Badge
                 variant="destructive"
-                className="absolute text-white -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0"
+                className="absolute text-black bg-white rounded-2xl -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0"
               >
                 {favorites.length}
               </Badge>
@@ -62,7 +62,7 @@ const Favorites = () => {
                 {/* Ürün Görseli */}
                 <div className="relative h-16 w-16 flex-shrink-0">
                   <Image
-                    src={`/images/${product.images[0]}`}
+                    src={`/uploads/${product.images[0]}`}
                     alt={product.title}
                     fill
                     className="object-cover rounded-md"
@@ -82,13 +82,14 @@ const Favorites = () => {
                       {product.price} TL
                     </span>
                     <span className="text-xs text-green-600 font-semibold">
-                      %{product.discountPercentage} İndirim
+                      {product.discountPercentage ? `%${product.discountPercentage} İndirim` : ""} 
                     </span>
                   </div>
                 </div>
 
                 {/* Aksiyonlar */}
                 <div className="flex gap-2">
+                  <Link href={'/Sepetim'}>
                   <Button
                     variant="secondary"
                     size="sm"
@@ -97,6 +98,8 @@ const Favorites = () => {
                     <ShoppingBag className="h-4 w-4 mr-1" />
                     Satın Al
                   </Button>
+                  </Link>
+                 
                   <Button
                     variant="ghost"
                     size="icon"

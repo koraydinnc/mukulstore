@@ -6,9 +6,8 @@ import { useLoginMutation } from '@/store/services/admin/authApi';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from '@/components/ui/input';
-import { toast } from '@/hooks/use-toast';
-import { Toaster } from '@/components/ui/toaster';
 import { useRouter } from 'next/navigation';
+import openNotification from '@/app/components/Toaster';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
@@ -23,14 +22,14 @@ export default function AdminLoginPage() {
     try {
       const result = await login({ email, password }).unwrap();
       dispatch(loginSuccess(result.admin));
-      toast({
+      openNotification({
         title: "Başarılı!",
         description: "Giriş başarıyla yapıldı.",
       });
       router.replace('/admin/dashboard');
     } catch (error) {
       console.error('Login error: ', error);  // Detaylı hata kaydı
-      toast({
+      openNotification({
         variant: "destructive",
         title: "Hata!",
         description: error?.data?.message || "Giriş yapılamadı.",
@@ -73,7 +72,7 @@ export default function AdminLoginPage() {
           </CardContent>
         </Card>
       </div>
-      <Toaster />
+      <openNotificationer />
     </>
   );
 }

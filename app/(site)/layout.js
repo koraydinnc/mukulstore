@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "./Providers";
 import Header from "../components/header";
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import SepetDrawer from "@/app/components/SepetDrawer";
 
 // Font optimizasyonu
 const poppins = Poppins({ 
@@ -61,20 +62,16 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="tr" className={poppins.variable}>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      </head>
       <body className={poppins.className}>
-          <Providers>
-            <Header />
-            <main className="min-h-screen">
-              {children}
-            </main>
-            <SpeedInsights />
-          </Providers>
+        <Providers>
+          <Header />
+          <main className="relative">
+            {children}
+            <SepetDrawer />
+          </main>
+          <SpeedInsights />
           <Toaster />
+        </Providers>
       </body>
     </html>
   );

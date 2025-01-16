@@ -7,7 +7,7 @@ const openNotification = ({ title, description, variant }) => {
     title: title,
     description: description,
     style: {
-      backgroundColor: variant === 'success' ? 'green' : '#EF4444',
+      backgroundColor: variant === 'success' ? 'white' : '#EF4444',
       width: 400,
     },
   });

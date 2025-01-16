@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { usePhotosUploadMutation } from "@/store/services/admin/productApi";
 import { Upload } from "antd";
 import { PlusOutlined, LoadingOutlined } from "@ant-design/icons";
-import { toast } from "@/hooks/use-toast";
+import openNotification from "./Toaster";
 
 const AdminPhotosAdd = ({ onChange, setImages }) => {
   
@@ -32,7 +32,7 @@ const AdminPhotosAdd = ({ onChange, setImages }) => {
         onChange(newImageList);
         
   
-        toast({
+        openNotification({
           title: "Başarılı",
           description: "Fotoğraf yüklendi",
         });
@@ -42,7 +42,7 @@ const AdminPhotosAdd = ({ onChange, setImages }) => {
     } catch (error) {
       console.error("Yükleme sırasında hata:", error);
       onError(error); // Ant Design Upload'a hata durumu bildir
-      toast({
+      openNotification({
         variant: "destructive",
         title: "Hata",
         description: "Fotoğraf yüklenemedi",

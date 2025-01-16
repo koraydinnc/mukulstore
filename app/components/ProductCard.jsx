@@ -7,7 +7,7 @@ import { Badge, Button } from 'antd';
 import { Heart, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { toast } from '@/hooks/use-toast';
+import openNotification from './Toaster';
 
 const ProductCard = ({ product, onClick }) => {
   const router = useRouter();
@@ -19,7 +19,7 @@ const ProductCard = ({ product, onClick }) => {
 
   const handleAddToCart = () => {
     if (!selectedSize) {
-      toast({
+      openNotification({
         variant: "destructive",
         title: "Beden Seçimi Gerekli",
         description: "Lütfen bir beden seçiniz.",
@@ -32,7 +32,7 @@ const ProductCard = ({ product, onClick }) => {
     );
 
     if (existingCartItem) {
-      toast({
+      openNotification({
         variant: "default",
         title: "Ürün Zaten Sepetinizde",
         description: "Bu ürün seçili beden ile zaten sepetinizde bulunuyor.",
@@ -41,28 +41,26 @@ const ProductCard = ({ product, onClick }) => {
     }
 
     dispatch(addToCart({ product, selectedSize }));
-    toast({
-      title: "Ürün Sepete Eklendi",
-      description: `${product.title} sepetinize eklendi.`,
-    });
+
   };
 
   const handleBuyNow = () => {
     handleAddToCart();
-    router.push('/cart');
+    router.push('/Sepetim');
   };
 
   const toggleFavorite = () => {
     if (isFavorite) {
       dispatch(removeFromFavorites(product.id));
-      toast({
+      openNotification({
         variant: "default",
         title: "Favorilerden Çıkarıldı",
         description: `${product.title} favorilerinizden çıkarıldı.`,
       });
     } else {
       dispatch(addToFavorites(product));
-      toast({
+      openNotification({
+        variant: "success",
         title: "Favorilere Eklendi",
         description: `${product.title} favorilerinize eklendi.`,
       });
@@ -83,19 +81,12 @@ const ProductCard = ({ product, onClick }) => {
   };
 
   const handleSizeSelect = (size) => {
-    // Seçili beden tekrar tıklandığında iptal et
     if (selectedSize === size) {
       setSelectedSize(null);
-      toast({
-        title: "Beden Seçimi İptal Edildi",
-        description: `${size} bedeni iptal edildi.`,
-      });
+    
     } else {
       setSelectedSize(size);
-      toast({
-        title: "Beden Seçildi",
-        description: `${size} bedeni seçildi.`,
-      });
+  
     }
   };
 
@@ -104,40 +95,41 @@ const ProductCard = ({ product, onClick }) => {
     
     return (
       <div className="mt-2 w-full">
-        <p className="text-sm text-gray-600 mb-1">Bedenler:</p>
-        <div className="flex flex-wrap gap-1 max-w-full overflow-x-auto scrollbar-hide pb-2">
-          {sizes.map((sizeItem, index) => (
-            <div
-              key={index}
-              onClick={() => sizeItem.stock > 0 && handleSizeSelect(sizeItem.size)}
-              className={`
-                cursor-pointer transition-all duration-200 transform
-                ${selectedSize === sizeItem.size ? 'scale-105' : ''}
-                ${sizeItem.stock === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}
-              `}
+      <p className="text-sm text-gray-600 mb-1">Bedenler:</p>
+      <div className="flex flex-wrap gap-1 max-w-full overflow-hidden pb-2">
+        {sizes.map((sizeItem, index) => (
+          <div
+            key={index}
+            onClick={() => sizeItem.stock > 0 && handleSizeSelect(sizeItem.size)}
+            className={`
+              cursor-pointer transition-all duration-200 transform
+              ${selectedSize === sizeItem.size ? 'scale-105' : ''}
+              ${sizeItem.stock === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}
+            `}
+          >
+            <Badge
+              count={sizeItem.stock}
+              showZero
+              overflowCount={99}
+              className={`mr-2 mt-4 my-1 shrink-0`}
             >
-              <Badge
-                count={sizeItem.stock}
-                showZero
-                overflowCount={99}
-                className={`mr-2 mt-4 my-1 shrink-0`}
-              >
-                <span className={`
-                  inline-flex items-center justify-center px-3 py-2 text-sm
-                  ${selectedSize === sizeItem.size 
-                    ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-400' 
-                    : 'bg-gray-100 text-gray-800'}
-                  ${sizeItem.stock > 0 ? '' : 'bg-gray-50 text-gray-400'}
-                  rounded-lg border whitespace-nowrap font-medium
-                  transition-all duration-200
-                `}>
-                  {sizeItem.size}
-                </span>
-              </Badge>
-            </div>
-          ))}
-        </div>
+              <span className={`
+                inline-flex items-center justify-center px-3 py-2 text-sm
+                ${selectedSize === sizeItem.size 
+                  ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-400' 
+                  : 'bg-gray-100 text-gray-800'}
+                ${sizeItem.stock > 0 ? '' : 'bg-gray-50 text-gray-400'}
+                rounded-lg border whitespace-nowrap font-medium
+                transition-all duration-200
+              `}>
+                {sizeItem.size}
+              </span>
+            </Badge>
+          </div>
+        ))}
       </div>
+    </div>
+    
     );
   };
 
