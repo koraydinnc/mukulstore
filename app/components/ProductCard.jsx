@@ -3,11 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '@/store/slices/cartSlice';
 import { addToFavorites, removeFromFavorites } from '@/store/slices/favoritesSlice';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
-import { Badge, Button } from 'antd';
 import { Heart, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import openNotification from './Toaster';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 const ProductCard = ({ product, onClick }) => {
   const router = useRouter();
@@ -92,46 +93,46 @@ const ProductCard = ({ product, onClick }) => {
 
   const renderSizes = (sizes) => {
     if (!sizes || sizes.length === 0) return null;
-    
+  
     return (
-      <div className="mt-2 w-full">
-      <p className="text-sm text-gray-600 mb-1">Bedenler:</p>
-      <div className="flex flex-wrap gap-1 max-w-full overflow-hidden pb-2">
-        {sizes.map((sizeItem, index) => (
-          <div
-            key={index}
-            onClick={() => sizeItem.stock > 0 && handleSizeSelect(sizeItem.size)}
-            className={`
-              cursor-pointer transition-all duration-200 transform
-              ${selectedSize === sizeItem.size ? 'scale-105' : ''}
-              ${sizeItem.stock === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}
-            `}
-          >
-            <Badge
-              count={sizeItem.stock}
-              showZero
-              overflowCount={99}
-              className={`mr-2 mt-4 my-1 shrink-0`}
+      <div className="mt-2 w-full sm:overflow-auto">
+        <p className="text-sm text-gray-600 mb-1">Bedenler:</p>
+        <div className="flex flex-wrap gap-1 sm:flex-col max-w-full overflow-auto pb-2">
+          {sizes.map((sizeItem, index) => (
+            <div
+              key={index}
+              onClick={() => sizeItem.stock > 0 && handleSizeSelect(sizeItem.size)}
+              className={`
+                cursor-pointer transition-all duration-200 transform
+                ${selectedSize === sizeItem.size ? 'scale-105' : ''}
+                ${sizeItem.stock === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}
+              `}
             >
-              <span className={`
-                inline-flex items-center justify-center px-3 py-2 text-sm
-                ${selectedSize === sizeItem.size 
-                  ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-400' 
-                  : 'bg-gray-100 text-gray-800'}
-                ${sizeItem.stock > 0 ? '' : 'bg-gray-50 text-gray-400'}
-                rounded-lg border whitespace-nowrap font-medium
-                transition-all duration-200
-              `}>
-                {sizeItem.size}
-              </span>
-            </Badge>
-          </div>
-        ))}
+              <Badge
+                count={sizeItem.stock}
+                showZero
+                overflowCount={99}
+                className={`mr-2 mt-4 my-1 shrink-0`}
+              >
+                <span className={`
+                  inline-flex items-center justify-center px-3 py-2 text-sm
+                  ${selectedSize === sizeItem.size 
+                    ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-400' 
+                    : 'bg-gray-100 text-gray-800'}
+                  ${sizeItem.stock > 0 ? '' : 'bg-gray-50 text-gray-400'}
+                  sm:rounded-lg border whitespace-nowrap font-medium
+                  transition-all duration-200
+                `}>
+                  {sizeItem.size}
+                </span>
+              </Badge>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-    
     );
   };
+  
 
   const getImagePath = (imagePath) => {
     if (!imagePath) return '/placeholder.jpg';
@@ -142,7 +143,7 @@ const ProductCard = ({ product, onClick }) => {
 
   return (
     <Card className="h-full cursor-pointer p-2 sm:p-4 flex flex-col hover:shadow-lg transition-shadow duration-200" >
-      <CardHeader className="p-0">
+      <CardHeader onClick={() => handleBuyNow(product.id)} className="p-0">
         <div className="relative w-full pt-[133%]"> {/* 4:3 aspect ratio */}
           <Image
             src={getImagePath(product.images[0])}

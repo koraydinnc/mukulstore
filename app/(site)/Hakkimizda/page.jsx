@@ -108,55 +108,65 @@ const Page = () => {
         </section>
 
         {/* Stats Section Updated */}
-        <section id="stats" className="container mx-auto px-4 py-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { 
-                number: 50000,
-                label: "Mutlu Müşteri",
-                prefix: <UserOutlined className="mr-2" />,
-                suffix: "+"
-              },
-              { 
-                number: 1000,
-                label: "Ürün Çeşidi",
-                prefix: <ShoppingOutlined className="mr-2" />,
-                suffix: "+"
-              },
-              { 
-                number: 2,
-                label: "Mağaza",
-                prefix: <ShopOutlined className="mr-2" />,
-                suffix: "+"
-              },
-              { 
-                number: 24,
-                label: "Müşteri Desteği",
-                prefix: <CustomerServiceOutlined className="mr-2" />,
-                suffix: "/7"
-              }
-            ].map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ 
-                  duration: 0.5,
-                  delay: index * 0.1 
-                }}
-                className="flex flex-col items-center justify-center p-4"
-              >
-                <AnimatedStatistic
-                  value={stat.number}
-                  title={stat.label}
-                  prefix={stat.prefix}
-                  suffix={stat.suffix}
-                />
-              </motion.div>
-            ))}
-          </div>
-        </section>
+        <section id="stats" className="container mx-auto px-4 py-8 sm:py-16">
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+    {[
+      { 
+        number: 50000,
+        label: "Mutlu Müşteri",
+        prefix: <UserOutlined className="mr-1 sm:mr-2" />,
+        suffix: "+"
+      },
+      { 
+        number: 1000,
+        label: "Ürün Çeşidi",
+        prefix: <ShoppingOutlined className="mr-1 sm:mr-2" />,
+        suffix: "+"
+      },
+      { 
+        number: 2,
+        label: "Mağaza",
+        prefix: <ShopOutlined className="mr-1 sm:mr-2" />,
+        suffix: "+"
+      },
+      { 
+        number: 24,
+        label: "Müşteri Desteği",
+        prefix: <CustomerServiceOutlined className="mr-1 sm:mr-2" />,
+        suffix: "/7"
+      }
+    ].map((stat, index) => (
+      <motion.div
+        key={index}
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ 
+          duration: 0.4,
+          delay: index * 0.1 
+        }}
+        className="flex flex-col items-center justify-center p-3 sm:p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
+      >
+        <AnimatedStatistic
+          className="text-base sm:text-lg lg:text-xl"
+          valueStyle={{ 
+            fontSize: 'inherit',
+            fontWeight: 'bold',
+            color: '#1890ff'
+          }}
+          titleStyle={{
+            fontSize: 'small',
+            color: '#666'
+          }}
+          value={stat.number}
+          title={stat.label}
+          prefix={stat.prefix}
+          suffix={stat.suffix}
+        />
+      </motion.div>
+    ))}
+  </div>
+</section>
 
         {/* Contact */}
         <section id="contact" className="bg-gray-900 text-white py-16">
