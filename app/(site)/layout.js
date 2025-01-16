@@ -5,12 +5,14 @@ import { Providers } from "./Providers";
 import Header from "../components/header";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
+// Font optimizasyonu
 const poppins = Poppins({ 
   weight: ['400', '500', '600', '700'],
   subsets: ['latin'],
   variable: '--font-poppins',
+  display: 'swap', // Font yüklenene kadar sistem fontu kullanılır
+  preload: true,
 });
-
 
 export const metadata = {
   title: {
@@ -28,6 +30,14 @@ export const metadata = {
     alternateLocale: 'en_US',
     siteName: 'Mukul Store',
     url: 'https://www.mukulstore.com',
+    images: [
+      {
+        url: './BlackLogo.jpeg',
+        width: '200',
+        height: '200',
+        alt: 'Mukul Store',
+      },
+    ],
   },
   robots: {
     index: true,
@@ -50,15 +60,21 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="tr">
-     
+    <html lang="tr" className={poppins.variable}>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body className={poppins.className}>
-        <Providers>
-          <Header/>
-          {children}
-          <SpeedInsights />
-        </Providers>
-        <Toaster />
+          <Providers>
+            <Header />
+            <main className="min-h-screen">
+              {children}
+            </main>
+            <SpeedInsights />
+          </Providers>
+          <Toaster />
       </body>
     </html>
   );

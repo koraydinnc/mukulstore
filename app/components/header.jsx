@@ -8,6 +8,7 @@ import { Menu, ShoppingCart, User, ChevronDown, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Badge } from "@/components/ui/badge"
+import { useRouter } from "next/navigation"
 
 const categories = [
   {
@@ -28,8 +29,7 @@ const categories = [
     ],
   },
   { name: "Üst Giyim", href: "/Kategori/UstGiyim" },
-  { name: "Alt Giyim", href: "/category/bottoms" },
-  { name: "Eşofman", href: "/Kategori/sportswear" },
+  { name: "Alt Giyim", href: "/Kategori/AltGiyim" },
   { name: "Hakkımızda", href: "/Hakkimizda" },
 ]
 
@@ -37,6 +37,7 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [openCategories, setOpenCategories] = useState({})
   const [isScrolled, setIsScrolled] = useState(false);
+  const router = useRouter()
   const toggleCategory = (categoryName) => {
     setOpenCategories((prev) => ({
       ...prev,
@@ -50,6 +51,12 @@ const Header = () => {
     damping: 60,
     restDelta: 0.8
   });
+
+  const handleRouteChange = (href) => {
+    setIsOpen(false);
+    console.log(href);
+    router.push(href);
+  }
 
   // Scroll'da header'ın yukarı kayması için y değerini tanımlıyoruz
   const y = useTransform(scrollYProgress, [0, 0.8], [0, -25]);
@@ -98,7 +105,8 @@ const Header = () => {
                               className="flex items-center justify-between w-full p-3 text-left text-lg font-medium hover:bg-gray-50 rounded-lg transition-colors"
                               aria-label={`Kategori: ${category.name}`}
                             >
-                              <span>{category.name}</span>
+                             
+                              <span onClick={() => handleRouteChange(category.href)}>{category.name}</span>
                               {category.subcategories && (
                                 <ChevronDown
                                   className={`h-5 w-5 transition-transform ${openCategories[category.name] ? "rotate-180" : ""}`}
