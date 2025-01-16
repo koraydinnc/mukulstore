@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
+import Cookies from 'js-cookie';
 
 const initialState = {
-  items: [],
+  items: Cookies.get('favorites') ? JSON.parse(Cookies.get('favorites')) : [],
 };
 
 const favoritesSlice = createSlice({
@@ -14,18 +15,23 @@ const favoritesSlice = createSlice({
       
       if (!existingItem) {
         state.items.push(newItem);
+        // Cookie güncelleme
+        Cookies.set('favorites', JSON.stringify(state.items));
       }
     },
     
     removeFromFavorites: (state, action) => {
-      const id = action.payload;
-      state.items = state.items.filter(item => item.id !== id);
+      state.items = state.items.filter(item => item.id !== action.payload);
+      // Cookie güncelleme
+      Cookies.set('favorites', JSON.stringify(state.items));
     },
     
     clearFavorites: (state) => {
       state.items = [];
-    }
-  }
+      // Cookie temizleme
+      Cookies.remove('favorites');
+    },
+  },
 });
 
 export const { addToFavorites, removeFromFavorites, clearFavorites } = favoritesSlice.actions;

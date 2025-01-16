@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
+import Favorites from "./Favorites"
+import { useDispatch, useSelector } from "react-redux"
+import CartItems from "./CartItems"
 
 const categories = [
   {
@@ -38,13 +41,16 @@ const Header = () => {
   const [openCategories, setOpenCategories] = useState({})
   const [isScrolled, setIsScrolled] = useState(false);
   const router = useRouter()
+  const dipsatch = useDispatch()
   const toggleCategory = (categoryName) => {
     setOpenCategories((prev) => ({
       ...prev,
       [categoryName]: !prev[categoryName],
     }))
   }
-
+  const cartItems = useSelector((state) => state.cart.items)
+  const cartQuantity = useSelector((state) => state.cart.totalQuantity);
+  console.log(cartItems)
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -169,15 +175,8 @@ const Header = () => {
               <Button variant="ghost" size="icon" className="text-white hover:text-white/80">
                 <Search className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="relative text-white hover:text-white/80">
-                <ShoppingCart className="h-5 w-5" />
-                <Badge
-                  variant="destructive"
-                  className="absolute -right-2 -top-2 h-5 w-5 flex bg-white text-black justify-center rounded-full p-0 text-xs"
-                >
-                  3
-                </Badge>
-              </Button>
+              <CartItems />
+              <Favorites />
               <Button variant="ghost" size="icon" className="text-white hover:text-white/80">
                 <User className="h-5 w-5" />
               </Button>

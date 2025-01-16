@@ -1,10 +1,74 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '@/store/slices/cartSlice';
+import { addToFavorites, removeFromFavorites } from '@/store/slices/favoritesSlice';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { Badge, Button } from 'antd';
 import { Heart, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { toast } from '@/hooks/use-toast';
 
 const ProductCard = ({ product, onClick }) => {
+  const router = useRouter();
+  const [selectedSize, setSelectedSize] = useState(null);
+  const dispatch = useDispatch();
+  const favorites = useSelector((state) => state.favorites.items);
+  const cartItems = useSelector((state) => state.cart.items);
+  const isFavorite = favorites.some(item => item.id === product.id);
+
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      toast({
+        variant: "destructive",
+        title: "Beden Seçimi Gerekli",
+        description: "Lütfen bir beden seçiniz.",
+      });
+      return;
+    }
+
+    const existingCartItem = cartItems.find(
+      item => item.id === product.id && item.size === selectedSize
+    );
+
+    if (existingCartItem) {
+      toast({
+        variant: "default",
+        title: "Ürün Zaten Sepetinizde",
+        description: "Bu ürün seçili beden ile zaten sepetinizde bulunuyor.",
+      });
+      return;
+    }
+
+    dispatch(addToCart({ product, selectedSize }));
+    toast({
+      title: "Ürün Sepete Eklendi",
+      description: `${product.title} sepetinize eklendi.`,
+    });
+  };
+
+  const handleBuyNow = () => {
+    handleAddToCart();
+    router.push('/cart');
+  };
+
+  const toggleFavorite = () => {
+    if (isFavorite) {
+      dispatch(removeFromFavorites(product.id));
+      toast({
+        variant: "default",
+        title: "Favorilerden Çıkarıldı",
+        description: `${product.title} favorilerinizden çıkarıldı.`,
+      });
+    } else {
+      dispatch(addToFavorites(product));
+      toast({
+        title: "Favorilere Eklendi",
+        description: `${product.title} favorilerinize eklendi.`,
+      });
+    }
+  };
+
   const renderStockStatus = (stock) => {
     if (stock < 10) {
       return (
@@ -18,30 +82,59 @@ const ProductCard = ({ product, onClick }) => {
     return <span className="text-sm text-gray-500">Stok: {stock}</span>;
   };
 
+  const handleSizeSelect = (size) => {
+    // Seçili beden tekrar tıklandığında iptal et
+    if (selectedSize === size) {
+      setSelectedSize(null);
+      toast({
+        title: "Beden Seçimi İptal Edildi",
+        description: `${size} bedeni iptal edildi.`,
+      });
+    } else {
+      setSelectedSize(size);
+      toast({
+        title: "Beden Seçildi",
+        description: `${size} bedeni seçildi.`,
+      });
+    }
+  };
+
   const renderSizes = (sizes) => {
     if (!sizes || sizes.length === 0) return null;
     
     return (
       <div className="mt-2 w-full">
-        <p className="text-sm  text-gray-600 mb-1">Bedenler:</p>
-        <div className="flex flex-wrap gap-1 max-w-full overflow-x-auto pb-2">
+        <p className="text-sm text-gray-600 mb-1">Bedenler:</p>
+        <div className="flex flex-wrap gap-1 max-w-full overflow-x-auto scrollbar-hide pb-2">
           {sizes.map((sizeItem, index) => (
-            <Badge
+            <div
               key={index}
-              count={sizeItem.stock}
-              showZero
-              overflowCount={99}
-              className="cursor-pointer mr-2 mt-4 my-1 shrink-0"
+              onClick={() => sizeItem.stock > 0 && handleSizeSelect(sizeItem.size)}
+              className={`
+                cursor-pointer transition-all duration-200 transform
+                ${selectedSize === sizeItem.size ? 'scale-105' : ''}
+                ${sizeItem.stock === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}
+              `}
             >
-              <span className={`
-                inline-flex items-center justify-center px-2 py-1 text-xs 
-                ${sizeItem.stock > 0 ? 'bg-gray-100 text-gray-800' : 'bg-gray-50 text-gray-400'}
-                rounded border whitespace-nowrap
-                ${sizeItem.stock > 0 ? 'border-gray-200' : 'border-gray-100'}
-              `}>
-                {sizeItem.size}
-              </span>
-            </Badge>
+              <Badge
+                count={sizeItem.stock}
+                showZero
+                overflowCount={99}
+                className={`mr-2 mt-4 my-1 shrink-0`}
+              >
+                <span className={`
+                  inline-flex items-center justify-center px-3 py-2 text-sm
+                  ${selectedSize === sizeItem.size 
+                    ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-400' 
+                    : 'bg-gray-100 text-gray-800'}
+                  ${sizeItem.stock > 0 ? '' : 'bg-gray-50 text-gray-400'}
+                  rounded-lg border whitespace-nowrap font-medium
+                  transition-all duration-200
+                `}>
+                  {sizeItem.size}
+                </span>
+              </Badge>
+            </div>
           ))}
         </div>
       </div>
@@ -56,7 +149,7 @@ const ProductCard = ({ product, onClick }) => {
   };
 
   return (
-    <Card className="h-full cursor-pointer p-2 sm:p-4 flex flex-col hover:shadow-lg transition-shadow duration-200" onClick={onClick}>
+    <Card className="h-full cursor-pointer p-2 sm:p-4 flex flex-col hover:shadow-lg transition-shadow duration-200" >
       <CardHeader className="p-0">
         <div className="relative w-full pt-[133%]"> {/* 4:3 aspect ratio */}
           <Image
@@ -93,22 +186,30 @@ const ProductCard = ({ product, onClick }) => {
           {renderSizes(product.sizes)}
         </div>
       </CardContent>
-      <CardFooter className="p-0 pt-4 mt-auto">
+      <CardFooter className="p-0 pt-4 mt-auto space-y-2">
         <div className="flex gap-2 w-full">
           <Button
             type="primary"
             size="default"
             icon={<ShoppingCart className="w-5 h-5" />}
-            className="flex-1 h-14 bg-blue-600 hover:bg-blue-700 text-white"
+            className="flex-1 h-12 bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAddToCart();
+            }}
           >
             <span className="hidden sm:inline">Sepete Ekle</span>
           </Button>
           <Button
             size="default"
             variant="outline"
-            className="aspect-square p-2 h-14"
+            className={`aspect-square p-2 h-12 ${isFavorite ? 'text-red-500' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFavorite();
+            }}
           >
-            <Heart className="w-5 h-14" />
+            <Heart className={`w-5 h-12 ${isFavorite ? 'fill-current' : ''}`} />
           </Button>
         </div>
       </CardFooter>

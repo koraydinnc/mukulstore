@@ -8,8 +8,9 @@ import CarouselWelcome from '../components/carouselWelcome';
 import TrendProducts from '../components/trendProducts';
 import ProductsFilter from '../components/ProductsFilter';
 import ProductsList from '../components/ProductsList';
+import notFound from '../not-found';
 
-export default function Home() {
+export default function Home({params}) {
   const [page, setPage] = useState(1);
   const [products, setProducts] = useState([]);
   const pageSize = 12;
@@ -27,7 +28,9 @@ export default function Home() {
 
   const { data: categoriesData } = useGetCategoriesQuery();
  
-
+  if (!params.slug) {
+    notFound()
+  }
   useEffect(() => {
     if (productsData) {
       setProducts(productsData.data);
