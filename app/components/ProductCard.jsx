@@ -7,42 +7,44 @@ import { Heart, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import openNotification from './Toaster';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge, Button } from 'antd';
 
-const ProductCard = ({ product, onClick }) => {
-  const router = useRouter();
+const ProductCard = ({ product }) => {
   const [selectedSize, setSelectedSize] = useState(null);
   const dispatch = useDispatch();
+  const router = useRouter();
+  
   const favorites = useSelector((state) => state.favorites.items);
   const cartItems = useSelector((state) => state.cart.items);
-  const isFavorite = favorites.some(item => item.id === product.id);
+  const isFavorite = favorites.some((item) => item.id === product.id);
 
   const handleAddToCart = () => {
     if (!selectedSize) {
-      openNotification({
-        variant: "destructive",
-        title: "Beden Seçimi Gerekli",
-        description: "Lütfen bir beden seçiniz.",
+      return openNotification({
+        variant: 'destructive',
+        title: 'Beden Seçimi Gerekli',
+        description: 'Lütfen bir beden seçiniz.',
       });
-      return;
     }
 
-    const existingCartItem = cartItems.find(
-      item => item.id === product.id && item.size === selectedSize
+    const isInCart = cartItems.some(
+      (item) => item.id === product.id && item.size === selectedSize
     );
 
-    if (existingCartItem) {
-      openNotification({
-        variant: "default",
-        title: "Ürün Zaten Sepetinizde",
-        description: "Bu ürün seçili beden ile zaten sepetinizde bulunuyor.",
+    if (isInCart) {
+      return openNotification({
+        variant: 'default',
+        title: 'Ürün Zaten Sepetinizde',
+        description: 'Bu ürün seçili beden ile zaten sepetinizde bulunuyor.',
       });
-      return;
     }
 
     dispatch(addToCart({ product, selectedSize }));
-
+    openNotification({
+      variant: 'success',
+      title: 'Sepete Eklendi',
+      description: `${product.title} sepete eklendi.`,
+    });
   };
 
   const handleBuyNow = () => {
@@ -54,57 +56,47 @@ const ProductCard = ({ product, onClick }) => {
     if (isFavorite) {
       dispatch(removeFromFavorites(product.id));
       openNotification({
-        variant: "default",
-        title: "Favorilerden Çıkarıldı",
+        variant: 'default',
+        title: 'Favorilerden Çıkarıldı',
         description: `${product.title} favorilerinizden çıkarıldı.`,
       });
     } else {
       dispatch(addToFavorites(product));
       openNotification({
-        variant: "success",
-        title: "Favorilere Eklendi",
+        variant: 'success',
+        title: 'Favorilere Eklendi',
         description: `${product.title} favorilerinize eklendi.`,
       });
     }
   };
 
-  const renderStockStatus = (stock) => {
-    if (stock < 10) {
-      return (
-        <div className="flex flex-col items-end">
-          <span className="text-xs text-red-600 font-semibold animate-pulse">
-            Son {stock} adet!
-          </span>
-        </div>
-      );
-    }
-    return <span className="text-sm text-gray-500">Stok: {stock}</span>;
-  };
-
   const handleSizeSelect = (size) => {
-    if (selectedSize === size) {
-      setSelectedSize(null);
-    
-    } else {
-      setSelectedSize(size);
-  
-    }
+    setSelectedSize(size === selectedSize ? null : size);
   };
 
- 
-  
+  const renderStockStatus = (stock) => (
+    stock < 10 ? (
+      <span className="text-xs text-red-600 font-semibold animate-pulse">
+        Son {stock} adet!
+      </span>
+    ) : (
+      <span className="text-sm text-gray-500">Stok: {stock}</span>
+    )
+  );
 
   const getImagePath = (imagePath) => {
     if (!imagePath) return '/placeholder.jpg';
-    if (imagePath.startsWith('http')) return imagePath;
-    if (imagePath.startsWith('/')) return imagePath;
-    return `/uploads/${imagePath}`; // Ensure leading slash for relative paths
+    return imagePath.startsWith('http') || imagePath.startsWith('/')
+      ? imagePath
+      : `/uploads/${imagePath}`;
   };
 
+  
+
   return (
-    <Card className="h-full cursor-pointer p-2 sm:p-4 flex flex-col hover:shadow-lg transition-shadow duration-200" >
+    <Card className="h-full cursor-pointer p-2 sm:p-4 flex flex-col hover:shadow-lg transition-shadow duration-200">
       <CardHeader onClick={() => handleBuyNow(product.id)} className="p-0">
-        <div className="relative w-full pt-[133%]"> {/* 4:3 aspect ratio */}
+        <div className="relative w-full pt-[133%]">
           <Image
             src={getImagePath(product.images[0])}
             alt={product.title}
@@ -132,21 +124,55 @@ const ProductCard = ({ product, onClick }) => {
             </span>
           )}
         </div>
-        <div className='mt-2 text-start flex'> 
-          {renderStockStatus(product.sizes.reduce((total, size) => total + size.stock, 0))}
-        </div>
-        <div className="mt-0 line-clamp-1">
-          {product.sizes.map((size) => (
-            <Badge
-              key={size.id}
-              variant={selectedSize === size.size ? 'primary' : 'outline'}
-              className="cursor-pointer"
-              onClick={() => handleSizeSelect(size.size)}
-            >
-              {size.size}
-            </Badge>
-          ))}
-        </div>
+        <div className="mt-2 flex">{renderStockStatus(product.sizes.reduce((total, size) => total + size.stock, 0))}</div>
+        <div className="mt-2 w-full">
+  <p className="text-sm text-gray-600 mb-2">Bedenler:</p>
+  <div className="flex flex-wrap gap-2">
+    {product.sizes.map((size) => {
+      const isSelected = selectedSize === size.size;
+      const isOutOfStock = size.stock === 0;
+
+      return (
+        <Button
+          key={size.size}
+          type={isSelected ? "primary" : "default"}
+          disabled={isOutOfStock}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleSizeSelect(size.size);
+          }}
+          className={`
+            min-w-[45px] h-9 px-2 py-1 rounded-lg
+            ${isSelected 
+              ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700' 
+              : 'bg-white'}
+            ${isOutOfStock 
+              ? 'opacity-40 cursor-not-allowed' 
+              : 'hover:border-blue-400 hover:text-blue-600'}
+            relative group transition-all duration-200
+          `}
+        >
+          <span className="text-sm font-medium">{size.size}</span>
+          {/* Stok Göstergesi */}
+          {size.stock > 0 && size.stock <= 3 && (
+            <span className="absolute -top-2 -right-2 text-xs bg-red-500 text-white px-1 rounded-full">
+              {size.stock}
+            </span>
+          )}
+          {/* Hover Tooltip */}
+          {isOutOfStock && (
+            <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 
+              bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 
+              group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+              Stokta Yok
+            </span>
+          )}
+        </Button>
+      );
+    })}
+  </div>
+</div>
+
       </CardContent>
       <CardFooter className="p-0 pt-4 mt-auto space-y-2">
         <div className="flex gap-2 w-full">
@@ -171,7 +197,7 @@ const ProductCard = ({ product, onClick }) => {
               toggleFavorite();
             }}
           >
-            <Heart className={`w-5 h-12 ${isFavorite ? 'fill-current' : ''}`} />
+            <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
           </Button>
         </div>
       </CardFooter>

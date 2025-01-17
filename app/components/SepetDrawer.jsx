@@ -110,7 +110,14 @@ const SepetDrawer = () => {
                             ₺
                             <CountUp end={item.totalPrice} duration={0.5} decimals={2} />
                           </motion.span>
+                          <motion.span
+                             key={item.quantity}
+                             initial={{ scale: 1.2, color: "#10B981" }}
+                             animate={{ scale: 1, color: "#1F2937" }}
+                             className="text-sm font-semibold"
+                          >
                           <span className="text-xs text-gray-500">x{item.quantity}</span>
+                          </motion.span>
                         </div>
                       </div>
                     </div>
@@ -123,10 +130,19 @@ const SepetDrawer = () => {
           {/* Footer */}
           <div className="border-t bg-gray-50 p-4 ">
             <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600 font-medium">Ara Toplam:</span>
-                <span className="text-lg font-bold text-gray-900">₺{totalAmount}</span>
-              </div>
+            <div className="flex justify-between items-center">
+  <span className="text-gray-600 font-medium">Ara Toplam:</span>
+  <div className="flex items-baseline">
+    <CountUp 
+      end={totalAmount} 
+      duration={0.8} 
+      decimals={2} 
+      className="text-lg font-semibold" 
+    />
+    <span className="ml-1 text-lg font-semibold">₺</span>
+  </div>
+</div>
+
               <Link href="/Sepetim" className="block">
                 <Button
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 font-medium"
