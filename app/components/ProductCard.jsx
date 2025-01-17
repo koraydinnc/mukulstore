@@ -91,47 +91,7 @@ const ProductCard = ({ product, onClick }) => {
     }
   };
 
-  const renderSizes = (sizes) => {
-    if (!sizes || sizes.length === 0) return null;
-  
-    return (
-      <div className="mt-2 w-full sm:overflow-auto">
-        <p className="text-sm text-gray-600 mb-1">Bedenler:</p>
-        <div className="flex flex-wrap gap-1 sm:flex-col max-w-full overflow-auto pb-2">
-          {sizes.map((sizeItem, index) => (
-            <div
-              key={index}
-              onClick={() => sizeItem.stock > 0 && handleSizeSelect(sizeItem.size)}
-              className={`
-                cursor-pointer transition-all duration-200 transform
-                ${selectedSize === sizeItem.size ? 'scale-105' : ''}
-                ${sizeItem.stock === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}
-              `}
-            >
-              <Badge
-                count={sizeItem.stock}
-                showZero
-                overflowCount={99}
-                className={`mr-2 mt-4 my-1 shrink-0`}
-              >
-                <span className={`
-                  inline-flex items-center justify-center px-3 py-2 text-sm
-                  ${selectedSize === sizeItem.size 
-                    ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-400' 
-                    : 'bg-gray-100 text-gray-800'}
-                  ${sizeItem.stock > 0 ? '' : 'bg-gray-50 text-gray-400'}
-                  sm:rounded-lg border whitespace-nowrap font-medium
-                  transition-all duration-200
-                `}>
-                  {sizeItem.size}
-                </span>
-              </Badge>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
+ 
   
 
   const getImagePath = (imagePath) => {
@@ -176,7 +136,16 @@ const ProductCard = ({ product, onClick }) => {
           {renderStockStatus(product.sizes.reduce((total, size) => total + size.stock, 0))}
         </div>
         <div className="mt-0 line-clamp-1">
-          {renderSizes(product.sizes)}
+          {product.sizes.map((size) => (
+            <Badge
+              key={size.id}
+              variant={selectedSize === size.size ? 'primary' : 'outline'}
+              className="cursor-pointer"
+              onClick={() => handleSizeSelect(size.size)}
+            >
+              {size.size}
+            </Badge>
+          ))}
         </div>
       </CardContent>
       <CardFooter className="p-0 pt-4 mt-auto space-y-2">
