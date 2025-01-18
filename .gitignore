@@ -1,100 +1,42 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
+# Dependencies
+node_modules/
 /.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+.pnp.js
 
-# testing
+# Testing
 /coverage
 
-# next.js
-/.next/
-/out/
-
-# production
+# Production
 /build
+/dist
 
-# misc
-.DS_Store
-*.pem
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# debug
+# Vercel
+.vercel
+
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
-.env
-.env.*
-!.env.example
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
 
-# Environment and credentials
-.env
-.env.*
-!.env.example
-.env.local
-.env.*.local
+# Cache
+.cache/
+.next/
 
-# lib directory
-/lib/
-lib/*
-.lib/
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# Google Cloud credentials
-lib/accountKey.json
-**/accountKey.json
-**/*.keyfile.json
-**/*credentials*.json
-**/*.pem
-**/*.key
-**/*.p12
-**/*.pfx
-
-# Credentials and keys
-/lib/accountKey.json
-/lib/credentials/*
-**/*.key
-**/*.pem
-**/*.p12
-**/*.pfx
-**/*.keyfile.json
-**/*credentials*.json
-**/*secret*.json
-**/*private*.json
-
-# Strict security rules
-/lib/keys/
-/lib/credentials/
-/lib/secrets/
-**/account*.json
-**/*key*.json
-**/*secret*.json
-**/*credential*.json
-**/*.key
-**/*.pem
-**/*.p8
-**/*.p12
-**/*.pfx
-**/*.env
-!.env.example
-!.env.template
-
-# Ensure no backup files are committed
-*.bak
-*~
-._*
+# Misc
+*.log
+*.tmp
+*.temp
