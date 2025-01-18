@@ -31,6 +31,11 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 2. Replace placeholder values with your actual Google Cloud credentials
 3. Never commit the actual credentials file
 
+## Security Setup
+
+### Credentials Setup
+1. Create directory for credentials:
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

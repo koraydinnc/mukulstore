@@ -36,6 +36,13 @@ yarn-error.log*
 .env.*
 !.env.example
 
+# Environment and credentials
+.env
+.env.*
+!.env.example
+.env.local
+.env.*.local
+
 # lib directory
 /lib/
 lib/*
@@ -57,3 +64,37 @@ lib/accountKey.json
 **/*.key
 **/*.p12
 **/*.pfx
+
+# Credentials and keys
+/lib/accountKey.json
+/lib/credentials/*
+**/*.key
+**/*.pem
+**/*.p12
+**/*.pfx
+**/*.keyfile.json
+**/*credentials*.json
+**/*secret*.json
+**/*private*.json
+
+# Strict security rules
+/lib/keys/
+/lib/credentials/
+/lib/secrets/
+**/account*.json
+**/*key*.json
+**/*secret*.json
+**/*credential*.json
+**/*.key
+**/*.pem
+**/*.p8
+**/*.p12
+**/*.pfx
+**/*.env
+!.env.example
+!.env.template
+
+# Ensure no backup files are committed
+*.bak
+*~
+._*
