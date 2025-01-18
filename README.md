@@ -20,6 +20,17 @@ You can start editing the page by modifying `app/page.js`. The page auto-updates
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Environment Setup
+1. Copy `.env.example` to `.env`
+2. Update the environment variables with your actual values
+3. Create `lib/accountKey.json` using the template in `lib/accountKey.template.json`
+4. Never commit sensitive credentials
+
+## Setup Credentials
+1. Copy `lib/accountKey.template.json` to `lib/accountKey.json`
+2. Replace placeholder values with your actual Google Cloud credentials
+3. Never commit the actual credentials file
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
