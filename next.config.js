@@ -14,6 +14,13 @@ const nextConfig = {
     formats: ['image/webp'],
     minimumCacheTTL: 60,
   },
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+    };
+    return config;
+  },
   /* config options here */
 }
  

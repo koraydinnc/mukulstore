@@ -72,7 +72,7 @@ const Favorites = () => {
                 {/* Ürün Bilgileri */}
                 <div className="flex-1">
                   <Link
-                    href={`/product/${product.id}`}
+                    href={`/urun/${product.id}`}
                     className="text-sm font-medium hover:text-blue-600 line-clamp-2"
                   >
                     {product.title}

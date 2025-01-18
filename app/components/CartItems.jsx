@@ -12,14 +12,16 @@ import {
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useState } from "react";
 
 const CartItems = () => {
+  const [open, setOpen] = useState(false);
   const cartItems = useSelector((state) => state.cart.items);
   const totalQuantity = useSelector((state) => state.cart.totalQuantity);
   const totalAmount = useSelector((state) => state.cart.totalAmount);
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative text-white hover:text-white/80">
           <ShoppingCart className="h-5 w-5" />
@@ -62,7 +64,7 @@ const CartItems = () => {
                   </div>
                   <div className="flex-1">
                     <Link
-                      href={`/product/${item.id}`}
+                      href={`/urun/${item.id}`}
                       className="text-sm font-medium hover:text-blue-600 line-clamp-1"
                     >
                       {item.title}
@@ -90,7 +92,7 @@ const CartItems = () => {
                 <span className="text-gray-600">Toplam Tutar:</span>
                 <span className="text-lg font-bold">₺{totalAmount}</span>
               </div>
-              <Link href="/Sepetim" className="w-full">
+              <Link href="/Sepetim" className="w-full" onClick={() => setOpen(false)}>
                 <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                   <ShoppingBag className="h-5 w-5 mr-2" />
                   Sepete Git ({totalQuantity} Ürün)

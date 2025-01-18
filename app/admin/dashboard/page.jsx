@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import AdminMenu from "@/app/components/AdminMenu";
 
 export default function DashboardPage() {
   const stats = [
@@ -51,7 +52,7 @@ export default function DashboardPage() {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl sm:text-3xl font-bold">Yönetim Panel</h1>
         </div>
-
+        <AdminMenu/>
         {/* İstatistik Kartları */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {stats.map((stat, index) => (

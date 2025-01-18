@@ -33,9 +33,20 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# lib directory
+/lib/
+lib/*
+.lib/
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Google Cloud credentials
+lib/accountKey.json
+**/accountKey.json
+**/*.keyfile.json
+**/*credentials*.json

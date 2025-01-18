@@ -1,10 +1,10 @@
 import { IncomingForm } from 'formidable';
+import { bucket } from '@/lib/firebaseAdmin';
 import fs from 'fs/promises';
-import path from 'path';
 
 export const config = {
   api: {
-    bodyParser: false, // Form verisini kendimiz parse edeceğiz
+    bodyParser: false,
   },
 };
 
@@ -14,43 +14,61 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Public klasöründeki uploads dizinini oluştur
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    await fs.mkdir(uploadDir, { recursive: true });
-
-    // Formidable formu oluştur
     const form = new IncomingForm({
-      uploadDir, // Dosyalar bu dizine yüklenecek
-      keepExtensions: true, // Dosya uzantılarını koru
-      multiples: true, // Birden fazla dosya yüklenmesine izin ver
+      keepExtensions: true,
     });
 
-    const formData = await new Promise((resolve, reject) => {
+    const [fields, files] = await new Promise((resolve, reject) => {
       form.parse(req, (err, fields, files) => {
-        if (err) return reject(err);
-        resolve({ fields, files });
+        if (err) reject(err);
+        resolve([fields, files]);
       });
     });
 
-    const { files } = formData;
-    const fileArray = files.files ? (Array.isArray(files.files) ? files.files : [files.files]) : [];
+    if (!files.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
 
-    const urls = fileArray.map((file) => {
-      // Her bir dosyanın URL'sini oluştur
-      return `/uploads/${path.basename(file.filepath)}`;
-    });
+    const file = Array.isArray(files.file) ? files.file[0] : files.file;
+    const fileName = `products/${Date.now()}-${file.originalFilename.replace(/[^a-zA-Z0-9.-]/g, '-')}`;
 
-    // Başarılı yanıt döndür
-    return res.status(200).json({
-      success: true,
-      urls, // URL'leri içeren bir dizi döndür
-    });
+    try {
+      // Upload file to Firebase Storage
+      await bucket.upload(file.filepath, {
+        destination: fileName,
+        metadata: {
+          contentType: file.mimetype,
+          metadata: {
+            firebaseStorageDownloadTokens: Date.now().toString(),
+          },
+        },
+      });
+
+      // Get public URL
+      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+
+      // Clean up temp file
+      await fs.unlink(file.filepath);
+
+      return res.status(200).json({
+        success: true,
+        urls: [publicUrl]
+      });
+
+    } catch (uploadError) {
+      console.error('Firebase upload error:', uploadError);
+      return res.status(500).json({
+        success: false,
+        message: 'Firebase upload failed',
+        error: uploadError.message
+      });
+    }
+
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error('Request handling error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Error uploading files',
-      error: error.message,
+      message: error.message
     });
   }
 }
