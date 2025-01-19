@@ -1,0 +1,58 @@
+/* Enhanced Pagination Styles */
+.custom-pagination {
+  @apply flex items-center justify-center gap-2;
+}
+
+.custom-pagination .ant-pagination-item,
+.custom-pagination .ant-pagination-prev,
+.custom-pagination .ant-pagination-next {
+  @apply m-0 border-0 shadow-sm;
+}
+
+.custom-pagination .ant-pagination-item {
+  @apply min-w-[40px] h-[40px] rounded-lg bg-white flex items-center justify-center transition-all duration-200;
+}
+
+.custom-pagination .ant-pagination-item a {
+  @apply text-gray-600 font-medium;
+}
+
+.custom-pagination .ant-pagination-item:hover {
+  @apply bg-blue-50;
+}
+
+.custom-pagination .ant-pagination-item:hover a {
+  @apply text-blue-600;
+}
+
+.custom-pagination .ant-pagination-item-active {
+  @apply bg-blue-600;
+}
+
+.custom-pagination .ant-pagination-item-active a {
+  @apply text-white;
+}
+
+.custom-pagination .ant-pagination-item-active:hover {
+  @apply bg-blue-700;
+}
+
+.custom-pagination .ant-pagination-item-active:hover a {
+  @apply text-white;
+}
+
+.custom-pagination .ant-pagination-jump-prev,
+.custom-pagination .ant-pagination-jump-next {
+  @apply min-w-[40px] h-[40px] rounded-lg bg-white flex items-center justify-center;
+}
+
+.custom-pagination .ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-ellipsis,
+.custom-pagination .ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-ellipsis {
+  @apply text-gray-400;
+}
+
+/* Remove old pagination styles */
+.pagination-button,
+.pagination-ellipsis {
+  display: none;
+}

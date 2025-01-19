@@ -8,16 +8,17 @@ import CarouselWelcome from '../components/carouselWelcome';
 import TrendProducts from '../components/trendProducts';
 import ProductsFilter from '../components/ProductsFilter';
 import ProductsList from '../components/ProductsList';
-import notFound from './not-found';
+import notFound from '../not-found';
 import { PackageSearch, RefreshCcw } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from 'antd';
 
 export default function Home({params}) {
   const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState(null);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [clearFiltersCallback, setClearFiltersCallback] = useState(null);
-  const pageSize = 12;
+  const pageSize = 20;
 
   const { data: trendData, isLoading: trendLoading } = useGetPopularProductsQuery({
     featured: true,
@@ -31,12 +32,15 @@ export default function Home({params}) {
   });
 
   const { data: categoriesData } = useGetCategoriesQuery();
- 
   useEffect(() => {
-    if (productsData?.data) {
+    if (productsData) {
       setFilteredProducts(productsData.data);
+      setPagination(productsData.pagination);
+      
     }
   }, [productsData]);
+
+
 
   const handleFilterChange = useCallback((filters) => {
     if (!productsData?.data) return;
@@ -142,7 +146,7 @@ export default function Home({params}) {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center justify-center py-16 px-4"
+            className="flex flex-col items-center justify-center py-16 "
           >
             <div className="bg-gray-50 p-6 rounded-full mb-6">
               <PackageSearch className="w-12 h-12 text-gray-400" />
@@ -156,6 +160,7 @@ export default function Home({params}) {
           </motion.div>
         ) : (
           <ProductsList
+            pagination={pagination}
             data={filteredProducts}
             isLoading={productsLoading}
             page={page}

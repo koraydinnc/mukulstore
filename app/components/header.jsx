@@ -24,7 +24,7 @@ const categories = [
   },
   {
     name: "Ayakkabı",
-    href: "/Katagori/Ayakkabi",
+    href: "/Kategori/Ayakkabi",
   },
   { name: "Üst Giyim", href: "/Kategori/UstGiyim" },
   { name: "Alt Giyim", href: "/Kategori/AltGiyim" },

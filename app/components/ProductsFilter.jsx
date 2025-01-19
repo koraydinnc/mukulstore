@@ -23,7 +23,6 @@ const ProductsFilter = ({ onFilterChange, categories, totalResults = 0, onClearF
     priceRange: 'all',
     sort: 'newest'
   });
-  console.log(activeFilters)
 
   const clothingSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
   const shoeSizes = ['36', '37', '38', '39', '40', '41', '42', '43', '44', '45'];
