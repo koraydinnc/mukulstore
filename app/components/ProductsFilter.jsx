@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, ChevronDown, SlidersHorizontal, X, Check } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import debounce from 'lodash.debounce';
 
-const ProductsFilter = ({ onFilterChange, categories: apiCategories }) => {
+const ProductsFilter = ({ onFilterChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState({
     category: [],
@@ -23,10 +23,29 @@ const ProductsFilter = ({ onFilterChange, categories: apiCategories }) => {
     priceRange: 'all',
     sort: 'newest'
   });
-  const [categories, setCategories] = useState([]);
+  const [categories] = useState([
+    {
+      name: 'Ayakkabılar',
+      value: '1',
+      items: [
+        { name: 'Spor Ayakkabı', value: 'spor' },
+        { name: 'Günlük Ayakkabı', value: 'gunluk' },
+        { name: 'Botlar', value: 'bot' }
+      ]
+    },
+    {
+      name: 'Tişörtler',
+      value: '2',
+      items: [
+        { name: 'Basic Tişört', value: 'basic' },
+        { name: 'Baskılı Tişört', value: 'baskili' },
+        { name: 'Oversize Tişört', value: 'oversize' }
+      ]
+    }
+  ]);
 
   const clothingSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-  const shoeSizes = Array.from({ length: 10 }, (_, i) => (36 + i).toString());
+  const shoeSizes = ['36', '37', '38', '39', '40', '41', '42', '43', '44', '45'];
   
   const priceRanges = [
     { label: '₺1000 - ₺1500', value: '1000-1500' },
@@ -45,25 +64,14 @@ const ProductsFilter = ({ onFilterChange, categories: apiCategories }) => {
     { label: 'İsim: Z-A', value: 'name-desc' }
   ];
 
-  // Kategorileri API'den gelen veriye göre düzenle
-  useEffect(() => {
-    if (apiCategories) {
-      const formattedCategories = apiCategories.map(cat => ({
-        name: cat.name,
-        value: cat.slug,
-        items: cat.subCategories.map(sub => ({
-          name: sub.name,
-          value: sub.slug
-        }))
-      }));
-      setCategories(formattedCategories);
-    }
-  }, [apiCategories]);
-
-  // Filter değişikliklerini takip et
-  useEffect(() => {
-    onFilterChange(activeFilters);
-  }, [activeFilters, onFilterChange]);
+  // Filter değişikliklerini takip et - useCallback ile optimize edildi
+  const handleFilterChange = useCallback((type, value) => {
+    setActiveFilters(prev => {
+      const newFilters = { ...prev, [type]: value };
+      onFilterChange(newFilters);
+      return newFilters;
+    });
+  }, [onFilterChange]);
 
   // Debounced filtre değişikliği
   const debouncedFilterChange = useCallback(
@@ -92,12 +100,6 @@ const ProductsFilter = ({ onFilterChange, categories: apiCategories }) => {
       : [...activeFilters.size, size];
     
     handleFilterChange('size', newSizes);
-  };
-
-  const handleFilterChange = (type, value) => {
-    const newFilters = { ...activeFilters, [type]: value };
-    setActiveFilters(newFilters);
-    debouncedFilterChange(newFilters);
   };
 
   const getActiveFiltersCount = () => {
@@ -425,4 +427,4 @@ const ProductsFilter = ({ onFilterChange, categories: apiCategories }) => {
   );
 };
 
-export default ProductsFilter;
+export default memo(ProductsFilter);
