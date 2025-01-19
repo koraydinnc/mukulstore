@@ -5,6 +5,7 @@ import { Providers } from "./Providers";
 import Header from "../components/header";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import SepetDrawer from "@/app/components/SepetDrawer";
+import Footer from "../components/Footer";
 
 // Font optimizasyonu
 const poppins = Poppins({ 
@@ -69,6 +70,7 @@ export default function RootLayout({ children }) {
             {children}
             <SepetDrawer />
           </main>
+          <Footer />
           <SpeedInsights />
           <Toaster />
         </Providers>

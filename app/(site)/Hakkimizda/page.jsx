@@ -167,31 +167,10 @@ const Page = () => {
     ))}
   </div>
 </section>
-
-        {/* Contact */}
-        <section id="contact" className="bg-gray-900 text-white py-16">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-8">Bize Ulaşın</h2>
-            <div className="max-w-xl mx-auto">
-              <p className="mb-4">Email: info@mukulstore.com</p>
-              <p className="mb-4">Telefon: +90 (545) 542 56 61</p>
-              <p>Adres: Ünye Caddesi, 17B, 55600, Samsun, Terme Türkiye</p>
-            </div>
-            <div className="border-t border-gray-200 mt-8">
-              <PaymentLogo />
-            </div>
-          </div>
-        </section>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-4">
-        <div className="container mx-auto text-center">
-          <p>&copy; 2025 MukulStore. Tüm hakları saklıdır.</p>
-          
-        </div>
-      </footer>
+    </main>
     </div>
+
+  
   );
 };
 

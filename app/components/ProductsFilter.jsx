@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useCallback, memo } from 'react';
+import { useState, useCallback, memo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Filter, ChevronDown, SlidersHorizontal, X, Check } from 'lucide-react';
+import { Filter, ChevronDown, SlidersHorizontal, X, Check, RefreshCcw } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -13,9 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import debounce from 'lodash.debounce';
 
-const ProductsFilter = ({ onFilterChange }) => {
+
+const ProductsFilter = ({ onFilterChange, categories, totalResults = 0, onClearFiltersRef }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState({
     category: [],
@@ -23,26 +23,7 @@ const ProductsFilter = ({ onFilterChange }) => {
     priceRange: 'all',
     sort: 'newest'
   });
-  const [categories] = useState([
-    {
-      name: 'Ayakkabılar',
-      value: '1',
-      items: [
-        { name: 'Spor Ayakkabı', value: 'spor' },
-        { name: 'Günlük Ayakkabı', value: 'gunluk' },
-        { name: 'Botlar', value: 'bot' }
-      ]
-    },
-    {
-      name: 'Tişörtler',
-      value: '2',
-      items: [
-        { name: 'Basic Tişört', value: 'basic' },
-        { name: 'Baskılı Tişört', value: 'baskili' },
-        { name: 'Oversize Tişört', value: 'oversize' }
-      ]
-    }
-  ]);
+  console.log(activeFilters)
 
   const clothingSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
   const shoeSizes = ['36', '37', '38', '39', '40', '41', '42', '43', '44', '45'];
@@ -64,22 +45,19 @@ const ProductsFilter = ({ onFilterChange }) => {
     { label: 'İsim: Z-A', value: 'name-desc' }
   ];
 
-  // Filter değişikliklerini takip et - useCallback ile optimize edildi
-  const handleFilterChange = useCallback((type, value) => {
-    setActiveFilters(prev => {
-      const newFilters = { ...prev, [type]: value };
-      onFilterChange(newFilters);
-      return newFilters;
-    });
-  }, [onFilterChange]);
+  // Filter değişikliklerini takip et
+  useEffect(() => {
+    if (onFilterChange) {
+      onFilterChange(activeFilters);
+    }
+  }, [activeFilters, onFilterChange]);
 
-  // Debounced filtre değişikliği
-  const debouncedFilterChange = useCallback(
-    debounce((newFilters) => {
-      onFilterChange(newFilters);
-    }, 300),
-    []
-  );
+  const handleFilterChange = useCallback((type, value) => {
+    setActiveFilters(prev => ({
+      ...prev,
+      [type]: value
+    }));
+  }, []);
 
   const handleCategoryToggle = (category, subcategory = null) => {
     let newCategories;
@@ -106,7 +84,7 @@ const ProductsFilter = ({ onFilterChange }) => {
     return activeFilters.size.length + (activeFilters.priceRange !== 'all' ? 1 : 0) + activeFilters.category.length;
   };
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setActiveFilters({
       category: [],
       size: [],
@@ -119,7 +97,14 @@ const ProductsFilter = ({ onFilterChange }) => {
       priceRange: 'all',
       sort: 'newest'
     });
-  };
+  }, [onFilterChange]);
+
+  // Register clear filters callback
+  useEffect(() => {
+    if (onClearFiltersRef) {
+      onClearFiltersRef(clearFilters);
+    }
+  }, [clearFilters, onClearFiltersRef]);
 
   return (
     <>
@@ -174,14 +159,21 @@ const ProductsFilter = ({ onFilterChange }) => {
 
             <div className="flex items-center gap-4">
               {getActiveFiltersCount() > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="text-red-500 hover:text-red-600"
-                >
-                  Filtreleri Temizle
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearFilters}
+                    className="text-red-500 hover:text-red-600"
+                  >
+                    <RefreshCcw className="w-4 h-4 mr-2" />
+                    Filtreleri Temizle
+                  </Button>
+                  <Separator orientation="vertical" className="h-6" />
+                  <span className="text-sm text-gray-500">
+                    {totalResults} sonuç bulundu
+                  </span>
+                </div>
               )}
               <Select
                 value={activeFilters.sort}
@@ -242,36 +234,41 @@ const ProductsFilter = ({ onFilterChange }) => {
                     </span>
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {categories.map((category) => (
-                      <div key={category.value} className="space-y-2">
+                    {categories?.map((category) => (
+                      <div key={category.id} className="space-y-2">
                         <Button
-                          variant={activeFilters.category.includes(category.value) ? "default" : "outline"}
+                          variant={activeFilters.category.includes(category.id.toString()) ? "default" : "outline"}
                           className={`w-full justify-between ${
-                            activeFilters.category.includes(category.value)
+                            activeFilters.category.includes(category.id.toString())
                               ? 'bg-purple-600 hover:bg-purple-700'
                               : 'hover:bg-purple-50'
                           }`}
-                          onClick={() => handleCategoryToggle(category.value)}
+                          onClick={() => handleCategoryToggle(category.id.toString())}
                         >
                           {category.name}
-                          <ChevronDown className="h-4 w-4 ml-2" />
+                          {category.subCategories?.length > 0 && (
+                            <ChevronDown className="h-4 w-4 ml-2" />
+                          )}
                         </Button>
-                        <div className="grid grid-cols-2 gap-1 pl-2">
-                          {category.items.map((item) => (
-                            <Button
-                              key={item.value}
-                              variant={activeFilters.category.includes(`${category.value}-${item.value}`) ? "default" : "ghost"}
-                              className={`justify-start text-sm h-8 ${
-                                activeFilters.category.includes(`${category.value}-${item.value}`)
-                                  ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                                  : 'text-gray-600 hover:text-purple-700 hover:bg-purple-50'
-                              }`}
-                              onClick={() => handleCategoryToggle(category.value, item.value)}
-                            >
-                              {item.name}
-                            </Button>
-                          ))}
-                        </div>
+                        
+                        {category.subCategories?.length > 0 && (
+                          <div className="grid grid-cols-2 gap-1 pl-2">
+                            {category.subCategories.map((sub) => (
+                              <Button
+                                key={sub.id}
+                                variant={activeFilters.category.includes(`${category.id}-${sub.id}`) ? "default" : "ghost"}
+                                className={`justify-start text-sm h-8 ${
+                                  activeFilters.category.includes(`${category.id}-${sub.id}`)
+                                    ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                                    : 'text-gray-600 hover:text-purple-700 hover:bg-purple-50'
+                                }`}
+                                onClick={() => handleCategoryToggle(category.id.toString(), sub.id.toString())}
+                              >
+                                {sub.name}
+                              </Button>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

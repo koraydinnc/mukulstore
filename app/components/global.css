@@ -1,0 +1,5 @@
+.container {
+    @apply px-4 mx-auto max-w-7xl;
+  }
+
+

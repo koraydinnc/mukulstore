@@ -11,6 +11,7 @@ import { Check, CreditCard, Shield, Lock, CircleCheck, ChevronLeft } from "lucid
 import Image from "next/image";
 import Link from "next/link";
 import Breadcrumb from "@/app/components/Breadcrumb";
+import SalesAgreementCheckbox from '@/app/components/SalesAgreementCheckbox';
 import './globals.css'
 
 const PaymentPage = () => {
@@ -26,6 +27,7 @@ const PaymentPage = () => {
   });
   const [errors, setErrors] = useState({});
   const [isCardFlipped, setIsCardFlipped] = useState(false);
+  const [agreementAccepted, setAgreementAccepted] = useState(false);
 
   // Format card number input
   const formatCardNumber = (value) => {
@@ -42,6 +44,12 @@ const PaymentPage = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!agreementAccepted) {
+      alert('Lütfen mesafeli satış sözleşmesini kabul ediniz.');
+      return;
+    }
+
     setIsLoading(true);
 
     // Simple validation
@@ -284,10 +292,21 @@ const PaymentPage = () => {
                       </div>
                     </div>
 
+                    <div className="mt-6">
+                      <SalesAgreementCheckbox
+                        isChecked={agreementAccepted}
+                        onChange={setAgreementAccepted}
+                      />
+                    </div>
+
                     <Button
                       type="submit"
-                      disabled={isLoading}
-                      className="w-full h-14 text-md bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg relative overflow-hidden"
+                      disabled={isLoading || !agreementAccepted}
+                      className={`w-full h-14 text-md ${
+                        !agreementAccepted 
+                          ? 'bg-gray-400 cursor-not-allowed' 
+                          : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800'
+                      } text-white rounded-lg relative overflow-hidden`}
                     >
                       {isLoading ? (
                         <>
