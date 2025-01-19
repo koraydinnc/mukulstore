@@ -1,27 +1,44 @@
 "use client"
 import Link from 'next/link'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, CreditCard, Home, ShoppingBag } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 const Breadcrumb = () => {
   const pathname = usePathname()
   const paths = pathname.split('/').filter(Boolean)
-  
+
   return (
-    <nav className="flex items-center space-x-2 text-sm text-gray-500">
-      <Link href="/" className="hover:text-gray-700">Ana Sayfa</Link>
+    <nav className="flex items-center text-sm text-gray-500 overflow-x-auto whitespace-nowrap scrollbar-none">
+      <Link 
+        href="/" 
+        className="hover:text-gray-700 flex items-center min-w-fit"
+      >
+        <Home className="h-4 w-4 sm:hidden" />
+        <span className="hidden sm:inline">Ana Sayfa</span>
+      </Link>
+
       {paths.map((path, i) => (
-        <div key={path} className="flex items-center">
-          <ChevronRight className="h-4 w-4 mx-2" />
+        <div key={path} className="flex items-center min-w-fit">
+          <ChevronRight className="h-4 w-4 mx-1 sm:mx-2 flex-shrink-0" />
           <Link 
             href={`/${paths.slice(0, i + 1).join('/')}`}
-            className={`${
-              i === paths.length - 1 
+            className={`truncate max-w-[120px] sm:max-w-full flex items-center gap-1
+              ${i === paths.length - 1 
                 ? 'text-blue-600 font-medium' 
-                : 'hover:text-gray-700'
-            }`}
+                : 'hover:text-gray-700'}
+            `}
           >
-            {path === 'Sepetim' ? 'Sepetim' : 'Ödeme'}
+            {path === 'Sepetim' ? (
+              <>
+                <ShoppingBag className="h-4 w-4 sm:hidden" />
+                <span className="overflow-hidden text-ellipsis whitespace-nowrap">{path}</span>
+              </>
+            ) : (
+              <>
+                <CreditCard className="h-4 w-4 sm:hidden" />
+                <span className="overflow-hidden text-ellipsis whitespace-nowrap">{path}</span>
+              </>
+            )}
           </Link>
         </div>
       ))}

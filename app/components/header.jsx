@@ -16,20 +16,15 @@ import CartItems from "./CartItems"
 const categories = [
   {
     name: "İndirimli Ürünler",
-    href: "/category/sale",
+    href: "/Kategori/IndirimliUrunler",
     subcategories: [
-      { name: "Yeni İndirimler", href: "/category/sale/new" },
+      { name: "Yeni İndirimler", href: "/Kategori/YeniIndirimler" },
       { name: "Sezon Sonu", href: "/category/sale/season-end" },
     ],
   },
   {
     name: "Ayakkabı",
-    href: "/category/shoes",
-    subcategories: [
-      { name: "Spor Ayakkabı", href: "/category/shoes/sneakers" },
-      { name: "Günlük Ayakkabı", href: "/category/shoes/casual" },
-      { name: "Bot", href: "/category/shoes/boots" },
-    ],
+    href: "/Katagori/Ayakkabi",
   },
   { name: "Üst Giyim", href: "/Kategori/UstGiyim" },
   { name: "Alt Giyim", href: "/Kategori/AltGiyim" },

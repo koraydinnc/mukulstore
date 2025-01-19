@@ -43,61 +43,86 @@ const SepetDrawer = () => {
       transition: {
         type: "spring",
         stiffness: 300,
-        damping: 30,
-        delay: 0.2
+        damping: 30
       }
     }
   };
 
-  const toggleButtonVariants = {
-    shopping: {
-      rotate: 0,
-      scale: 1
+  const overlayVariants = {
+    open: {
+      opacity: 1,
+      transition: { duration: 0.3 }
     },
-    close: {
+    closed: {
+      opacity: 0,
+      transition: { duration: 0.2 }
+    }
+  };
+
+  const toggleButtonVariants = {
+    open: {
+      rotate: 360,
+      scale: 1,
+      transition: { duration: 0.3, type: "spring", stiffness: 300 }
+    },
+    closed: {
+      rotate: 0,
+      scale: 1,
+      transition: { duration: 0.3, type: "spring", stiffness: 300 }
+    }
+  };
+
+  const iconVariants = {
+    open: {
       rotate: 180,
-      scale: 1.1
+      transition: { duration: 0.2 }
+    },
+    closed: {
+      rotate: 0,
+      transition: { duration: 0.2 }
     }
   };
 
   return (
     <>
-      {/* Mobile Toggle Button - Only show if there are items */}
+      {/* Mobile Toggle Button */}
       {cartItems.length > 0 && (
         <motion.button
           onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className={`fixed bottom-4 right-4 z-50 sm:hidden p-4 rounded-full shadow-lg transition-all duration-300 ${
-            isMobileOpen 
-              ? 'bg-red-500 hover:bg-red-600' 
-              : 'bg-blue-600 hover:bg-blue-700'
-          }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          className={`
+            fixed bottom-4 right-4 z-50 sm:hidden p-4 rounded-full shadow-lg
+            transition-colors duration-300
+            ${isMobileOpen ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-600 hover:bg-blue-700'}
+          `}
+          variants={toggleButtonVariants}
+          animate={isMobileOpen ? "open" : "closed"}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
         >
           <motion.div
+            variants={iconVariants}
+            animate={isMobileOpen ? "open" : "closed"}
             className="relative"
-            initial="shopping"
-            animate={isMobileOpen ? "close" : "shopping"}
-            variants={toggleButtonVariants}
-            transition={{ duration: 0.3 }}
           >
             {isMobileOpen ? (
               <X className="h-6 w-6 text-white" />
             ) : (
               <>
                 <ShoppingBag className="h-6 w-6 text-white" />
-                {cartItems.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {cartItems.length}
-                  </span>
-                )}
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"
+                >
+                  {cartItems.length}
+                </motion.span>
               </>
             )}
           </motion.div>
         </motion.button>
       )}
 
-      {/* Drawer */}
+      {/* Drawer - Always visible when items exist */}
       <motion.div
         initial="closed"
         animate={isMobileOpen ? "open" : "closed"}
@@ -105,14 +130,14 @@ const SepetDrawer = () => {
         className={`
           fixed right-0 top-0 h-full z-40 
           w-full sm:w-80 bg-white shadow-xl border-l border-gray-200 
-          sm:translate-x-0 sm:top-24 sm:h-[calc(100vh-6rem)]
-          ${!isMobileOpen ? 'translate-x-full sm:translate-x-0' : 'translate-x-0'}
-          ${cartItems.length === 0 ? 'sm:hidden' : ''}
+          sm:transform-none sm:top-24 sm:h-[calc(100vh-6rem)]
+          ${cartItems.length === 0 ? 'sm:translate-x-0 translate-x-full' : 'sm:translate-x-0'}
+          ${isMobileOpen ? 'translate-x-0' : 'translate-x-full sm:translate-x-0'}
         `}
       >
         {/* Drawer Header */}
         <div className="sticky top-0 bg-white z-10 border-b p-4">
-          <h2 className="text-lg font-semibold">Sepetim ({cartItems.length})</h2>
+          <h2 className="text-base sm:text-lg font-semibold text-gray-800">Sepetim ({cartItems.length})</h2>
         </div>
 
         {/* Scrollable Content */}
@@ -198,7 +223,6 @@ const SepetDrawer = () => {
             <Link href="/Sepetim" className="block">
               <Button
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 font-medium"
-                onClick={() => setIsMobileOpen(false)}
               >
                 <ShoppingBag className="w-5 h-5 mr-2" />
                 Sepete Git ({cartItems.length})
@@ -208,16 +232,16 @@ const SepetDrawer = () => {
         </div>
       </motion.div>
 
-      {/* Overlay with Animation */}
+      {/* Mobile Overlay */}
       <AnimatePresence>
         {isMobileOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={() => setIsMobileOpen(false)}
+            initial="closed"
+            animate="open"
+            exit="closed"
+            variants={overlayVariants}
             className="fixed inset-0 bg-black/50 z-30 sm:hidden"
+            onClick={() => setIsMobileOpen(false)}
           />
         )}
       </AnimatePresence>

@@ -76,88 +76,8 @@ const CartPage = () => {
           animate={{ opacity: 1, y: 0 }}
           className="grid grid-cols-1 lg:grid-cols-3 gap-8"
         >
-          {/* Cart Items - Takes 2 columns on large screens */}
-          <div className="lg:col-span-2">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-800">
-                Sepetim ({cartItems.length} Ürün)
-              </h1>
-              <Button 
-                variant="outline" 
-                onClick={handleClearCart}
-                className="text-red-500 hover:text-red-700"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Sepeti Temizle
-              </Button>
-            </div>
-              
-            <ScrollArea className="h-[600px] pr-4">
-              <AnimatePresence mode="popLayout">
-                {cartItems.map((item) => (
-                  <motion.div
-                    key={`${item.id}-${item.size}`}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="mb-4 bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow"
-                  >
-                    <Card className="p-4">
-                      <div className="flex gap-4">
-                        <div className="relative w-24 h-24">
-                          <Image
-                            src={`/uploads/${item.images[0]}` || '/images/placeholder.png'}
-                            alt={item.title}
-                            fill
-                            className="object-cover rounded-md"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-medium">{item.title}</h3>
-                          <p className="text-sm text-gray-500">Beden: {item.size}</p>
-                          <div className="mt-2 flex items-center gap-4">
-                            <Select
-                              value={item.quantity.toString()}
-                              onValueChange={(value) => handleQuantityChange(item.id, item.size, value)}
-                            >
-                              <SelectTrigger className="w-20">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent className='bg-white'>
-                                {[1, 2, 3, 4, 5].map((num) => (
-                                  <SelectItem key={num} value={num.toString()}>
-                                    {num}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleRemoveItem(item.id, item.size)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold text-lg">₺{item.totalPrice}</p>
-                          {item.discountPercentage > 0 && (
-                            <p className="text-sm text-green-600">%{item.discountPercentage} İndirim</p>
-                          )}
-                        </div>
-                      </div>
-                    </Card>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </ScrollArea>
-          </div>
-
-          {/* Order Summary - Takes 1 column on large screens */}
-          <div className="lg:col-span-1">
+          {/* Order Summary - Moving to top */}
+          <div className="lg:col-span-1 order-1 lg:order-1">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -227,7 +147,7 @@ const CartPage = () => {
                 <div className="text-xs text-gray-500 text-center space-y-2">
                   <p className="flex items-center justify-center">
                     <svg className="w-4 h-4 mr-1 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                     256-bit SSL Güvenli Ödeme
                   </p>
@@ -235,6 +155,84 @@ const CartPage = () => {
                 </div>
               </div>
             </motion.div>
+          </div>
+
+          {/* Cart Items - Moving below payment */}
+          <div className="lg:col-span-2 order-2 lg:order-2">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-800">
+                Sepetim ({cartItems.length} Ürün)
+              </h1>
+              <Button 
+                variant="outline" 
+                onClick={handleClearCart}
+                className="text-red-500 hover:text-red-700"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Sepeti Temizle</span>
+              </Button>
+            </div>
+              
+            <ScrollArea className="h-[600px] pr-4">
+              <AnimatePresence mode="popLayout">
+                {cartItems.map((item) => (
+                  <motion.div
+                    key={`${item.id}-${item.size}`}
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="mb-4 bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow"
+                  >
+                      <div className="flex gap-4">
+                        <div className="relative w-24 h-24">
+                          <Image
+                            src={`/uploads/${item.images[0]}` || '/images/placeholder.png'}
+                            alt={item.title}
+                            fill
+                            className="object-cover rounded-md"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium">{item.title}</h3>
+                          <p className="text-sm text-gray-500">Beden: {item.size}</p>
+                          <div className="mt-2 flex items-center gap-4">
+                            <Select
+                              value={item.quantity.toString()}
+                              onValueChange={(value) => handleQuantityChange(item.id, item.size, value)}
+                            >
+                              <SelectTrigger className="w-20">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className='bg-white'>
+                                {[1, 2, 3, 4, 5].map((num) => (
+                                  <SelectItem key={num} value={num.toString()}>
+                                    {num}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleRemoveItem(item.id, item.size)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-lg">₺{item.totalPrice}</p>
+                          {item.discountPercentage > 0 && (
+                            <p className="text-sm text-green-600">%{item.discountPercentage} İndirim</p>
+                          )}
+                        </div>
+                      </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </ScrollArea>
           </div>
         </motion.div>
       </div>
