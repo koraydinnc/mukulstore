@@ -79,7 +79,7 @@ const PaymentPage = () => {
 
         {/* Progress Steps */}
         <div className="mb-12">
-          <div className="flex items-center justify-center space-x-12">
+          <div className="flex items-center justify-center space-x-4">
             <div className="flex items-center">
               <CircleCheck className="h-6 w-6 text-green-500" />
               <span className="ml-2 text-sm font-medium">Sepet</span>

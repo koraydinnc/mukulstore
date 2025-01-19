@@ -8,7 +8,7 @@ const Breadcrumb = () => {
   const paths = pathname.split('/').filter(Boolean)
 
   return (
-    <nav className="flex items-center text-sm text-gray-500 overflow-x-auto whitespace-nowrap scrollbar-none">
+    <nav className="flex items-center text-sm text-gray-500 space-x-1 sm:space-x-24 py-2">
       <Link 
         href="/" 
         className="hover:text-gray-700 flex items-center min-w-fit"
@@ -18,7 +18,7 @@ const Breadcrumb = () => {
       </Link>
 
       {paths.map((path, i) => (
-        <div key={path} className="flex items-center min-w-fit">
+        <div key={path} className="flex items-center space-x-4 sm:space-x-2">
           <ChevronRight className="h-4 w-4 mx-1 sm:mx-2 flex-shrink-0" />
           <Link 
             href={`/${paths.slice(0, i + 1).join('/')}`}
