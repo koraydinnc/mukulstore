@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useSelector } from "react-redux";
@@ -175,7 +174,7 @@ const PaymentPage = () => {
                         <div className="h-full flex flex-col justify-between">
                           <div className="flex justify-between items-start">
                             <div className="flex gap-2">
-                               <Image src="/logo_band_colored@3x.png" width={250} height={200} />
+                               <Image src="/logo_band_colored@3x.png" width={200} height={200} />
                             </div>
                             <motion.div
                               animate={{ rotateY: [0, 360] }}
