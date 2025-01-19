@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, ChevronDown, SlidersHorizontal, X, Check } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import debounce from 'lodash.debounce';
 
-const ProductsFilter = ({ onFilterChange }) => {
+const ProductsFilter = ({ onFilterChange, categories: apiCategories }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState({
     category: [],
@@ -22,29 +23,7 @@ const ProductsFilter = ({ onFilterChange }) => {
     priceRange: 'all',
     sort: 'newest'
   });
-
-  const categories = [
-    {
-      name: 'Üst Giyim',
-      value: 'ust-giyim',
-      items: ['T-Shirt', 'Sweatshirt', 'Gömlek', 'Ceket', 'Mont']
-    },
-    {
-      name: 'Alt Giyim',
-      value: 'alt-giyim',
-      items: ['Pantolon', 'Şort', 'Eşofman', 'Tayt']
-    },
-    {
-      name: 'Ayakkabı',
-      value: 'ayakkabi',
-      items: ['Spor Ayakkabı', 'Bot', 'Günlük Ayakkabı', 'Terlik']
-    },
-    {
-      name: 'Aksesuar',
-      value: 'aksesuar',
-      items: ['Çanta', 'Cüzdan', 'Kemer', 'Şapka']
-    }
-  ];
+  const [categories, setCategories] = useState([]);
 
   const clothingSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
   const shoeSizes = Array.from({ length: 10 }, (_, i) => (36 + i).toString());
@@ -65,6 +44,34 @@ const ProductsFilter = ({ onFilterChange }) => {
     { label: 'İsim: A-Z', value: 'name-asc' },
     { label: 'İsim: Z-A', value: 'name-desc' }
   ];
+
+  // Kategorileri API'den gelen veriye göre düzenle
+  useEffect(() => {
+    if (apiCategories) {
+      const formattedCategories = apiCategories.map(cat => ({
+        name: cat.name,
+        value: cat.slug,
+        items: cat.subCategories.map(sub => ({
+          name: sub.name,
+          value: sub.slug
+        }))
+      }));
+      setCategories(formattedCategories);
+    }
+  }, [apiCategories]);
+
+  // Filter değişikliklerini takip et
+  useEffect(() => {
+    onFilterChange(activeFilters);
+  }, [activeFilters, onFilterChange]);
+
+  // Debounced filtre değişikliği
+  const debouncedFilterChange = useCallback(
+    debounce((newFilters) => {
+      onFilterChange(newFilters);
+    }, 300),
+    []
+  );
 
   const handleCategoryToggle = (category, subcategory = null) => {
     let newCategories;
@@ -90,7 +97,7 @@ const ProductsFilter = ({ onFilterChange }) => {
   const handleFilterChange = (type, value) => {
     const newFilters = { ...activeFilters, [type]: value };
     setActiveFilters(newFilters);
-    onFilterChange(newFilters);
+    debouncedFilterChange(newFilters);
   };
 
   const getActiveFiltersCount = () => {
@@ -250,16 +257,16 @@ const ProductsFilter = ({ onFilterChange }) => {
                         <div className="grid grid-cols-2 gap-1 pl-2">
                           {category.items.map((item) => (
                             <Button
-                              key={item}
-                              variant={activeFilters.category.includes(`${category.value}-${item}`) ? "default" : "ghost"}
+                              key={item.value}
+                              variant={activeFilters.category.includes(`${category.value}-${item.value}`) ? "default" : "ghost"}
                               className={`justify-start text-sm h-8 ${
-                                activeFilters.category.includes(`${category.value}-${item}`)
+                                activeFilters.category.includes(`${category.value}-${item.value}`)
                                   ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
                                   : 'text-gray-600 hover:text-purple-700 hover:bg-purple-50'
                               }`}
-                              onClick={() => handleCategoryToggle(category.value, item)}
+                              onClick={() => handleCategoryToggle(category.value, item.value)}
                             >
-                              {item}
+                              {item.name}
                             </Button>
                           ))}
                         </div>

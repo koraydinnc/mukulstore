@@ -12,7 +12,7 @@ import notFound from './not-found';
 
 export default function Home({params}) {
   const [page, setPage] = useState(1);
-  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const pageSize = 12;
 
   const { data: trendData, isLoading: trendLoading } = useGetPopularProductsQuery({
@@ -32,8 +32,8 @@ export default function Home({params}) {
     notFound()
   }
   useEffect(() => {
-    if (productsData) {
-      setProducts(productsData.data);
+    if (productsData?.data) {
+      setFilteredProducts(productsData.data);
     }
   }, [productsData]);
 
@@ -42,27 +42,63 @@ export default function Home({params}) {
   }
 
   const handleFilterChange = (filters) => {
-    const filteredProducts = productsData.data.filter((product) => {
-      const matchesCategory = filters.category ? product.category === filters.category : true;
-      const matchesPriceRange = filters.priceRange 
-        ? product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1] 
-        : true;
-      const matchesSizes = filters.sizes 
-        ? filters.sizes.every((size) => product.sizes.includes(size)) 
-        : true;
-      const matchesInStock = filters.inStock !== undefined 
-        ? product.inStock === filters.inStock 
-        : true;
-      const matchesOnSale = filters.onSale !== undefined 
-        ? product.onSale === filters.onSale 
-        : true;
-  
-      return matchesCategory && matchesPriceRange && matchesSizes && matchesInStock && matchesOnSale;
-    });
-    setProducts(filteredProducts);
+    if (!productsData?.data) return;
+
+    let filtered = [...productsData.data];
+
+    // Kategori filtresi
+    if (filters.category.length > 0) {
+      filtered = filtered.filter(product => {
+        return filters.category.some(cat => {
+          const [mainCat, subCat] = cat.split('-');
+          if (subCat) {
+            return product.category === mainCat && product.subCategory === subCat;
+          }
+          return product.category === mainCat;
+        });
+      });
+    }
+
+    // Beden filtresi
+    if (filters.size.length > 0) {
+      filtered = filtered.filter(product => 
+        filters.size.some(size => product.sizes.includes(size))
+      );
+    }
+
+    // Fiyat aralığı filtresi
+    if (filters.priceRange !== 'all') {
+      const [min, max] = filters.priceRange.split('-').map(Number);
+      filtered = filtered.filter(product => {
+        if (filters.priceRange === '5000-plus') {
+          return product.price >= 5000;
+        }
+        return product.price >= min && product.price <= max;
+      });
+    }
+
+    // Sıralama
+    if (filters.sort) {
+      filtered.sort((a, b) => {
+        switch (filters.sort) {
+          case 'price-low':
+            return a.price - b.price;
+          case 'price-high':
+            return b.price - a.price;
+          case 'name-asc':
+            return a.title.localeCompare(b.title);
+          case 'name-desc':
+            return b.title.localeCompare(a.title);
+          case 'newest':
+            return new Date(b.createdAt) - new Date(a.createdAt);
+          default:
+            return 0;
+        }
+      });
+    }
+
+    setFilteredProducts(filtered);
   };
-  
-   console.log(products, 'products')
 
   return (
     <main className="overflow-x-hidden bg-white min-h-screen">
@@ -88,7 +124,7 @@ export default function Home({params}) {
 
       <section>
         <ProductsList
-          data={products}
+          data={filteredProducts}
           isLoading={productsLoading}
           page={page}
           setPage={setPage}
