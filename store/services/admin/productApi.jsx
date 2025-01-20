@@ -10,22 +10,21 @@ export const productApi = createApi({
     getProducts: builder.query({
       query: () => '/admin/product/product-list',
     }),
-    createProduct: builder.mutation({
-      query: (product) => ({
-        url: '/admin/product/product-add',
-        method: 'POST',
-        body: product,
-      }),
-    }),
-    photosUpload: builder.mutation({
-      query: (formData) => ({
+    uploadImages: builder.mutation({
+      query: (data) => ({
         url: '/admin/product/photos-upload',
         method: 'POST',
-        body: formData,
+        body: data // { images: [base64String, base64String, ...] }
       }),
-      invalidatesTags: ['Photos'], // Bu cache'yi temizler
     }),
-    
+    createProduct: builder.mutation({
+      query: (data) => ({
+        url: '/admin/product/product-add',
+        method: 'POST',
+        body: data
+      }),
+    }),
+  
     deleteProduct: builder.mutation({
       query: (id) => ({
         url: '/admin/product/product-delete',
@@ -55,7 +54,7 @@ export const productApi = createApi({
 export const {
   useGetProductsQuery,
   useCreateProductMutation,
-  usePhotosUploadMutation,
+  useUploadImagesMutation,
   useDeleteProductMutation,
   useUpdateProductMutation,
   useDeletePhotoMutation,

@@ -7,7 +7,8 @@ const nextConfig = {
       'www.mukulstore.com', 
       'mukulstore.com', 
       'localhost',
-      'koraydincc.s3.amazonaws.com' // Add S3 bucket hostname
+      'koraydincc.s3.amazonaws.com' ,
+      "firebasestorage.googleapis.com", // Add Firebase Storage hostname
     ],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],

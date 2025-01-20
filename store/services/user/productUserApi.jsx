@@ -20,8 +20,20 @@ export const productUserApi = createApi({
                 }
             }),
             providesTags: ['Product'],
-        })
+        }),
+        getProductSale: builder.query({
+            query: () => 'user/product/product-indirimler',
+            providesTags: ['Product'],
+        }),
+        getProductUstGiyim: builder.query({
+            query: () => 'user/product/product-ustgiyim',
+            providesTags: ['Product'],
+        }),
+        getProductAltGiyim: builder.query({
+            query: () => 'user/product/product-altgiyim',
+            providesTags: ['Product'],
+        }),
     }), 
 });
 
-export const { useGetPopularProductsQuery, useGetProductsListQuery } = productUserApi;
+export const { useGetPopularProductsQuery, useGetProductsListQuery, useGetProductAltGiyimQuery, useGetProductSaleQuery, useGetProductUstGiyimQuery } = productUserApi;

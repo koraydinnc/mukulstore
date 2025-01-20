@@ -1,74 +1,61 @@
-// import { IncomingForm } from 'formidable';
-// import { bucket } from '@/lib/firebaseAdmin';
-// import fs from 'fs/promises';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '@/lib/firebase';
+import { nanoid } from 'nanoid';
 
-// export const config = {
-//   api: {
-//     bodyParser: false,
-//   },
-// };
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
 
-// export default async function handler(req, res) {
-//   if (req.method !== 'POST') {
-//     return res.status(405).json({ message: 'Method not allowed' });
-//   }
+  try {
+    const { images } = req.body;
 
-//   try {
-//     const form = new IncomingForm({
-//       keepExtensions: true,
-//     });
+    if (!Array.isArray(images)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Images must be an array'
+      });
+    }
 
-//     const [fields, files] = await new Promise((resolve, reject) => {
-//       form.parse(req, (err, fields, files) => {
-//         if (err) reject(err);
-//         resolve([fields, files]);
-//       });
-//     });
+    const uploadedUrls = await Promise.all(
+      images.map(async (base64Image, index) => {
+        try {
+          const fileName = `${nanoid()}-${Date.now()}-${index}.jpg`;
+          const storageRef = ref(storage, `products/${fileName}`);
 
-//     if (!files.file) {
-//       return res.status(400).json({ success: false, message: 'No file uploaded' });
-//     }
+          // Base64'ü temizle ve buffer'a çevir
+          const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, '');
+          const imageBuffer = Buffer.from(base64Data, 'base64');
 
-//     const file = Array.isArray(files.file) ? files.file[0] : files.file;
-//     const fileName = `products/${Date.now()}-${file.originalFilename.replace(/[^a-zA-Z0-9.-]/g, '-')}`;
+          // Firebase'e yükle
+          const uploadResult = await uploadBytes(storageRef, imageBuffer, {
+            contentType: 'image/jpeg'
+          });
 
-//     try {
-//       // Upload file to Firebase Storage
-//       await bucket.upload(file.filepath, {
-//         destination: fileName,
-//         metadata: {
-//           contentType: file.mimetype,
-//           metadata: {
-//             firebaseStorageDownloadTokens: Date.now().toString(),
-//           },
-//         },
-//       });
+          // URL al
+          const downloadURL = await getDownloadURL(uploadResult.ref);
+          console.log(`Image ${index + 1} uploaded:`, downloadURL);
 
-//       // Get public URL
-//       const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+          return downloadURL;
+        } catch (error) {
+          console.error(`Error uploading image ${index}:`, error);
+          throw new Error(`Failed to upload image ${index}`);
+        }
+      })
+    );
 
-//       // Clean up temp file
-//       await fs.unlink(file.filepath);
+    return res.status(200).json({
+      success: true,
+      imageUrls: uploadedUrls,
+      message: 'All images uploaded successfully'
+    });
 
-//       return res.status(200).json({
-//         success: true,
-//         urls: [publicUrl]
-//       });
-
-//     } catch (uploadError) {
-//       console.error('Firebase upload error:', uploadError);
-//       return res.status(500).json({
-//         success: false,
-//         message: 'Firebase upload failed',
-//         error: uploadError.message
-//       });
-//     }
-
-//   } catch (error) {
-//     console.error('Request handling error:', error);
-//     return res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// }
+  } catch (error) {
+    console.error('Upload error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to upload images',
+      error: error.message
+    });
+  }
+}

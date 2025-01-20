@@ -28,7 +28,7 @@ import {
 import { Switch as AntSwitch, InputNumber, Spin } from 'antd' // Import Ant Design Switch
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import AdminPhotosAdd from '@/app/components/AdminPhotosAdd'
-import { useCreateProductMutation } from '@/store/services/admin/productApi'
+import { useUploadImagesMutation, useCreateProductMutation } from '@/store/services/admin/productApi'
 import { useGetCategoriesQuery } from '@/store/services/admin/categoryApi'
 import openNotification from '@/app/components/Toaster'
 
@@ -62,12 +62,17 @@ const formSchema = z.object({
 })
 
 export default function ProductAddPage() {
-  const [productAdd] = useCreateProductMutation()
+  const [uploadImages] = useUploadImagesMutation();
+  const [createProduct] = useCreateProductMutation();
   const [images, setImages] = useState([])
   const {data: categories, isLoading} = useGetCategoriesQuery()
   const [sizes, setSizes] = useState([
   ])
+  const [imageList, setImageList] = useState([]);
 
+  const handleImageUpload = (base64Image) => {
+    setImageList(prev => [...prev, base64Image]);
+  };
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -118,41 +123,61 @@ export default function ProductAddPage() {
    
   async function onSubmit(values) {
     try {
+      // Önce tüm resimleri yükle
+      const uploadResponse = await uploadImages({ images: imageList }).unwrap();
+      
+      if (!uploadResponse.success) {
+        throw new Error('Fotoğraf yükleme başarısız');
+      }
 
-      console.log(values)
-       
-      const categoryId = categories.categories.find((category) => category.name === values.categoryId).id
- 
+      // Kategori ID'sini bul
+      const selectedCategory = categories.categories.find(
+        category => category.name === values.categoryId
+      );
+
+      if (!selectedCategory) {
+        throw new Error('Geçersiz kategori');
+      }
 
       const formData = {
         ...values,
-        images: images, 
-        categoryId: categoryId,
-        sizes: []
-      }
-      console.log(formData,'formData')
-      const response = await productAdd(formData).unwrap()
-       console.log(response)
-      if (response.status === 1) {
+        images: uploadResponse.imageUrls,
+        categoryId: selectedCategory.id, // Doğru kategori ID'sini kullan
+        price: parseFloat(values.price),
+        stock: parseInt(values.stock),
+        sizes: values.sizes
+          .filter(size => size.size && size.stock)
+          .map(size => ({
+            ...size,
+            stock: parseInt(size.stock)
+          }))
+      };
+
+      console.log('Gönderilen form verisi:', formData);
+
+      // Ürünü oluştur
+      const productResponse = await createProduct(formData).unwrap();
+      
+      if (productResponse.status === 1) {
         openNotification({
           variant: "success",
           title: "Başarılı!",
           description: "Ürün başarıyla eklendi.",
-        })
-    
-        setImages([])
-        form.reset()
+        });
+        
+        setImageList([]); // Fotoğraf listesini temizle
+        form.reset();
       }
     } catch (error) {
-      console.error("Hata:", error)
+      console.error("Hata:", error);
       openNotification({
         variant: "destructive",
         title: "Hata!",
-        description: error?.data?.message || "Bir hata oluştu.",
-      })
+        description: error?.data?.message || error.message || "Bir hata oluştu.",
+      });
     }
   }
-3
+
   return (
     <div className="p-6">
       <Card className="max-w-2xl mx-auto bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
@@ -403,14 +428,10 @@ export default function ProductAddPage() {
                 name="images"
                 render={() => (
                   <FormItem>
-                    <FormLabel className="text-zinc-700 dark:text-zinc-300">Ürün Fotoğrafları</FormLabel>
-                    <AdminPhotosAdd
-                      onChange={(newImages) => {
-                        const urls = newImages.map((image) => image.url);
-                        console.log("Fotoğraf URL'leri:", urls);
-                        form.setValue("images", urls);
-                      }}
-                      setImages={setImages}
+                    <AdminPhotosAdd 
+                      onImageUpload={handleImageUpload}
+                      imageList={imageList}
+                      onChange={setImageList}
                     />
                     <FormMessage className="text-red-500" />
                   </FormItem>

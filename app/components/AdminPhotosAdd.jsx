@@ -1,109 +1,96 @@
-import React, { useState } from "react";
-import { usePhotosUploadMutation } from "@/store/services/admin/productApi";
-import { Upload } from "antd";
-import { PlusOutlined, LoadingOutlined } from "@ant-design/icons";
-import openNotification from "./Toaster";
+'use client';
 
-const AdminPhotosAdd = ({ onChange, setImages }) => {
-  const [imageList, setImageList] = useState([]);
-  const [photosUpload, { isLoading }] = usePhotosUploadMutation();
+import { useState } from 'react';
+import { Upload, message } from 'antd';
+import { PlusOutlined, LoadingOutlined } from '@ant-design/icons';
+import { Label } from "@/components/ui/label";
+
+const AdminPhotosAdd = ({ onImageUpload, imageList = [], onChange }) => {
+  const [loading, setLoading] = useState(false);
+  const [fileList, setFileList] = useState([]);
 
   const handleUpload = async ({ file, onSuccess, onError }) => {
     try {
-      if (imageList.length >= 8) {
-        openNotification({
-          variant: "warning",
-          title: "Limit Aşıldı",
-          description: "En fazla 8 fotoğraf yükleyebilirsiniz.",
-        });
-        return;
+      setLoading(true);
+      
+      if (!file.type.startsWith('image/')) {
+        throw new Error('Lütfen sadece resim dosyası yükleyin');
       }
 
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const result = await photosUpload(formData).unwrap();
-      console.log("Yükleme başarılı, sunucu yanıtı:", result);
-
-      if (result.urls) {
-        const newImage = {
-          uid: file.uid,
-          name: file.name,
-          status: "done",
-          url: result.urls[0],
-        };
-
-        const newImageList = [...imageList, newImage];
-        setImageList(newImageList);
-        setImages((prev) => [...prev, result.urls[0]]);
-        onChange(newImageList);
-
-        openNotification({
-          title: "Başarılı",
-          description: "Fotoğraf yüklendi",
-        });
-      } else {
-        throw new Error("Sunucu beklenen yanıtı döndürmedi.");
-      }
+      const base64 = await convertToBase64(file);
+      
+      // Parent componente base64'ü gönder
+      onImageUpload(base64);
+      
+      // Dosya listesini güncelle
+      const newFile = {
+        uid: file.uid,
+        name: file.name,
+        status: 'done',
+        url: URL.createObjectURL(file),
+      };
+      
+      setFileList(prev => [...prev, newFile]);
+      onSuccess();
+      
+      message.success('Fotoğraf başarıyla yüklendi');
     } catch (error) {
-      console.error("Yükleme sırasında hata:", error);
+      console.error('Upload error:', error);
+      message.error(error.message || 'Fotoğraf yüklenirken bir hata oluştu');
       onError(error);
-      openNotification({
-        variant: "destructive",
-        title: "Hata",
-        description: "Fotoğraf yüklenemedi",
-      });
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleRemove = (file) => {
-    const updatedList = imageList.filter((item) => item.uid !== file.uid);
-    setImageList(updatedList);
-    setImages((prev) => prev.filter((url) => url !== file.url));
-    onChange(updatedList);
+    const newFileList = fileList.filter(item => item.uid !== file.uid);
+    setFileList(newFileList);
+    // Parent componente güncel listeyi bildir
+    const updatedBase64List = imageList.filter((_, index) => 
+      index !== fileList.findIndex(f => f.uid === file.uid)
+    );
+    onChange?.(updatedBase64List);
   };
-
-  const beforeUpload = (file) => {
-    const isImage = file.type.startsWith("image/");
-    if (!isImage) {
-      openNotification({
-        variant: "destructive",
-        title: "Hata",
-        description: "Sadece görüntü dosyaları yükleyebilirsiniz!",
-      });
-    }
-    const isSmallEnough = file.size / 1024 / 1024 < 10;
-    if (!isSmallEnough) {
-      openNotification({
-        variant: "destructive",
-        title: "Hata",
-        description: "Dosya boyutu 10 MB'den küçük olmalıdır.",
-      });
-    }
-    return isImage && isSmallEnough;
-  };
-
-  const uploadButton = (
-    <div>
-      {isLoading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>Fotoğraf Yükle</div>
-    </div>
-  );
 
   return (
-    <Upload
-      listType="picture-card"
-      fileList={imageList.map((file) => ({
-        ...file,
-        thumbUrl: file.url,
-      }))}
-      customRequest={handleUpload}
-      onRemove={handleRemove}
-      beforeUpload={beforeUpload}
-    >
-      {imageList.length >= 8 ? null : uploadButton}
-    </Upload>
+    <div>
+      <Label>Ürün Fotoğrafları</Label>
+      <div className="mt-2">
+        <Upload
+          customRequest={handleUpload}
+          listType="picture-card"
+          fileList={fileList}
+          accept="image/*"
+          multiple={true}
+          maxCount={8}
+          onRemove={handleRemove}
+          showUploadList={{
+            showPreviewIcon: true,
+            showRemoveIcon: true,
+            showDownloadIcon: false,
+          }}
+        >
+          {fileList.length >= 8 ? null : (
+            <div>
+              {loading ? <LoadingOutlined /> : <PlusOutlined />}
+              <div className="mt-2">Fotoğraf Ekle</div>
+            </div>
+          )}
+        </Upload>
+      </div>
+    </div>
   );
+};
+
+// Base64 dönüşüm fonksiyonu
+const convertToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
 };
 
 export default AdminPhotosAdd;
