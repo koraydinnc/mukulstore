@@ -1,74 +1,91 @@
-"use client";
+'use client';
 
-import React from 'react';
+import { useState } from 'react';
+import { useGetProductsListQuery } from '@/store/services/user/productUserApi';
+import ProductsList from '@/app/components/ProductsList';
 import { motion } from 'framer-motion';
-import { Timer, Instagram, Facebook } from 'lucide-react';
-import Link from 'next/link';
+import Loading from '../../loading';
+import { Shovel } from 'lucide-react';
 
-const notFound = () => {
+export default function AyakkabiPage() {
+  const [page, setPage] = useState(1);
+  const [filters, setFilters] = useState({
+    priceRange: [0, 5000],
+    sizes: [],
+    onlyInStock: false,
+    onlyDiscounted: false
+  });
+
+  const { data, error, isLoading } = useGetProductsListQuery({
+    page,
+    pageSize: 20,
+    category: 'ayakkabi'
+  });
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+    setPage(1);
+  };
+
+  // Filter the products based on selected filters
+  const filteredProducts = data?.data?.filter(product => {
+    const price = product.discountedPrice || product.price;
+    const inPriceRange = price >= filters.priceRange[0] && price <= filters.priceRange[1];
+    const hasSize = filters.sizes.length === 0 || product.sizes.some(s => filters.sizes.includes(s.size));
+    const inStock = !filters.onlyInStock || product.sizes.some(s => s.stock > 0);
+    const isDiscounted = !filters.onlyDiscounted || product.discountPercentage > 0;
+
+    return inPriceRange && hasSize && inStock && isDiscounted;
+  });
+
+  if (isLoading) return <Loading />;
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-red-500">Bir hata oluştu. Lütfen tekrar deneyin.</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-100 to-white">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-2xl mx-auto p-8 text-center"
+        className="bg-gradient-to-r from-blue-600 to-blue-800 py-12 mb-8"
       >
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          className="inline-block mb-8"
-        >
-          <Timer size={48} className="text-blue-500" />
-        </motion.div>
-
-        <h1 className="text-4xl font-bold mb-4">
-          Çalışmalarımız Devam Ediyor
-        </h1>
-        
-        <p className="text-gray-600 mb-8 text-lg">
-          Sizlere daha iyi hizmet verebilmek için çalışıyoruz. Çok yakında yeni koleksiyonumuzla sizlerle olacağız.
-        </p>
-
-        <div className="space-y-4">
-          <p className="text-sm text-gray-500">
-            Sosyal medyada bizi takip edin:
-          </p>
-          
-          <div className="flex justify-center space-x-4">
-            <Link 
-              href="https://instagram.com/mukulstore" 
-              className="p-2 hover:text-pink-500 transition-colors"
-              target="_blank"
-            >
-              <Instagram size={24} />
-            </Link>
-            <Link 
-              href="https://facebook.com/mukulstore" 
-              className="p-2 hover:text-blue-500 transition-colors"
-              target="_blank"
-            >
-              <Facebook size={24} />
-            </Link>
-          </div>
-        </div>
-
-        <motion.div 
-          className="mt-12"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          <Link 
-            href="/"
-            className="text-blue-500 hover:text-blue-600 transition-colors"
+        <div className="container mx-auto px-4 text-center">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="bg-white/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
           >
-            Ana Sayfaya Dön
-          </Link>
-        </motion.div>
+            <Shovel className="w-8 h-8 text-white" />
+          </motion.div>
+          <h1 className="text-4xl font-bold text-white mb-4">
+            Ayakkabı Koleksiyonu
+          </h1>
+          <p className="text-blue-100 max-w-2xl mx-auto">
+            En yeni ve trend ayakkabı modellerimizi keşfedin. 
+            Konfor ve şıklığı bir arada sunan özel koleksiyonumuz sizlerle.
+          </p>
+        </div>
       </motion.div>
+
+      {/* Filters */}
+
+      {/* Products Grid */}
+      <div className="container mx-auto px-4 py-8">
+        <ProductsList
+          data={filteredProducts || []}
+          pagination={data?.pagination}
+          setPage={setPage}
+          pageSize={20}
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   );
-};
-
-export default notFound;
+}

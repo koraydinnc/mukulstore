@@ -1,74 +1,140 @@
-"use client";
+'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Timer, Instagram, Facebook } from 'lucide-react';
-import Link from 'next/link';
+import { useState } from 'react';
+import { useGetProductSaleQuery } from '@/store/services/user/productUserApi';
+import ProductsList from '@/app/components/ProductsList';
+import { Spin } from 'antd';
+import { motion, AnimatePresence } from 'framer-motion';
+import Loading from '../../loading';
+import { Tag, Percent, TrendingDown, ArrowDownRight } from 'lucide-react';
 
-const notFound = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-100 to-white">
+export default function IndirimlerPage() {
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
+
+  const { data, error, isLoading } = useGetProductSaleQuery({
+    page,
+    pageSize
+  });
+
+  if (isLoading) return <Loading />;
+
+  if (error) {
+    return (
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-2xl mx-auto p-8 text-center"
+        initial={{ opacity: 0 }} 
+        animate={{ opacity: 1 }}
+        className="min-h-screen flex items-center justify-center"
       >
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          className="inline-block mb-8"
+        <p className="text-red-500">Bir hata oluştu. Lütfen tekrar deneyin.</p>
+      </motion.div>
+    );
+  }
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className="min-h-screen bg-gray-50"
+      >
+        {/* Hero Section */}
+        <motion.div 
+          className="relative bg-gradient-to-r from-red-600 via-red-500 to-red-600 py-16"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
         >
-          <Timer size={48} className="text-blue-500" />
-        </motion.div>
-
-        <h1 className="text-4xl font-bold mb-4">
-          Çalışmalarımız Devam Ediyor
-        </h1>
-        
-        <p className="text-gray-600 mb-8 text-lg">
-          Sizlere daha iyi hizmet verebilmek için çalışıyoruz. Çok yakında yeni koleksiyonumuzla sizlerle olacağız.
-        </p>
-
-        <div className="space-y-4">
-          <p className="text-sm text-gray-500">
-            Sosyal medyada bizi takip edin:
-          </p>
-          
-          <div className="flex justify-center space-x-4">
-            <Link 
-              href="https://instagram.com/mukulstore" 
-              className="p-2 hover:text-pink-500 transition-colors"
-              target="_blank"
+          <motion.div 
+            className="absolute inset-0 bg-black opacity-10"
+            animate={{ 
+              backgroundPosition: ['0% 0%', '100% 100%'],
+            }}
+            transition={{ 
+              duration: 20,
+              repeat: Infinity,
+              repeatType: 'reverse'
+            }}
+          />
+          <div className="container mx-auto px-4 relative">
+            <motion.h1 
+              className="text-4xl md:text-5xl font-bold text-white text-center mb-6"
+              variants={itemVariants}
             >
-              <Instagram size={24} />
-            </Link>
-            <Link 
-              href="https://facebook.com/mukulstore" 
-              className="p-2 hover:text-blue-500 transition-colors"
-              target="_blank"
+              Büyük İndirim Fırsatları
+            </motion.h1>
+            <motion.p 
+              className="text-red-100 text-center max-w-2xl mx-auto mb-8"
+              variants={itemVariants}
             >
-              <Facebook size={24} />
-            </Link>
+              En yüksek indirim oranına sahip ürünlerimizi keşfedin.
+              Sınırlı süre için kaçırılmayacak fırsatlar!
+            </motion.p>
+
+            {/* Stats */}
+            <motion.div 
+              className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
+              variants={containerVariants}
+            >
+              {[
+                { icon: <Tag className="w-6 h-6" />, text: "İndirimli Ürünler", value: data?.data.length || 0 },
+                { icon: <Percent className="w-6 h-6" />, text: "İndirim Oranına Kadar", value: "40%" },
+                { icon: <TrendingDown className="w-6 h-6" />, text: "Özel Fırsatlar", value: "Her Gün" },
+                { icon: <ArrowDownRight className="w-6 h-6" />, text: "En Düşük Fiyatlar", value: "Garantili" }
+              ].map((stat, index) => (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center"
+                >
+                  <motion.div 
+                    className="text-white/90 flex justify-center mb-2"
+                    whileHover={{ scale: 1.1 }}
+                  >
+                    {stat.icon}
+                  </motion.div>
+                  <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
+                  <div className="text-sm text-white/80">{stat.text}</div>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
 
         <motion.div 
-          className="mt-12"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          className="container mx-auto px-4 py-8"
+          variants={itemVariants}
         >
-          <Link 
-            href="/"
-            className="text-blue-500 hover:text-blue-600 transition-colors"
-          >
-            Ana Sayfaya Dön
-          </Link>
+          <ProductsList
+            data={data?.data || []}
+            pagination={data?.pagination}
+            setPage={setPage}
+            pageSize={pageSize}
+            isLoading={isLoading}
+          />
         </motion.div>
-      </motion.div>
-    </div>
-  );
-};
 
-export default notFound;
+       
+      </motion.div>
+    </AnimatePresence>
+  );
+}

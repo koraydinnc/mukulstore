@@ -12,24 +12,9 @@ import { useRouter } from "next/navigation"
 import Favorites from "./Favorites"
 import { useDispatch, useSelector } from "react-redux"
 import CartItems from "./CartItems"
+import { useGetCategoriesQuery } from "@/store/services/user/categoryUserApi"
 
-const categories = [
-  {
-    name: "İndirimli Ürünler",
-    href: "/Kategori/IndirimliUrunler",
-    subcategories: [
-      { name: "Yeni İndirimler", href: "/Kategori/YeniIndirimler" },
-      { name: "Sezon Sonu", href: "/category/sale/season-end" },
-    ],
-  },
-  {
-    name: "Ayakkabı",
-    href: "/Kategori/Ayakkabi",
-  },
-  { name: "Üst Giyim", href: "/Kategori/UstGiyim" },
-  { name: "Alt Giyim", href: "/Kategori/AltGiyim" },
-  { name: "Hakkımızda", href: "/Hakkimizda" },
-]
+
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -37,6 +22,25 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const router = useRouter()
   const dipsatch = useDispatch()
+
+  const {data} = useGetCategoriesQuery()
+  
+
+  const categories = [
+    {
+      name: "İndirimli Ürünler",
+      href: "/Kategori/IndirimliUrunler",
+    },
+    {
+      name: "Ayakkabı",
+      href: "/Kategori/Ayakkabi",
+    },
+    { name: "Üst Giyim", href: "/Kategori/UstGiyim" },
+    { name: "Alt Giyim", href: "/Kategori/AltGiyim" },
+    { name: "Hakkımızda", href: "/Hakkimizda" },
+  ]
+
+
   const toggleCategory = (categoryName) => {
     setOpenCategories((prev) => ({
       ...prev,
