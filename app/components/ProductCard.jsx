@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { motion } from 'framer-motion';
 import { addToCart } from '@/store/slices/cartSlice';
 import { addToFavorites, removeFromFavorites } from '@/store/slices/favoritesSlice';
-import { Card, CardHeader, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
-import { Heart, ShoppingCart } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Heart, ShoppingCart, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import openNotification from './Toaster';
-import { Badge, Button } from 'antd';
+import { Badge, Button, Skeleton } from 'antd';
 
 const ProductCard = ({ product }) => {
   const [selectedSize, setSelectedSize] = useState(null);
+  const [imageLoading, setImageLoading] = useState(true);
   const dispatch = useDispatch();
   const router = useRouter();
   
@@ -86,122 +88,173 @@ const ProductCard = ({ product }) => {
 
   const getImagePath = (imagePath) => {
     if (!imagePath) return '/placeholder.jpg';
-    return imagePath.startsWith('http') || imagePath.startsWith('/')
-      ? imagePath
-      : `/uploads/${imagePath}`;
+    // Firebase URL'lerini doğrudan kullan
+    if (imagePath.includes('firebasestorage.googleapis.com')) {
+      return imagePath;
+    }
+    // Yerel dosyalar için
+    return imagePath.startsWith('/') ? imagePath : `/uploads/${imagePath}`;
   };
 
-  
+  const cardVariants = {
+    hover: {
+      y: -5,
+      transition: { duration: 0.2 }
+    }
+  };
 
   return (
-    <Card className="h-full cursor-pointer p-2 sm:p-4 flex flex-col hover:shadow-lg transition-shadow duration-200">
-      <CardHeader onClick={() => handleBuyNow(product.id)} className="p-0">
-        <div className="relative w-full pt-[133%]">
+    <motion.div
+      variants={cardVariants}
+      whileHover="hover"
+      className="h-full w-full"
+    >
+      <Card 
+        onClick={() => router.push(`/Urunler/${product.id}`)}
+        className="relative h-full overflow-hidden rounded-lg cursor-pointer sm:rounded-xl shadow-sm hover:shadow-xl transition-all duration-300"
+      >
+      {product.discountPercentage > 0 && (
+          <div className="absolute top-0 left-0 z-20">
+            <div className="bg-red-500 text-white px-3 py-1.5 rounded-br-xl
+              shadow-lg transform hover:scale-105 transition-all duration-200">
+              <div className="flex items-center gap-1">
+                <span className="text-base font-bold">%{product.discountPercentage}</span>
+                <span className="text-xs uppercase tracking-wider">İndirim</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Product Image Container */}
+        <div className="relative aspect-[4/5] sm:aspect-[3/4] overflow-hidden bg-gray-100">
+          {imageLoading && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-gray-400" />
+            </div>
+          )}
           <Image
             src={getImagePath(product.images[0])}
             alt={product.title}
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="absolute top-0 left-0 w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+            className={`object-cover transition-all duration-300 hover:scale-105 ${
+              imageLoading ? 'opacity-0' : 'opacity-100'
+            }`}
+            onLoadingComplete={() => setImageLoading(false)}
             priority={false}
-            loading="lazy"
           />
-        </div>
-      </CardHeader>
-      <CardContent className="p-0 pt-4 flex-1 space-y-2">
-        <CardTitle className="text-base sm:text-lg font-bold truncate">{product.title}</CardTitle>
-        <p className="text-gray-600 line-clamp-2 text-xs sm:text-sm">{product.description}</p>
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="text-xl font-bold text-gray-800">₺{product.discountedPrice || product.price}</span>
-            {product.discountPercentage > 0 && (
-              <span className="text-sm line-through text-gray-500">₺{product.price}</span>
-            )}
-          </div>
-          {product.discountPercentage > 0 && (
-            <span className="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded">
-              %{product.discountPercentage} İndirim
-            </span>
-          )}
-        </div>
-        <div className="mt-2 flex">{renderStockStatus(product.sizes.reduce((total, size) => total + size.stock, 0))}</div>
-        <div className="mt-2 w-full">
-  <p className="text-sm text-gray-600 mb-2">Bedenler:</p>
-  <div className="flex flex-wrap gap-2">
-    {product.sizes.map((size) => {
-      const isSelected = selectedSize === size.size;
-      const isOutOfStock = size.stock === 0;
-
-      return (
-        <Button
-          key={size.size}
-          type={isSelected ? "primary" : "default"}
-          disabled={isOutOfStock}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleSizeSelect(size.size);
-          }}
-          className={`
-            min-w-[45px] h-9 px-2 py-1 rounded-lg
-            ${isSelected 
-              ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700' 
-              : 'bg-white'}
-            ${isOutOfStock 
-              ? 'opacity-40 cursor-not-allowed' 
-              : 'hover:border-blue-400 hover:text-blue-600'}
-            relative group transition-all duration-200
-          `}
-        >
-          <span className="text-sm font-medium">{size.size}</span>
-          {/* Stok Göstergesi */}
-          {size.stock > 0 && size.stock <= 3 && (
-            <span className="absolute -top-2 -right-2 text-xs bg-red-500 text-white px-1 rounded-full">
-              {size.stock}
-            </span>
-          )}
-          {/* Hover Tooltip */}
-          {isOutOfStock && (
-            <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 
-              bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 
-              group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-              Stokta Yok
-            </span>
-          )}
-        </Button>
-      );
-    })}
-  </div>
-</div>
-
-      </CardContent>
-      <CardFooter className="p-0 pt-4 mt-auto space-y-2">
-        <div className="flex gap-2 w-full">
+          {/* Favorite Button - Boyutları ve görünürlüğü artırıldı */}
           <Button
-            type="primary"
-            size="default"
-            icon={<ShoppingCart className="w-5 h-5" />}
-            className="flex-1 h-12 bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleAddToCart();
-            }}
-          >
-            <span className="hidden sm:inline">Sepete Ekle</span>
-          </Button>
-          <Button
-            size="default"
-            variant="outline"
-            className={`aspect-square p-2 h-12 ${isFavorite ? 'text-red-500' : ''}`}
             onClick={(e) => {
               e.stopPropagation();
               toggleFavorite();
             }}
+            className={`absolute top-2 right-2 sm:top-4 sm:right-4 w-10 h-10 sm:w-12 sm:h-12 rounded-full 
+              bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white flex items-center justify-center
+              ${isFavorite ? 'text-red-500' : 'text-gray-600'}
+              hover:scale-110 transition-all duration-200 z-10`}
           >
-            <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+            <Heart 
+              className={`w-6 h-6 sm:w-7 sm:h-7 
+                ${isFavorite ? 'fill-current text-red-500' : 'stroke-[2.5]'}
+                transition-colors duration-200`} 
+            />
           </Button>
         </div>
-      </CardFooter>
-    </Card>
+
+        {/* Product Info */}
+        <div className="p-2 sm:p-4 space-y-2 sm:space-y-4">
+          <div>
+            <h3 className="font-semibold text-sm sm:text-lg leading-tight line-clamp-2">
+              {product.title}
+            </h3>
+            <p className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2">
+              {product.description}
+            </p>
+          </div>
+
+          {/* Price Section - Responsive düzenleme */}
+          <div className="flex items-baseline gap-2">
+            <span className="text-lg sm:text-2xl font-bold text-blue-600">
+              ₺{product.discountedPrice || product.price}
+            </span>
+            {product.discountedPrice && (
+              <span className="text-xs sm:text-sm line-through text-gray-400">
+                ₺{product.price}
+              </span>
+            )}
+          </div>
+
+          {/* Size Selection - Grid yapısı düzeltildi */}
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-1 sm:gap-2">
+            {product.sizes.map((size) => (
+              <Button
+                key={size.size}
+                type={selectedSize === size.size ? "primary" : "default"}
+                disabled={size.stock === 0}
+                onClick={(e) => 
+                {
+                  e.stopPropagation();
+                  handleSizeSelect(size.size);
+                }
+                }
+                className={`relative h-8 sm:h-10 px-1 sm:px-2 text-xs sm:text-sm ${
+                  size.stock === 0 ? 'opacity-50' : ''
+                }`}
+              >
+                {size.size}
+                {size.stock <= 3 && size.stock > 0 && (
+                  <span className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 text-[10px] sm:text-xs
+                    flex items-center justify-center bg-red-500 text-white rounded-full">
+                    {size.stock}
+                  </span>
+                )}
+              </Button>
+            ))}
+          </div>
+
+          {/* Action Buttons - Updated with stopPropagation */}
+          <div className="grid grid-cols-2 gap-1.5 sm:gap-2 pt-2">
+            <Button
+              type="primary"
+              size="middle"
+              onClick={(e) => {
+                e.stopPropagation();  // Prevent navigation
+                handleAddToCart();
+              }}
+              className="bg-blue-600 hover:bg-blue-700 min-w-12 w-full min-h-[40px] sm:h-10 sm:text-sm
+                flex items-center justify-center gap-2.5"
+            >
+              <ShoppingCart className="w-4 h-4 sm:w-4 sm:h-5 mr-1 sm:mr-1 flex-shrink-0" />
+              <span className="w-auto md:flex justify-center hidden items-center text-nowrap min-w-5">
+                Sepete Ekle
+              </span>
+            </Button>
+
+            <Button
+              size="middle"
+              onClick={(e) => {
+                e.stopPropagation();  // Prevent navigation
+                handleBuyNow();
+              }}
+              className="border-blue-600 text-blue-600 hover:bg-blue-50 min-h-[40px] sm:h-10 
+                text-[11px] leading-3 sm:text-sm px-1 sm:px-3"
+            >
+              <span className="whitespace-nowrap">Hemen Al</span>
+            </Button>
+          </div>
+
+          {/* Stock Status - Responsive yazı boyutu */}
+          {product.totalStock < 10 && (
+            <div className="text-center">
+              <span className="text-xs sm:text-sm text-red-600 font-medium animate-pulse">
+                Son {product.totalStock} ürün!
+              </span>
+            </div>
+          )}
+        </div>
+      </Card>
+    </motion.div>
   );
 };
 

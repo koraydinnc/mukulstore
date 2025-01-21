@@ -20,16 +20,24 @@ export default async function handler(req, res) {
     const uploadedUrls = await Promise.all(
       images.map(async (base64Image, index) => {
         try {
-          const fileName = `${nanoid()}-${Date.now()}-${index}.jpg`;
+          // Base64'ü temizle ve dosya tipini tespit et
+          const match = base64Image.match(/^data:image\/(jpeg|jpg|png);base64,/);
+          if (!match) {
+            throw new Error(`Image ${index} is not a valid JPEG or PNG file`);
+          }
+
+          const mimeType = match[1] === 'jpg' ? 'jpeg' : match[1];
+          const fileExtension = mimeType === 'jpeg' ? 'jpg' : 'png';
+          const fileName = `${nanoid()}-${Date.now()}-${index}.${fileExtension}`;
           const storageRef = ref(storage, `products/${fileName}`);
 
-          // Base64'ü temizle ve buffer'a çevir
+          // Base64 veriyi temizle ve buffer'a çevir
           const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, '');
           const imageBuffer = Buffer.from(base64Data, 'base64');
 
           // Firebase'e yükle
           const uploadResult = await uploadBytes(storageRef, imageBuffer, {
-            contentType: 'image/jpeg'
+            contentType: `image/${mimeType}`
           });
 
           // URL al
