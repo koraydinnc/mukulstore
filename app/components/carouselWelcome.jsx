@@ -1,120 +1,102 @@
 "use client"
 
-import React, { memo, useState, useEffect, useCallback } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import useEmblaCarousel from 'embla-carousel-react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import Image from 'next/image';
 
 const CarouselWelcome = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Video önbelleğe alma
-  const videos = [
-    { src: '/banner/1.mp4', href: '/Kategori/IndirimliUrunler', preload: 'auto' },
-    { src: '/banner/2.mp4', href: '/Kategori/AltGiyim', preload: 'metadata' },
-    { src: '/banner/3.mp4', href: '/Kategori/UstGiyim', preload: 'metadata' }
+  // GIF banner items
+  const banners = [
+    { src: '/banner/1.gif', href: '/Kategori/IndirimliUrunler' },
+    { src: '/banner/2.gif', href: '/Kategori/AltGiyim' },
+    { src: '/banner/3.gif', href: '/Kategori/UstGiyim' }
   ];
 
-  const VideoSlide = memo(({ src, href, isVisible, onLoad }) => (
+  const BannerSlide = memo(({ src, href }) => (
     <CarouselItem 
-      className="relative justify-center items-center flex cursor-pointer min-h-[200px] sm:max-h-[300px] md:max-h-[400px] xl:max-h-[1240px]" // Height değerleri düşürüldü
+      className="relative w-full cursor-pointer"
       onClick={() => router.push(href)}
     >
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-        </div>
-      )}
-      <video 
-        autoPlay 
-        loop 
-        muted 
-        playsInline
-        preload={isVisible ? 'auto' : 'none'}
-        className="w-full min-h-full object-cover rounded-lg"
-        onLoadedData={() => {
-          setIsLoading(false);
-          onLoad?.();
-        }}
-        style={{ opacity: isLoading ? 0 : 1 }}
-      >
-        <source src={src} type="video/mp4" />
-      </video>
+      <div className="aspect-[16/9] sm:aspect-[18/9] md:aspect-[21/9] relative w-full min-h-[200px] sm:min-h-[300px]">
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          </div>
+        )}
+        <Image
+          src={src}
+          alt="Banner"
+          fill
+          className="object-cover object-center rounded-lg"
+          onLoadingComplete={() => setIsLoading(false)}
+          priority
+          sizes="100vw"
+        />
+      </div>
     </CarouselItem>
   ));
 
-  VideoSlide.displayName = 'VideoSlide';
+  BannerSlide.displayName = 'BannerSlide';
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: true,
-    align: 'start',
-    skipSnaps: false,
-    inViewThreshold: 0.7,
-    lazyLoad: true,
-  }, [
-    Autoplay({
-      delay: 4500,
-      stopOnInteraction: false,
-      stopOnMouseEnter: true,
-    })
-  ]);
+  const plugin = React.useRef(
+    Autoplay({ delay: 3000, stopOnInteraction: false })
+  );
+
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    {
+      loop: true,
+      align: 'center',
+      skipSnaps: false,
+    },
+    [plugin.current]
+  );
+
+  useEffect(() => {
+    if (emblaApi) {
+      emblaApi.reInit();
+      // Force start autoplay
+      plugin.current.play();
+    }
+    return () => {
+      if (plugin.current) {
+        plugin.current.stop();
+      }
+    };
+  }, [emblaApi]);
 
   // Slide değişimini izle
-  useEffect(() => {
+  React.useEffect(() => {
     if (!emblaApi) return;
-
-    const onSelect = () => {
-      setCurrentSlide(emblaApi.selectedScrollSnap());
-    };
-
+    const onSelect = () => setCurrentSlide(emblaApi.selectedScrollSnap());
     emblaApi.on('select', onSelect);
     return () => emblaApi.off('select', onSelect);
   }, [emblaApi]);
 
-  // Performans optimizasyonu için intersection observer
-  const [ref, setRef] = useState(null);
-  useEffect(() => {
-    if (!ref) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          ref.querySelector('video')?.play();
-        } else {
-          ref.querySelector('video')?.pause();
-        }
-      },
-      { threshold: 0.5 }
-    );
-
-    observer.observe(ref);
-    return () => observer.disconnect();
-  }, [ref]);
-
   return (
-    <div className="w-full max-w-screen-4xl mx-auto my-4" ref={setRef}> {/* margin-top değeri düşürüldü */}
+    <div className="w-full mx-auto px-2 sm:px-4 md:px-6 my-2 sm:my-4">
       <Carousel 
         ref={emblaRef} 
-        className="relative w-full overflow-hidden rounded-lg" // rounded eklendi
-        options={{ containScroll: 'trimSnaps' }}
+        className="relative w-full overflow-hidden rounded-lg shadow-lg"
       >
-        <CarouselContent>
-          {videos.map((video, index) => (
-            <VideoSlide 
+        <CarouselContent className="w-full">
+          {banners.map((banner, index) => (
+            <BannerSlide 
               key={index} 
-              src={video.src} 
-              href={video.href}
-              isVisible={currentSlide === index}
-              onLoad={() => console.log(`Video ${index + 1} loaded`)}
+              src={banner.src} 
+              href={banner.href}
             />
           ))}
         </CarouselContent>
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-          {videos.map((_, index) => (
+        <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
+          {banners.map((_, index) => (
             <button
               key={index}
               className={`w-2 h-2 rounded-full transition-all ${
@@ -124,8 +106,8 @@ const CarouselWelcome = () => {
             />
           ))}
         </div>
-        <CarouselPrevious className="hidden lg:flex absolute left-4 xxl:left-96 lg:left-40" />
-        <CarouselNext className="absolute right-4 lg:flex hidden xxl:right-96 lg:right-40" />
+        <CarouselPrevious className="hidden lg:flex absolute left-2 sm:left-4 z-10" />
+        <CarouselNext className="hidden lg:flex absolute right-2 sm:right-4 z-10" />
       </Carousel>
     </div>
   );

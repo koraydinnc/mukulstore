@@ -114,7 +114,7 @@ const ProductCard = ({ product }) => {
         className="relative h-full overflow-hidden rounded-lg cursor-pointer sm:rounded-xl shadow-sm hover:shadow-xl transition-all duration-300"
       >
       {product.discountPercentage > 0 && (
-          <div className="absolute top-0 left-0 z-20">
+          <div className="absolute top-0 left-0 z-10">
             <div className="bg-red-500 text-white px-3 py-1.5 rounded-br-xl
               shadow-lg transform hover:scale-105 transition-all duration-200">
               <div className="flex items-center gap-1">
@@ -145,21 +145,24 @@ const ProductCard = ({ product }) => {
           />
           {/* Favorite Button - Boyutları ve görünürlüğü artırıldı */}
           <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleFavorite();
-            }}
-            className={`absolute top-2 right-2 sm:top-4 sm:right-4 w-10 h-10 sm:w-12 sm:h-12 rounded-full 
-              bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white flex items-center justify-center
-              ${isFavorite ? 'text-red-500' : 'text-gray-600'}
-              hover:scale-110 transition-all duration-200 z-10`}
-          >
-            <Heart 
-              className={`w-6 h-6 sm:w-7 sm:h-7 
-                ${isFavorite ? 'fill-current text-red-500' : 'stroke-[2.5]'}
-                transition-colors duration-200`} 
-            />
-          </Button>
+  onClick={(e) => {
+    e.stopPropagation();
+    toggleFavorite();
+  }}
+  className={`absolute top-2 right-0 sm:top-4 sm:right-2 w-10 h-10 sm:w-12 sm:h-12 rounded-full 
+    bg-white/70 backdrop-blur-md shadow-md hover:shadow-lg hover:bg-red-100 flex items-center justify-center
+    ${isFavorite ? 'text-red-500' : 'text-gray-600'}
+    hover:scale-105 transition-all duration-300 ease-in-out z-20`}
+>
+  <Heart
+    className={`w-6 h-6 sm:w-8 sm:h-8 ${
+      isFavorite
+        ? 'fill-red-500 scale-110 text-red-500'
+        : 'stroke-gray-600 hover:stroke-red-500'
+    } transition-transform duration-300 ease-in-out`}
+  />
+</Button>
+
         </div>
 
         {/* Product Info */}
