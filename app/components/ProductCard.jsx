@@ -111,7 +111,7 @@ const ProductCard = ({ product }) => {
     >
       <Card 
         onClick={() => router.push(`/Urunler/${product.id}`)}
-        className="relative h-full overflow-hidden rounded-lg cursor-pointer sm:rounded-xl shadow-sm hover:shadow-xl transition-all duration-300"
+        className="relative h-full overflow-hidden rounded-xl shadow-sm hover:shadow-xl transition-all duration-300"
       >
       {product.discountPercentage > 0 && (
           <div className="absolute top-0 left-0 z-10">
@@ -125,48 +125,65 @@ const ProductCard = ({ product }) => {
           </div>
         )}
 
-        {/* Product Image Container */}
-        <div className="relative aspect-[4/5] sm:aspect-[3/4] overflow-hidden bg-gray-100">
+        {/* Product Image Container - Updated image loading handling */}
+        <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
           {imageLoading && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-gray-400" />
+              <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
             </div>
           )}
           <Image
             src={getImagePath(product.images[0])}
             alt={product.title}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+            sizes="(max-width: 640px) 33vw, (max-width: 768px) 33vw, 33vw"
             className={`object-cover transition-all duration-300 hover:scale-105 ${
               imageLoading ? 'opacity-0' : 'opacity-100'
             }`}
-            onLoadingComplete={() => setImageLoading(false)}
+            onLoad={() => setImageLoading(false)}
             priority={false}
+            quality={75}
+            loading="lazy"
           />
+          
           {/* Favorite Button - Boyutları ve görünürlüğü artırıldı */}
-          <Button
-  onClick={(e) => {
-    e.stopPropagation();
-    toggleFavorite();
-  }}
-  className={`absolute top-2 right-0 sm:top-4 sm:right-2 w-10 h-10 sm:w-12 sm:h-12 rounded-full 
-    bg-white/70 backdrop-blur-md shadow-md hover:shadow-lg hover:bg-red-100 flex items-center justify-center
-    ${isFavorite ? 'text-red-500' : 'text-gray-600'}
-    hover:scale-105 transition-all duration-300 ease-in-out z-20`}
->
-  <Heart
-    className={`w-6 h-6 sm:w-8 sm:h-8 ${
-      isFavorite
-        ? 'fill-red-500 scale-110 text-red-500'
-        : 'stroke-gray-600 hover:stroke-red-500'
-    } transition-transform duration-300 ease-in-out`}
-  />
-</Button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFavorite();
+            }}
+            className={`absolute top-2 right-2 w-8 h-8 sm:w-10 sm:h-10 rounded-full 
+              ${isFavorite 
+                ? 'bg-red-50 hover:bg-red-100' 
+                : 'bg-transparent hover:bg-transparent'} 
+              backdrop-blur-sm shadow-lg hover:shadow-xl
+              flex items-center justify-center transform
+              transition-all duration-300 ease-in-out z-20
+              group hover:scale-110 active:scale-95`}
+            aria-label={isFavorite ? "Favorilerden Çıkar" : "Favorilere Ekle"}
+          >
+            <Heart
+              className={`w-4 h-4 sm:w-5 sm:h-5
+                ${isFavorite 
+                  ? 'fill-red-500 text-red-500' 
+                  : 'stroke-gray-600 group-hover:stroke-red-500'
+                } 
+                transition-all duration-300 ease-in-out
+                group-hover:scale-110 group-active:scale-90`}
+            />
+            {isFavorite && (
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"
+              />
+            )}
+          </button>
 
         </div>
 
         {/* Product Info */}
-        <div className="p-2 sm:p-4 space-y-2 sm:space-y-4">
+        <div className="p-3 sm:p-4 space-y-3">
           <div>
             <h3 className="font-semibold text-sm sm:text-lg leading-tight line-clamp-2">
               {product.title}

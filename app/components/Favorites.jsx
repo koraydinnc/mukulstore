@@ -62,8 +62,8 @@ const Favorites = () => {
                 {/* Ürün Görseli */}
                 <div className="relative h-16 w-16 flex-shrink-0">
                   <Image
-                    src={`/uploads/${product.images[0]}`}
-                    alt={product.title}
+                        src={product.images[0].includes("firebasestorage.googleapis.com") ? product.images[0] : `/uploads/${product.images[0]}`} 
+                        alt={product.title}
                     fill
                     className="object-cover rounded-md"
                   />

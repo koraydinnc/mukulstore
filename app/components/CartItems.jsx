@@ -55,8 +55,8 @@ const CartItems = () => {
                 >
                   <div className="relative h-16 w-16 flex-shrink-0">
                   <Image
-  src={`/uploads/${item.images[0]}` || '/placeholder.jpg'} // Varsayılan görsel
-  alt={item.title}
+                        src={item.images[0].includes("firebasestorage.googleapis.com") ? item.images[0] : `/uploads/${item.images[0]}`} 
+                        alt={item.title}
   fill
   className="object-cover rounded-md"
 />

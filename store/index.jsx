@@ -7,12 +7,14 @@ import { productApi } from './services/admin/productApi';
 import { authApi } from './services/admin/authApi';
 import { productUserApi } from './services/user/productUserApi';
 import { categoryUserApi } from './services/user/categoryUserApi';
+import salesSlice from './slices/salesSlice';
 
 const store = configureStore({
   reducer: {
     cart: cartSlice,
     favorites: favoritesSlice,
     admin: adminSlice,
+    sales: salesSlice,
     [productApi.reducerPath]: productApi.reducer,
     [categoryApi.reducerPath]: categoryApi.reducer,
     [authApi.reducerPath]: authApi.reducer,

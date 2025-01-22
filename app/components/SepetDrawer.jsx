@@ -82,6 +82,7 @@ const SepetDrawer = () => {
       transition: { duration: 0.2 }
     }
   };
+  console.log(cartItems);
 
   return (
     <>
@@ -168,7 +169,7 @@ const SepetDrawer = () => {
                   <div className="flex gap-3">
                     <div className="relative w-16 h-16 flex-shrink-0">
                       <Image
-                        src={`/uploads/${item.images[0]}`}
+                        src={item.images[0].includes("firebasestorage.googleapis.com") ? item.images[0] : `/uploads/${item.images[0]}`} 
                         alt={item.title}
                         fill
                         className="object-cover rounded"
