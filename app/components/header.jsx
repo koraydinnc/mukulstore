@@ -176,7 +176,7 @@ const Header = () => {
               </Button>
               <CartItems />
               <Favorites />
-              <Button variant="ghost" size="icon" className="text-white hover:text-white/80">
+              <Button onClick={() => router.push('/GirisYap')} variant="ghost" size="icon" className="text-white hover:text-white/80">
                 <User className="h-5 w-5" />
               </Button>
             </div>

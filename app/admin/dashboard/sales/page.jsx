@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getSales } from '@/services/firebase';
 import { setSales, setLoading } from '@/store/slices/salesSlice';
 import { DatePicker, Table, Card, Statistic } from 'antd';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
@@ -28,7 +27,6 @@ const SalesPage = () => {
   const loadSales = async () => {
     dispatch(setLoading(true));
     try {
-      const salesData = await getSales(...dateRange);
       dispatch(setSales(salesData));
     } catch (error) {
       console.error('Error loading sales:', error);

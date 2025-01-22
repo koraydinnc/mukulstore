@@ -279,7 +279,19 @@ export default function ProductAddPage() {
                             render={({ field }) => (
                               <FormItem>
                                 <FormControl>
-                                  <Input {...field} placeholder="Beden" />
+                                  <Input 
+                                    {...field} 
+                                    placeholder="Beden"
+                                    onChange={(e) => {
+                                      // Sayı değilse büyük harfe çevir
+                                      const value = e.target.value;
+                                      const finalValue = isNaN(value) 
+                                        ? value.toUpperCase() 
+                                        : value;
+                                      field.onChange(finalValue);
+                                    }}
+                                    value={field.value}
+                                  />
                                 </FormControl>
                               </FormItem>
                             )}
