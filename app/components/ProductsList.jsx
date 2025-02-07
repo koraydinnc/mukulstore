@@ -37,11 +37,11 @@ const ProductsList = ({ data, isLoading, pageSize = 20, pagination, setPage }) =
 
   return (
     <div id="products-list-section" className="min-h-screen bg-gray-50 py-12">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-2">
         <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-10">
           Tüm Ürünler
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 p-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 cursor-pointer  gap-2">
           {data?.map((product) => (
             <ProductCard
               key={product.id}

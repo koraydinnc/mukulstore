@@ -62,7 +62,7 @@ export default function Footer() {
     terms: {
       title: 'Teslimat ve İade Şartları',
       content: (
-        <div className="space-y-6">
+        <div className="space-y-6 transition-all ">
           <p className="font-medium">Müşterilerimizin memnuniyeti bizim için önceliklidir. Mukul Store olarak, sizlere kaliteli hizmet sunmayı taahhüt ediyoruz. Teslimat ve iade işlemleriyle ilgili şu koşullar geçerlidir:</p>
           
           <div>

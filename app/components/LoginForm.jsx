@@ -117,6 +117,18 @@ export function LoginForm({ className, ...props }) {
                       </Button>
                     </form>
 
+                    {/* Mobile Register Button - New Addition */}
+                    <div className="md:hidden text-center">
+                      <p className="text-sm text-gray-600 mb-4">Hesabınız yok mu?</p>
+                      <Button
+                        variant="outline"
+                        className="w-full h-12 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+                        onClick={() => setIsRegister(true)}
+                      >
+                        Hesap Oluştur
+                      </Button>
+                    </div>
+
                     <div className="relative">
                       <div className="absolute inset-0 flex items-center">
                         <div className="w-full border-t border-gray-200" />

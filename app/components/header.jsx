@@ -171,14 +171,10 @@ const Header = () => {
             </nav>
 
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="text-white hover:text-white/80">
-                <Search className="h-5 w-5" />
-              </Button>
+            
               <CartItems />
               <Favorites />
-              <Button onClick={() => router.push('/GirisYap')} variant="ghost" size="icon" className="text-white hover:text-white/80">
-                <User className="h-5 w-5" />
-              </Button>
+             
             </div>
           </div>
         </div>

@@ -307,11 +307,16 @@ export default function ProductAddPage() {
                               </FormItem>
                             )}
                           />
-                          {index !== fields.length - 1 && (
-                            <Button type="button" onClick={() => remove(index)}>
-                              Sil
-                            </Button>
-                          )}
+                            <div>
+                              
+                             <Button type="button" onClick={() => remove(index)}>
+                             Sil
+                           </Button>
+                           <Button type="button" onClick={() => append({ size: "", stock: "" })}>
+                             Ekle 
+                           </Button>
+                            </div>
+
                         </div>
                       ))}
                     </div>

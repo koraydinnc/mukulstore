@@ -55,7 +55,7 @@ const TrendProducts = ({ data, refetch }) => {
                             {data.data.map((product) => (
                                 <CarouselItem
                                     key={product.id}
-                                    className="basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 px-1 md:px-2"
+                                    className="basis-1/2 cursor-pointer md:basis-1/3 lg:basis-1/4 xl:basis-1/5 px-1 md:px-2"
                                 >
                                     <ProductCard 
                                         product={product} 
