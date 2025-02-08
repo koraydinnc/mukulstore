@@ -35,6 +35,11 @@ export default async function handler(req, res) {
           const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, '');
           const imageBuffer = Buffer.from(base64Data, 'base64');
 
+          // Dosya boyutunu kontrol et
+          if (imageBuffer.length > 1 * 1024 * 1024) {
+            throw new Error(`Image ${index} is larger than 1MB`);
+          }
+
           // Firebase'e yükle
           const uploadResult = await uploadBytes(storageRef, imageBuffer, {
             contentType: `image/${mimeType}`
