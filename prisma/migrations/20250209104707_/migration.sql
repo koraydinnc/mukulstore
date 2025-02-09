@@ -43,20 +43,11 @@ CREATE TABLE "Product" (
     "isPopular" BOOLEAN NOT NULL DEFAULT false,
     "categoryId" INTEGER NOT NULL,
     "status" "ProductStatus" NOT NULL DEFAULT 'ACTIVE',
+    "sizes" JSONB NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Size" (
-    "id" SERIAL NOT NULL,
-    "size" TEXT NOT NULL,
-    "stock" INTEGER NOT NULL,
-    "product_id" INTEGER NOT NULL,
-
-    CONSTRAINT "Size_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -106,9 +97,6 @@ CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Size" ADD CONSTRAINT "Size_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

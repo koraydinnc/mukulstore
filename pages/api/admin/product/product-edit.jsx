@@ -1,118 +1,78 @@
 import prisma from "@/lib/prisma";
-import { storage } from "@/lib/firebase";
-import { ref, deleteObject } from "firebase/storage";
 
 export default async function handler(req, res) {
-  if (req.method !== 'PUT') {
-    return res.status(405).json({ status: 0, message: 'Method not allowed' });
-  }
-
-  try {
+  if (req.method === 'PUT') {
     const { id } = req.query;
-    const formData = req.body;
+    const { title, description, price, discountPercentage, images, stock, featured, isPopular, categoryId, status } = req.body;
 
-    // Validasyon: formData'nın geçerli olduğuna emin olalım
-    const { 
-      title, 
-      description, 
-      price, 
-      discountPercentage, 
-      images,
-      deletedImages, 
-      newImages, 
-      featured, 
-      isPopular, 
-      categoryId, 
-      status,
-      sizes
-    } = formData;
-
-    if (!title || !description || !price) {
-      return res.status(400).json({ status: 0, message: 'Missing required fields' });
+    if (!req.body || typeof req.body !== 'object') {
+      return res.status(400).json({ message: 'Request body is not valid' });
     }
 
-    // Önce mevcut ürünü ve fotoğraflarını al
-    const existingProduct = await prisma.product.findUnique({
-      where: { id: Number(id) },
-      select: { images: true }
-    });
-
-    // Silinecek fotoğrafları Firebase'den sil
-    if (Array.isArray(deletedImages) && deletedImages.length > 0) {
-      await Promise.all(
-        deletedImages.map(async (imageUrl) => {
-          try {
-            const imageName = imageUrl.split('/').pop().split('?')[0];
-            const imageRef = ref(storage, `products/${imageName}`);
-            await deleteObject(imageRef);
-          } catch (error) {
-            console.error('Error deleting image:', error);
-          }
-        })
-      );
+    if (!id) {
+      return res.status(400).json({ message: 'Product ID is required' });
     }
 
-    // Yeni fotoğrafları yükle
-    let uploadedImageUrls = [];
-    if (Array.isArray(newImages) && newImages.length > 0) {
-      const uploadResponse = await fetch('/api/admin/product/photos-upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ images: newImages })
+    if (!title || !description || !price || !stock || !categoryId) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    // Validate and parse input data
+    const parsedPrice = parseFloat(price);
+    const parsedStock = parseInt(stock);
+    const parsedCategoryId = parseInt(categoryId);
+    const parsedDiscountPercentage = discountPercentage ? parseFloat(discountPercentage) : null;
+
+    if (isNaN(parsedPrice)) {
+      return res.status(400).json({ message: 'Invalid price value' });
+    }
+
+    if (isNaN(parsedStock)) {
+      return res.status(400).json({ message: 'Invalid stock value' });
+    }
+
+    if (isNaN(parsedCategoryId)) {
+      return res.status(400).json({ message: 'Invalid category ID' });
+    }
+
+    try {
+      // Find the product in the database
+      const product = await prisma.product.findUnique({
+        where: {
+          id: Number(id),
+        },
       });
 
-      const uploadResult = await uploadResponse.json();
-      if (uploadResult.success) {
-        uploadedImageUrls = uploadResult.imageUrls;
-      } else {
-        return res.status(500).json({ status: 0, message: 'Failed to upload images' });
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
       }
-    }
 
-    // Mevcut fotoğraflardan silinmeyenleri al ve yeni fotoğrafları ekle
-    const updatedImages = [
-      ...existingProduct.images.filter(img => !deletedImages?.includes(img)),
-      ...uploadedImageUrls
-    ];
-
-    // Transaction kullanarak ürün ve varyantları güncelle
-    const updatedProduct = await prisma.$transaction(async (prisma) => {
-      // Önce ürünü güncelle
-      const product = await prisma.product.update({
+      // Update the product
+      const updatedProduct = await prisma.product.update({
         where: { id: Number(id) },
         data: {
           title,
           description,
-          price: Number(price), // Fiyatın sayısal bir değere dönüştürülmesi gerekebilir
-          discountPercentage: Number(discountPercentage), // Aynı şekilde
-          images: updatedImages,
-          featured: Boolean(featured),
-          isPopular: Boolean(isPopular),
-          categoryId: Number(categoryId),
-          status: status || 'ACTIVE',
-          updatedAt: new Date()
-        }
+          price: parsedPrice,
+          discountPercentage: parsedDiscountPercentage,
+          images,
+          stock: parsedStock,
+          featured,
+          isPopular,
+          categoryId: parsedCategoryId,
+          status,
+          updatedAt: new Date(),
+        },
       });
 
-      // Varyant işlemleri burada yapılabilir
-
-      return product;
-    });
-
-    return res.status(200).json({
-      status: 1,
-      message: 'Product updated successfully',
-      product: updatedProduct
-    });
-
-  } catch (error) {
-    console.error('Error updating product:', error);
-    return res.status(500).json({
-      status: 0,
-      message: 'Failed to update product',
-      error: error.message || 'Unknown error occurred'
-    });
-  } finally {
-    await prisma.$disconnect();
+      return res.status(200).json(updatedProduct);
+    } catch (error) {
+      console.error('Error updating product:', error);
+      return res.status(500).json({ message: 'Could not update product', error: error.message });
+    } finally {
+      await prisma.$disconnect();
+    }
+  } else {
+    return res.status(405).json({ message: 'Method not allowed' });
   }
 }

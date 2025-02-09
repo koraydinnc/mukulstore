@@ -33,27 +33,93 @@ const AdminProductsList = ({ data, refetch }) => {
       openNotification({ title: 'Hata', description: error.data.message, type: 'error' });
     }
   };
+const handleUpdate = async (values) => {
+  try {
+    // Mevcut ve yeni fotoğrafları ayır
+    const existingImages = images.filter(img => img.startsWith('http'));
+    const newImages = images.filter(img => img.startsWith('blob'));
 
-  const handleUpdate = async (values) => {
-    try {
-      const updatedValues = {
-        ...values,
-        price: parseFloat(values.price),
-        discountPercentage: values.discountPercentage ? parseFloat(values.discountPercentage) : null,
-        stock: parseInt(values.stock),
-        categoryId: parseInt(values.categoryId),
-        images, 
-      };
+    // Yeni fotoğrafları yükle
+    let uploadedImages = [...existingImages];
+    
+    if (newImages.length > 0) {
+      // Base64'e dönüştürme işlemi
+      const base64Images = await Promise.all(
+        newImages.map(async (blobUrl) => {
+          const response = await fetch(blobUrl);
+          const blob = await response.blob();
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+          });
+        })
+      );
 
-      await updateProduct({ id: currentProduct.id, values: updatedValues }).unwrap();
-      openNotification({ title: 'Başarılı', description: 'Ürün başarıyla güncellendi.', variant: 'success' });
-      refetch();
-      handleCancel();
-    } catch (error) {
-      console.log(error);
-      openNotification({ title: 'Hata', description: error.data.message, type: 'error' });
+      // Fotoğrafları yükle
+      const uploadResponse = await fetch('/api/admin/product/photos-upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          images: base64Images 
+        }),
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error('Fotoğraf yükleme başarısız');
+      }
+
+      const uploadResult = await uploadResponse.json();
+      
+      if (!uploadResult.success) {
+        throw new Error(uploadResult.message || 'Fotoğraf yükleme başarısız');
+      }
+
+      // Burayı düzelttik - imageUrls direkt olarak bir array
+      uploadedImages = [...existingImages, ...uploadResult.imageUrls];
     }
-  };
+
+    console.log('Güncellenecek görsel listesi:', uploadedImages); // Debug için
+
+    const updatedValues = {
+      ...values,
+      price: parseFloat(values.price),
+      discountPercentage: values.discountPercentage ? parseFloat(values.discountPercentage) : null,
+      categoryId: parseInt(values.categoryId),
+      images: uploadedImages
+    };
+
+    // Debug için
+    console.log('Güncellenecek değerler:', updatedValues);
+
+    const result = await updateProduct({ 
+      id: currentProduct.id, 
+      values: updatedValues 
+    }).unwrap();
+
+    // Debug için
+    console.log('Güncelleme sonucu:', result);
+
+    openNotification({ 
+      title: 'Başarılı', 
+      description: 'Ürün başarıyla güncellendi.', 
+      variant: 'success' 
+    });
+
+    refetch();
+    handleCancel();
+
+  } catch (error) {
+    console.error('Güncelleme hatası:', error);
+    openNotification({ 
+      title: 'Hata', 
+      description: error.message || 'Ürün güncellenirken bir hata oluştu', 
+      type: 'error' 
+    });
+  }
+};
 
   console.log(data, "data")
 
