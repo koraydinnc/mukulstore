@@ -55,6 +55,8 @@ const AdminProductsList = ({ data, refetch }) => {
     }
   };
 
+  console.log(data, "data")
+
   return (
     <>
       <List
@@ -115,6 +117,13 @@ const AdminProductsList = ({ data, refetch }) => {
               <InputNumber min={0} />
             </Form.Item>
             <Form.Item
+              name="discountPercentage"
+              label="İndirim Yüzdesi (%)"
+              rules={[{ required: true, message: 'Lütfen indirim yüzdesini girin!' }]}
+            >
+              <InputNumber min={0} max={100} />
+            </Form.Item>
+            <Form.Item
               name="images"
               label="Fotoğraflar"
             >
@@ -123,7 +132,7 @@ const AdminProductsList = ({ data, refetch }) => {
             <Form.Item
               name="stock"
               label="Stok"
-              rules={[{ required: true, message: 'Please input the stock!' }]}
+              rules={[{ required: true, message: 'Lütfen stok miktarını girin!' }]}
             >
               <InputNumber min={0} />
             </Form.Item>

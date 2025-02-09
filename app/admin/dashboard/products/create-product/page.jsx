@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from 'react'
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm, Controller, useFieldArray } from "react-hook-form"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { useState, useEffect } from 'react';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -15,7 +15,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -24,13 +24,13 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Switch as AntSwitch, InputNumber, Spin } from 'antd' // Import Ant Design Switch
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import AdminPhotosAdd from '@/app/components/AdminPhotosAdd'
-import { useUploadImagesMutation, useCreateProductMutation } from '@/store/services/admin/productApi'
-import { useGetCategoriesQuery } from '@/store/services/admin/categoryApi'
-import openNotification from '@/app/components/Toaster'
+} from "@/components/ui/select";
+import { Switch as AntSwitch, Spin } from 'antd';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import AdminPhotosAdd from '@/app/components/AdminPhotosAdd';
+import { useUploadImagesMutation, useCreateProductMutation } from '@/store/services/admin/productApi';
+import { useGetCategoriesQuery } from '@/store/services/admin/categoryApi';
+import openNotification from '@/app/components/Toaster';
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -59,20 +59,13 @@ const formSchema = z.object({
       stock: z.string()
     })
   )
-})
+});
 
 export default function ProductAddPage() {
   const [uploadImages] = useUploadImagesMutation();
-  const [createProduct] = useCreateProductMutation();
-  const [images, setImages] = useState([])
-  const {data: categories, isLoading} = useGetCategoriesQuery()
-  const [sizes, setSizes] = useState([
-  ])
+  const [createProduct, { isLoading: productLoading }] = useCreateProductMutation();
+  const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery();
   const [imageList, setImageList] = useState([]);
-
-  const handleImageUpload = (base64Image) => {
-    setImageList(prev => [...prev, base64Image]);
-  };
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -81,18 +74,15 @@ export default function ProductAddPage() {
       description: "",
       price: "",
       discountPercentage: 0,
-      images: images,
+      images: [],
       stock: "",
       featured: false,
       isPopular: false,
       categoryId: "",
       status: "ACTIVE",
-      sizes: [{
-          size: "",
-          stock: ""
-      }]
+      sizes: [{ size: "", stock: "" }]
     },
-  })
+  });
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -115,22 +105,22 @@ export default function ProductAddPage() {
     ? `${(parseFloat(price) - (parseFloat(price) * (discountPercentage || 0)) / 100).toFixed(2)} TL`
     : price ? `${parseFloat(price).toFixed(2)} TL` : "";
 
-    
-  if (isLoading) {
-    return <Spin fullscreen/>
-    
+  if (productLoading || categoriesLoading) {
+    return <Spin fullscreen />;
   }
-   
+
+  const handleImageUpload = (base64Image) => {
+    setImageList(prev => [...prev, base64Image]);
+  };
+
   async function onSubmit(values) {
     try {
-      // Önce tüm resimleri yükle
       const uploadResponse = await uploadImages({ images: imageList }).unwrap();
       
       if (!uploadResponse.success) {
         throw new Error('Fotoğraf yükleme başarısız');
       }
 
-      // Kategori ID'sini bul
       const selectedCategory = categories.categories.find(
         category => category.name === values.categoryId
       );
@@ -142,7 +132,7 @@ export default function ProductAddPage() {
       const formData = {
         ...values,
         images: uploadResponse.imageUrls,
-        categoryId: selectedCategory.id, // Doğru kategori ID'sini kullan
+        categoryId: selectedCategory.id,
         price: parseFloat(values.price),
         stock: parseInt(values.stock),
         sizes: values.sizes
@@ -155,7 +145,6 @@ export default function ProductAddPage() {
 
       console.log('Gönderilen form verisi:', formData);
 
-      // Ürünü oluştur
       const productResponse = await createProduct(formData).unwrap();
       
       if (productResponse.status === 1) {
@@ -165,7 +154,7 @@ export default function ProductAddPage() {
           description: "Ürün başarıyla eklendi.",
         });
         
-        setImageList([]); // Fotoğraf listesini temizle
+        setImageList([]);
         form.reset();
       }
     } catch (error) {
@@ -283,7 +272,6 @@ export default function ProductAddPage() {
                                     {...field} 
                                     placeholder="Beden"
                                     onChange={(e) => {
-                                      // Sayı değilse büyük harfe çevir
                                       const value = e.target.value;
                                       const finalValue = isNaN(value) 
                                         ? value.toUpperCase() 
@@ -307,16 +295,14 @@ export default function ProductAddPage() {
                               </FormItem>
                             )}
                           />
-                            <div>
-                              
-                             <Button type="button" onClick={() => remove(index)}>
-                             Sil
-                           </Button>
-                           <Button type="button" onClick={() => append({ size: "", stock: "" })}>
-                             Ekle 
-                           </Button>
-                            </div>
-
+                          <div>
+                            <Button type="button" onClick={() => remove(index)}>
+                              Sil
+                            </Button>
+                            <Button type="button" onClick={() => append({ size: "", stock: "" })}>
+                              Ekle 
+                            </Button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -358,30 +344,28 @@ export default function ProductAddPage() {
                 name="categoryId"
                 render={({ field }) => (
                   <FormItem>
-                  <FormLabel className="text-zinc-700 dark:text-zinc-300">Kategori</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    value={field.value} 
-                  >
-                    <FormControl>
-                      <SelectTrigger className="border-zinc-300 dark:border-zinc-700 focus:ring-zinc-400 dark:focus:ring-zinc-600">
-                        <SelectValue placeholder="Kategori seçiniz" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-white">
-                      {categories && categories.categories.map((category) => (
-                        <SelectGroup key={category.id} title={category.name}>
-                          <SelectItem value={category.name} key={category.id}>
-                            {category.name} 
-                          </SelectItem>
-                        </SelectGroup>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage className="text-red-500" />
-                </FormItem>
-                
-                
+                    <FormLabel className="text-zinc-700 dark:text-zinc-300">Kategori</FormLabel>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      value={field.value} 
+                    >
+                      <FormControl>
+                        <SelectTrigger className="border-zinc-300 dark:border-zinc-700 focus:ring-zinc-400 dark:focus:ring-zinc-600">
+                          <SelectValue placeholder="Kategori seçiniz" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-white">
+                        {categories && categories.categories.map((category) => (
+                          <SelectGroup key={category.id} title={category.name}>
+                            <SelectItem value={category.name} key={category.id}>
+                              {category.name} 
+                            </SelectItem>
+                          </SelectGroup>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
                 )}
               />
 
@@ -426,7 +410,7 @@ export default function ProductAddPage() {
                   <FormItem>
                     <FormLabel className="text-zinc-700 dark:text-zinc-300">Durum</FormLabel>
                     <FormControl className='flex flex-col'>
-                    <AntSwitch
+                      <AntSwitch
                         checked={field.value === "ACTIVE"}
                         onChange={(checked) =>
                           field.onChange(checked ? "ACTIVE" : "INACTIVE")
@@ -466,5 +450,5 @@ export default function ProductAddPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

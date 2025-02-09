@@ -34,7 +34,18 @@ const menuItems = [
   {
     title: 'Kategoriler',
     icon: <Tags className="h-4 w-4" />,
-    href: '/admin/dashboard/categories'
+    subItems: [
+      {
+        title: 'Kategori Ekle',
+        href: '/admin/dashboard/category/add-category',
+        icon: <PlusCircle className="h-4 w-4" />
+      },
+      {
+        title: 'Kategoriler',
+        href: '/admin/dashboard/category/category-list',
+        icon: <List className="h-4 w-4" />
+      }
+    ]
   },
   {
     title: 'Stok',
