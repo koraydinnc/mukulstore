@@ -50,7 +50,7 @@ const menuItems = [
   {
     title: 'Stok',
     icon: <Boxes className="h-4 w-4" />,
-    href: '/admin/dashboard/inventory'
+    href: '/admin/dashboard/stock'
   },
   {
     title: 'Kullanıcılar',

@@ -1,48 +1,58 @@
 "use client"
-import Link from 'next/link'
-import { ChevronRight, CreditCard, Home, ShoppingBag } from 'lucide-react'
+
 import { usePathname } from 'next/navigation'
+import React from 'react'
+import { CircleCheck, ShoppingBag, User, CreditCard } from 'lucide-react'
 
 const Breadcrumb = () => {
+  const steps = [
+    { label: 'Sepetim', path: '/Sepetim', icon: <ShoppingBag /> },
+    { label: 'Bilgiler', path: '/Sepetim/Bilgiler', icon: <User /> },
+    { label: 'Ödeme', path: '/Sepetim/Odeme', icon: <CreditCard /> },
+    { label: 'Onay', path: '/Sepetim/Onay', icon: <CircleCheck /> }
+  ]
+
   const pathname = usePathname()
-  const paths = pathname.split('/').filter(Boolean)
+
+  // En uzun eşleşen path'i bul
+  const currentStepIndex = steps
+    .map((step, index) => ({ index, match: pathname.startsWith(step.path) }))
+    .filter(step => step.match)
+    .map(step => step.index)
+    .pop() ?? -1
 
   return (
-    <nav className="flex items-center text-sm text-gray-500 space-x-1 sm:space-x-24 py-2">
-      <Link 
-        href="/" 
-        className="hover:text-gray-700 flex items-center min-w-fit"
-      >
-        <Home className="h-4 w-4 sm:hidden" />
-        <span className="hidden sm:inline">Ana Sayfa</span>
-      </Link>
+    <div className="mb-12">
+      <div className="flex items-center justify-center space-x-4">
+        {steps.map((step, index) => {
+          const isActive = index <= currentStepIndex
+          const isCurrent = index === currentStepIndex
 
-      {paths.map((path, i) => (
-        <div key={path} className="flex items-center space-x-4 sm:space-x-2">
-          <ChevronRight className="h-4 w-4 mx-1 sm:mx-2 flex-shrink-0" />
-          <Link 
-            href={`/${paths.slice(0, i + 1).join('/')}`}
-            className={`truncate max-w-[120px] sm:max-w-full flex items-center gap-1
-              ${i === paths.length - 1 
-                ? 'text-blue-600 font-medium' 
-                : 'hover:text-gray-700'}
-            `}
-          >
-            {path === 'Sepetim' ? (
-              <>
-                <ShoppingBag className="h-4 w-4 sm:hidden" />
-                <span className="overflow-hidden text-ellipsis whitespace-nowrap">{path}</span>
-              </>
-            ) : (
-              <>
-                <CreditCard className="h-4 w-4 sm:hidden" />
-                <span className="overflow-hidden text-ellipsis whitespace-nowrap">{path}</span>
-              </>
-            )}
-          </Link>
-        </div>
-      ))}
-    </nav>
+          return (
+            <div key={step.path} className="flex items-center">
+              {index > 0 && (
+                <div className={`h-px w-16 ${isActive ? 'bg-green-500' : 'bg-gray-200'}`} />
+              )}
+              <div className="flex items-center">
+                {isActive ? (
+                  <CircleCheck className="h-6 w-6 text-green-500" />
+                ) : (
+                  <div
+                    className={`h-6 w-6 rounded-full flex items-center justify-center text-sm
+                    ${isCurrent ? 'bg-blue-500 text-white' : 'border-2 border-gray-200 text-gray-400'}`}
+                  >
+                    {index + 1}
+                  </div>
+                )}
+                <span className={`ml-2 text-sm font-medium ${isActive ? 'text-gray-900' : 'text-gray-400'}`}>
+                  {step.label}
+                </span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 

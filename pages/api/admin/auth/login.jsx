@@ -1,51 +1,43 @@
-import { compare } from 'bcryptjs';
 import prisma from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 export default async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ message: 'Method not allowed' });
-    }
+  const { email, password } = req.body;
 
+  if (req.method === 'POST') {
     try {
-        const { email, password } = req.body;
+      if (!email || !password) {
+        return res.status(400).json({ status: 0, message: 'Email ve Password Giriniz!' });
+      }
 
-        if (!email || !password) {
-            return res.status(400).json({ 
-                message: 'Email ve şifre zorunludur' 
-            });
-        }
+      const existingAdmin = await prisma.admin.findUnique({
+        where: { email },
+      });
 
-        const admin = await prisma.admin.findUnique({ 
-            where: { email }
-        });
+      if (!existingAdmin) {
+        return res.status(400).json({ message: 'Bu email kayıtlı değil.' });
+      }
 
-        if (!admin) {
-            return res.status(401).json({ 
-                message: 'Geçersiz email veya şifre' 
-            });
-        }
+      const isPasswordValid = await bcrypt.compare(password, existingAdmin.password);
 
-        const isPasswordValid = await compare(password, admin.password);
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: 'Geçersiz şifre.' });
+      }
 
-        if (!isPasswordValid) {
-            return res.status(401).json({ 
-                message: 'Geçersiz email veya şifre' 
-            });
-        }
+      // JWT oluşturma
+      const token = jwt.sign(
+        { id: existingAdmin.id, email: existingAdmin.email },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
 
-        const { password: _, ...adminData } = admin;
-
-        return res.status(200).json({
-            message: 'Giriş başarılı',
-            admin: adminData
-        });
-
+      return res.status(200).json({ status: 1, token, message: 'Giriş başarılı!' });
     } catch (error) {
-        console.error('Login error:', error);
-        return res.status(500).json({ 
-            message: 'Bir hata oluştu. Lütfen tekrar deneyin.' 
-        });
-    } finally {
-        await prisma.$disconnect();
+      console.error(error);
+      return res.status(500).json({ status: 0, message: 'Bir Hata Oluştu!' });
     }
+  } else {
+    return res.status(405).json({ status: 0, message: 'Yalnızca POST istekleri kabul edilir.' });
+  }
 }

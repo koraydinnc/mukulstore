@@ -4,31 +4,20 @@ import React, { useState, useCallback, useEffect } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { Button, Rate, Badge, Divider } from 'antd';
 import { motion } from 'framer-motion';
-import Image from 'next/image'; // Add this import
-import { 
-  ShoppingCart, 
-  Heart, 
-  Truck, 
-  Shield, 
-  RefreshCw,
-  Check,
-} from 'lucide-react';
+import Image from 'next/image';
+import { ShoppingCart, Heart, Truck, Shield, RefreshCw, Check } from 'lucide-react';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '@/store/slices/cartSlice';
 
 const UrunDetay = ({ data }) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const dispatch = useDispatch();
 
   // Carousel setup
-  const [mainCarouselRef, mainEmbla] = useEmblaCarousel({ 
-    loop: true,
-    dragFree: true 
-  });
-  const [thumbCarouselRef, thumbEmbla] = useEmblaCarousel({
-    containScroll: "keepSnaps",
-    dragFree: true,
-    slidesToScroll: 1
-  });
+  const [mainCarouselRef, mainEmbla] = useEmblaCarousel({ loop: true, dragFree: true });
+  const [thumbCarouselRef, thumbEmbla] = useEmblaCarousel({ containScroll: "keepSnaps", dragFree: true, slidesToScroll: 1 });
 
   // Sync carousels and active index
   useEffect(() => {
@@ -52,13 +41,10 @@ const UrunDetay = ({ data }) => {
     if (mainEmbla) mainEmbla.scrollNext();
   }, [mainEmbla]);
 
-  const onThumbClick = useCallback(
-    (index) => {
-      if (!mainEmbla || !thumbEmbla) return;
-      mainEmbla.scrollTo(index);
-    },
-    [mainEmbla, thumbEmbla]
-  );
+  const onThumbClick = useCallback((index) => {
+    if (!mainEmbla || !thumbEmbla) return;
+    mainEmbla.scrollTo(index);
+  }, [mainEmbla, thumbEmbla]);
 
   const handleImageSelect = useCallback((index) => {
     setSelectedImage(index);
@@ -76,18 +62,24 @@ const UrunDetay = ({ data }) => {
     return imagePath.startsWith('/') ? imagePath : `/uploads/${imagePath}`;
   };
 
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      alert('Lütfen bir beden seçin');
+      return;
+    }
+    dispatch(addToCart({ product: data, selectedSize }));
+  };
+
   const renderProductGallery = () => (
     <div className="lg:w-1/2 space-y-4">
       <div className="relative rounded-xl overflow-hidden bg-gray-100">
-        {/* İndirim Etiketi - Yeni Tasarım */}
         {data?.discountPercentage > 0 && (
           <motion.div 
             initial={{ x: -100 }}
             animate={{ x: 0 }}
             className="absolute top-4 left-4 z-30"
           >
-            <div className="bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg
-              transform hover:scale-105 transition-all duration-200">
+            <div className="bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200">
               <div className="flex flex-col items-center">
                 <span className="text-2xl font-bold">%{data.discountPercentage}</span>
                 <span className="text-sm uppercase tracking-wider">İndirim</span>
@@ -103,16 +95,16 @@ const UrunDetay = ({ data }) => {
           <div className="flex touch-pan-y">
             {data?.images?.map((image, index) => (
               <div key={index} className="relative flex-[0_0_100%] min-w-100">
-                <div className="relative aspect-square "> {/* Aspect ratio ayarlandı */}
+                <div className="relative aspect-square">
                   <Image
                     src={getImagePath(image)}
                     alt={`${data?.title || 'Ürün'} - ${index + 1}`}
                     fill
                     priority={index === 0}
-                    className="object-cover  bg-white min-w-full min-h-[100px] " // object-contain ile tam sığma sağlandı
+                    className="object-cover bg-white min-w-full min-h-[100px]"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    quality={85} // Kalite optimizasyonu
-                    loading={index === 0 ? "eager" : "lazy"} // İlk resim hızlı yükleme
+                    quality={85}
+                    loading={index === 0 ? "eager" : "lazy"}
                   />
                 </div>
               </div>
@@ -209,6 +201,7 @@ const UrunDetay = ({ data }) => {
       <div className="space-y-6">
         <div className="flex gap-4">
           <Button
+            onClick={handleAddToCart}
             type="primary"
             size="large"
             icon={<ShoppingCart size={20} />}

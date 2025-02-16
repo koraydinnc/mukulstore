@@ -1,4 +1,5 @@
 "use client"
+import Breadcrumb from '@/app/components/Breadcrumb'
 import { usePathname } from 'next/navigation'
 
 export default function CartLayout({ children }) {
@@ -13,6 +14,7 @@ export default function CartLayout({ children }) {
     <div className="container mx-auto py-8 px-4">
       <div className="grid grid-cols-1 sm:grid-cols-1 gap-8">
         <div className="order-2 sm:order-1">
+
           {children}
         </div>
       </div>

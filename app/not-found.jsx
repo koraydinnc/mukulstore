@@ -2,10 +2,11 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Timer, Instagram, Facebook } from 'lucide-react';
+import { AlertTriangle, Instagram, Facebook } from 'lucide-react';
 import Link from 'next/link';
+import "./globals.css";
 
-const notFound = () => {
+const NotFound = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-100 to-white">
       <motion.div 
@@ -19,15 +20,15 @@ const notFound = () => {
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
           className="inline-block mb-8"
         >
-          <Timer size={48} className="text-blue-500" />
+          <AlertTriangle size={48} className="text-red-500" />
         </motion.div>
 
         <h1 className="text-4xl font-bold mb-4">
-          Çalışmalarımız Devam Ediyor
+          Sayfa Bulunamadı
         </h1>
         
         <p className="text-gray-600 mb-8 text-lg">
-          Sizlere daha iyi hizmet verebilmek için çalışıyoruz. Çok yakında yeni koleksiyonumuzla sizlerle olacağız.
+          Aradığınız sayfa bulunamadı. Yanlış bir URL girmiş olabilirsiniz veya sayfa kaldırılmış olabilir.
         </p>
 
         <div className="space-y-4">
@@ -71,4 +72,4 @@ const notFound = () => {
   );
 };
 
-export default notFound;
+export default NotFound;

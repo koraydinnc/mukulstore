@@ -23,7 +23,6 @@ const CartPage = () => {
   const handleQuantityChange = (itemId, size, quantity) => {
     dispatch(updateQuantity({ id: itemId, size, quantity: parseInt(quantity) }));
   };
-
   const handleRemoveItem = (itemId, size) => {
     dispatch(removeFromCart({ id: itemId, size }));
     openNotification({
@@ -43,11 +42,13 @@ const CartPage = () => {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           className="text-center"
         >
+          
           <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-gray-400" />
           <h1 className="text-2xl font-bold mb-2">Sepetiniz Boş</h1>
           <p className="text-gray-600 mb-4">
@@ -66,10 +67,9 @@ const CartPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Breadcrumb */}
-        <div className="mb-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumb />
-        </div>
+         </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -112,7 +112,7 @@ const CartPage = () => {
                   </div>
 
                   <div className="space-y-3">
-                    <Link href="/Sepetim/Odeme" className="block">
+                    <Link href="/Sepetim/Bilgiler" className="block">
                       <Button 
                         className="w-full h-14 bg-blue-600 hover:bg-blue-700 transform transition-all duration-200 hover:scale-[1.02] shadow-lg hover:shadow-blue-500/30"
                       >
@@ -187,7 +187,7 @@ const CartPage = () => {
                       <div className="flex gap-4">
                         <div className="relative w-24 h-24">
                           <Image
-                            src={`/uploads/${item.images[0]}` || '/images/placeholder.png'}
+                            src={`${item.images[0]}` || '/images/placeholder.png'}
                             alt={item.title}
                             fill
                             className="object-cover rounded-md"

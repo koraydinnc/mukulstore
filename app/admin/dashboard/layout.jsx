@@ -8,7 +8,7 @@ import AdminMenu from '@/app/components/AdminMenu';
 
 export default function DashboardLayout({ children }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen  flex">
       {/* AdminMenu */}
       <AdminMenu />
 
@@ -23,37 +23,7 @@ export default function DashboardLayout({ children }) {
                 <span className="self-center text-xl font-semibold">Admin Panel</span>
               </Link>
 
-              <div className="flex items-center gap-4">
-                {/* Search Bar */}
-                <div className="hidden md:flex items-center">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                    <input
-                      type="text"
-                      placeholder="Ara..."
-                      className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-                
-                {/* Notifications */}
-                <button className="relative p-2 hover:bg-gray-100 rounded-lg">
-                  <Bell className="h-6 w-6 text-gray-500" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
-
-                {/* Profile */}
-                <button className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg">
-                  <Image
-                    src="/avatar-placeholder.jpg"
-                    width={32}
-                    height={32}
-                    alt="Profile"
-                    className="rounded-full"
-                  />
-                  <span className="hidden md:inline text-sm font-medium">Admin</span>
-                </button>
-              </div>
+            
             </div>
           </div>
         </nav>

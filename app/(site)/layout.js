@@ -70,6 +70,7 @@ export default function RootLayout({ children }) {
             {children}
             <SepetDrawer />
           </main>
+          <title>Mukul Store</title>
           <Footer />
           <SpeedInsights />
           <Toaster />

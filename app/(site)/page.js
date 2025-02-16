@@ -8,10 +8,8 @@ import CarouselWelcome from '../components/carouselWelcome';
 import TrendProducts from '../components/trendProducts';
 import ProductsFilter from '../components/ProductsFilter';
 import ProductsList from '../components/ProductsList';
-import notFound from './not-found';
 import { PackageSearch, RefreshCcw } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Button } from 'antd';
 
 export default function Home({params}) {
   const [page, setPage] = useState(1);
@@ -110,9 +108,6 @@ export default function Home({params}) {
     }
   }, [clearFiltersCallback]);
 
-  if (!params.slug) {
-    notFound()
-  }
  
   if (trendLoading || productsLoading || !categoriesData) {
     return <Loading />;

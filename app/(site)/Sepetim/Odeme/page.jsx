@@ -10,9 +10,9 @@ import { motion } from "framer-motion";
 import { Check, CreditCard, Shield, Lock, CircleCheck, ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import Breadcrumb from "@/app/components/Breadcrumb";
 import SalesAgreementCheckbox from '@/app/components/SalesAgreementCheckbox';
 import './globals.css'
+import Breadcrumb from "@/app/components/Breadcrumb";
 
 const PaymentPage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -79,30 +79,10 @@ const PaymentPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Breadcrumb */}
-        <div className="mb-8">
-          <Breadcrumb />
-        </div>
+  
 
         {/* Progress Steps */}
-        <div className="mb-12">
-          <div className="flex items-center justify-center space-x-4">
-            <div className="flex items-center">
-              <CircleCheck className="h-6 w-6 text-green-500" />
-              <span className="ml-2 text-sm font-medium">Sepet</span>
-            </div>
-            <div className="h-px w-16 bg-green-500" />
-            <div className="flex items-center">
-              <div className="h-6 w-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm">2</div>
-              <span className="ml-2 text-sm font-medium">Ödeme</span>
-            </div>
-            <div className="h-px w-16 bg-gray-200" />
-            <div className="flex items-center">
-              <div className="h-6 w-6 rounded-full border-2 border-gray-200 text-gray-400 flex items-center justify-center text-sm">3</div>
-              <span className="ml-2 text-sm font-medium text-gray-400">Onay</span>
-            </div>
-          </div>
-        </div>
+        <Breadcrumb/>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Order Summary Section */}
@@ -115,7 +95,7 @@ const PaymentPage = () => {
                     <div key={`${item.id}-${item.size}`} className="flex gap-4">
                       <div className="relative w-20 h-20">
                         <Image
-                          src={`/uploads/${item.images[0]}`}
+                          src={`${item.images[0]}`}
                           alt={item.title}
                           fill
                           className="object-cover rounded"
