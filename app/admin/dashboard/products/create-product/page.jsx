@@ -442,8 +442,9 @@ export default function ProductAddPage() {
               <Button
                 type="submit"
                 className="w-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-50 dark:hover:bg-zinc-200 dark:text-zinc-900"
+                disabled={productLoading}
               >
-                Ürün Ekle
+                {productLoading ? "Yükleniyor..." : "Ürün Ekle"}
               </Button>
             </form>
           </Form>
