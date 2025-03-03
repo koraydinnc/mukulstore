@@ -24,9 +24,11 @@ const Page = () => {
     return <div className="text-gray-600">Ürün bilgisi bulunamadı.</div>;
   }
 
+  console.log(data, 'urun detay data')
+
   return (
     <div>
-      <section className="text-gray-600 body-font overflow-hidden">
+      <section className="text-gray-600 font-sans overflow-hidden">
         <UrunDetay data={data} />
       </section>
     </div>

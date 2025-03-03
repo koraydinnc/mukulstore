@@ -37,7 +37,7 @@ const TrendProducts = ({ data, refetch }) => {
     }
 
     return (
-        <div className="min-h-full w-full flex items-center justify-center py-12 bg-gray-50">
+        <div className="min-h-full w-full flex items-center justify-center py-12 bg-white">
             <div className="w-full min-h-full xl:w-3/4">
                 <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 mb-10">
                     Popüler Ürünler

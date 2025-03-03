@@ -27,7 +27,7 @@ const Favorites = () => {
           size="icon"
           className="relative text-gray-800 hover:text-gray-600 group"
         >
-          <motion.div >
+          <motion.div>
             <Heart className="h-5 w-5 text-white group-hover:fill-red-500" />
             {favorites?.length > 0 && (
               <Badge
@@ -62,8 +62,14 @@ const Favorites = () => {
                 {/* Ürün Görseli */}
                 <div className="relative h-16 w-16 flex-shrink-0">
                   <Image
-                        src={product.images[0].includes("firebasestorage.googleapis.com") ? product.images[0] : `/uploads/${product.images[0]}`} 
-                        alt={product.title}
+                    src={
+                      product.images[0].includes(
+                        "firebasestorage.googleapis.com"
+                      )
+                        ? product.images[0]
+                        : `/uploads/${product.images[0]}`
+                    }
+                    alt={product.title}
                     fill
                     className="object-cover rounded-md"
                   />
@@ -82,31 +88,34 @@ const Favorites = () => {
                       {product.price} TL
                     </span>
                     <span className="text-xs text-green-600 font-semibold">
-                      {product.discountPercentage ? `%${product.discountPercentage} İndirim` : ""} 
+                      {product.discountPercentage
+                        ? `%${product.discountPercentage} İndirim`
+                        : ""}
                     </span>
                   </div>
                 </div>
 
-                {/* Aksiyonlar */}
-                <div className="flex gap-2">
-                  <Link href={'/Sepetim'}>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="text-xs rounded-xl text-white bg-blue-600 hover:bg-blue-500"
-                  >
-                    <ShoppingBag className="h-4 w-4 mr-1" />
-                    Satın Al
-                  </Button>
+                {/* Aksiyonlar - Responsive */}
+                <div className="flex gap-1 sm:gap-2 flex-shrink-0">
+                  <Link href={"/Sepetim"}>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="text-[10px] xs:text-xs rounded-xl text-white bg-blue-600 hover:bg-blue-500 px-2 sm:px-3 h-8"
+                    >
+                      <ShoppingBag className="h-3 w-3 sm:h-4 sm:w-4 mr-0.5 sm:mr-1" />
+                      <span className="hidden xs:inline">Satın Al</span>
+                      <span className="inline xs:hidden">Al</span>
+                    </Button>
                   </Link>
-                 
+
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => dispatch(removeFromFavorites(product.id))}
-                    className="hover:text-red-500"
+                    className="hover:text-red-500 h-8 w-8 p-1.5"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                 </div>
               </motion.div>

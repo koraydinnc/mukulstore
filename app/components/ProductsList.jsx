@@ -9,7 +9,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 const ProductsList = ({ data, isLoading, pageSize = 20, pagination, setPage }) => {
   const router = useRouter();
 
-  // Doğru toplam sayfa sayısını hesaplama
   const totalPages = Math.ceil(pagination?.totalCount / pageSize) || 1;
   const currentPage = pagination?.currentPage || 1;
 
@@ -36,7 +35,7 @@ const ProductsList = ({ data, isLoading, pageSize = 20, pagination, setPage }) =
   }
 
   return (
-    <div id="products-list-section" className="min-h-screen bg-gray-50 py-12">
+    <div id="products-list-section" className="min-h-screen bg-white py-12">
       <div className="container mx-auto px-2">
         <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-10">
           Tüm Ürünler

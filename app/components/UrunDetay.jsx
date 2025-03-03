@@ -19,7 +19,9 @@ const UrunDetay = ({ data }) => {
   const [mainCarouselRef, mainEmbla] = useEmblaCarousel({ loop: true, dragFree: true });
   const [thumbCarouselRef, thumbEmbla] = useEmblaCarousel({ containScroll: "keepSnaps", dragFree: true, slidesToScroll: 1 });
 
-  // Sync carousels and active index
+  
+  data && console.log(data, 'urun detay data')
+
   useEffect(() => {
     if (!mainEmbla) return;
 
@@ -147,35 +149,44 @@ const UrunDetay = ({ data }) => {
     >
       <h1 className="text-4xl font-bold text-gray-900 mb-4">{data.title}</h1>
 
-      <div className="space-y-2">
-        <div className="flex items-baseline gap-4">
-          <span className="text-3xl font-bold text-gray-900">
-            {data.discountedPrice}₺
+      <div className="space-y-2 font-sans">
+  <div className="flex flex-wrap items-center gap-3">
+    {data?.discountedPrice ? (
+      <>
+        <span className="text-3xl font-bold text-blue-600">
+          {data.discountedPrice.toLocaleString('tr-TR')}₺
+        </span>
+        {data.price && (
+          <span className="text-xl text-gray-500 line-through">
+            {data.price.toLocaleString('tr-TR')}₺
           </span>
-          {data.discountPercentage > 0 && (
-            <>
-              <span className="text-xl text-gray-500 line-through">
-                {data.price}₺
-              </span>
-              <span className="text-sm bg-red-100 text-red-600 px-2 py-1 rounded-full">
-                %{data?.discountPercentage} indirim
-              </span>
-            </>
-          )}
-        </div>
+        )}
+        {data.discountPercentage > 0 && (
+          <span className="text-sm bg-red-100 text-red-600 px-3 py-1.5 rounded-full font-medium">
+            %{data.discountPercentage} indirim
+          </span>
+        )}
+      </>
+    ) : data?.price ? (
+      <span className="text-3xl font-bold text-blue-600">
+        {data.price.toLocaleString('tr-TR')}₺
+      </span>
+    ) : (
+      <span className="text-lg text-gray-500">Fiyat bilgisi bulunamadı</span>
+    )}
+  </div>
 
-        <div className="text-green-600 font-medium flex flex-col items-start space-y-2">
-          <div className="flex items-center gap-2">
-            <Check size={16} className="inline mr-1" />
-            Stokta mevcut
-          </div>
-          <div className="flex items-center gap-2">
-            <Check size={16} className="inline mr-1" />
-            İthal Orijinal Ürün
-          </div>
-        </div>
-      </div>
-
+  <div className="text-green-600 font-medium flex flex-col items-start space-y-2 mt-2">
+    <div className="flex items-center gap-2">
+      <Check size={16} className="inline mr-1" />
+      <span className="text-sm font-sans">Stokta mevcut</span>
+    </div>
+    <div className="flex items-center gap-2">
+      <Check size={16} className="inline mr-1" />
+      <span className="text-sm font-sans">İthal Orijinal Ürün</span>
+    </div>
+  </div>
+</div>
       <div className="space-y-4">
         <h3 className="font-semibold text-gray-900">Beden Seç</h3>
         <div className="flex flex-wrap gap-3">
