@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -13,11 +12,18 @@ import Link from "next/link";
 import SalesAgreementCheckbox from '@/app/components/SalesAgreementCheckbox';
 import './globals.css'
 import Breadcrumb from "@/app/components/Breadcrumb";
+import { Modal } from "antd";
+import { useRouter } from "next/navigation";
+
+const MESAFELI_SOZLESME = `MUKUL STORE – Mesafeli Satış Sözleşmesi\n\nMadde 1 - Taraflar\n1.1. Satıcı:\nUnvan: MUKUL STORE\nAdres: [Satıcı Adresi]\nTelefon: [Telefon Numarası]\nE-Posta: [E-posta Adresi]\n\n1.2. Alıcı:\nAdı-Soyadı: [Alıcı Adı Soyadı]\nAdres: [Teslimat Adresi]\nTelefon: [Telefon Numarası]\nE-Posta: [E-posta Adresi]\n\nMadde 2 - Konu\nİşbu sözleşmenin konusu, Alıcı’nın Satıcı’ya ait [www.mukulstore.com] internet sitesinden elektronik ortamda sipariş verdiği, aşağıda nitelikleri ve satış fiyatı belirtilen ürün/hizmetlerin satışı ve teslimi ile ilgili olarak 6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmelere Dair Yönetmelik hükümleri gereğince tarafların hak ve yükümlülüklerini düzenler.\n\nMadde 3 - Ürün Bilgileri\nÜrün(ler): [Ürün Adı, Miktarı, Renk/Model, Birim Fiyatı, Toplam Tutar]\nTeslimat Adresi: [Teslimat Adresi]\nTeslim Edilecek Kişi: [Ad-Soyad]\nFatura Adresi: [Fatura Adresi]\n\nMadde 4 - Genel Hükümler\n- Alıcı, sözleşme konusu ürünün temel nitelikleri, satış fiyatı ve ödeme şekli ile teslimata ilişkin ön bilgileri okuyup bilgi sahibi olduğunu ve elektronik ortamda gerekli teyidi verdiğini kabul ve beyan eder.\n- Ürün, yasal 30 günlük süre aşılmamak koşulu ile her bir ürün için Alıcı’nın yerleşim yeri uzaklığına bağlı olarak internet sitesinde belirtilen süre içinde Alıcı’ya veya gösterdiği adresteki kişi/kuruluşa teslim edilir.\n- Alıcı, teslim sırasında ürünü kontrol etmekle yükümlüdür. Hasarlı veya ambalajı açılmış ürün teslim alınmamalı, tutanak tutulmalıdır.\n\nMadde 5 - Cayma Hakkı\n- Alıcı, 14 gün içinde herhangi bir gerekçe göstermeksizin ve cezai şart ödemeksizin sözleşmeden cayma hakkına sahiptir.\n- Cayma hakkı süresi, ürünün Alıcı’ya teslim edildiği gün başlar.\n- Cayma hakkının kullanılması için bu süre içinde Satıcı’ya e-posta veya yazılı olarak bildirim yapılmalıdır.\n- Ürün iadesi Satıcı’nın belirttiği adrese, eksiksiz, kullanılmamış ve faturasının aslı ile yapılmalıdır.\n\nMadde 6 - Uyuşmazlık Durumu\nİşbu sözleşmeden kaynaklanabilecek uyuşmazlıklarda, Ticaret Bakanlığı tarafından her yıl belirlenen parasal sınırlar dâhilinde Alıcinin yerleşim yerindeki Tüketici Hakem Heyetleri veya Tüketici Mahkemeleri yetkilidir.\n\nMadde 7 - Yürürlük\nİşbu sözleşme, Alıcı tarafından elektronik ortamda onaylandığı tarihte yürürlüğe girer.`;
+
+const KVKK_METNI = `MUKUL STORE – Kişisel Verilerin Korunması Hakkında Aydınlatma Metni\n\nİşbu aydınlatma metni, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında, veri sorumlusu sıfatıyla MUKUL STORE tarafından hazırlanmıştır.\n\n1. Veri Sorumlusu\nVeri Sorumlusu: MUKUL STORE\nAdres: [Adresiniz]\nE-posta: [E-posta]\nTelefon: [Telefon]\n\n2. Toplanan Kişisel Veriler\nWeb sitemiz üzerinden sipariş verirken veya üye olurken aşağıdaki kişisel verileriniz toplanmaktadır:\n- Kimlik Bilgisi (Ad, Soyad)\n- İletişim Bilgisi (E-posta, Telefon, Adres)\n- Müşteri İşlem Verisi (Sipariş geçmişi, fatura bilgileri)\n- Ödeme Bilgileri (Kart bilgileri üçüncü taraf ödeme sağlayıcılar üzerinden güvenli biçimde işlenmektedir)\n\n3. Kişisel Verilerin İşlenme Amaçları\nKişisel verileriniz, aşağıdaki amaçlarla işlenmektedir:\n- Siparişlerin alınması ve teslimat süreçlerinin yürütülmesi\n- Müşteri destek hizmetlerinin sunulması\n- Mevzuattan doğan yükümlülüklerin yerine getirilmesi\n- Kampanya ve promosyon bildirimlerinin yapılması (açık rıza ile)\n\n4. Hukuki Sebep ve Aktarım\nVerileriniz, 6698 sayılı KVKK’nın 5. ve 6. maddelerinde belirtilen veri işleme şartlarına uygun olarak; açık rıza, sözleşmenin kurulması ve ifası, hukuki yükümlülüklerin yerine getirilmesi gibi sebeplerle işlenmektedir.\nVerileriniz, hizmet aldığımız kargo firmaları, ödeme altyapısı sağlayıcıları ve e-posta servis sağlayıcılarla paylaşılabilir.\n\n5. Haklarınız\nKVKK’nın 11. maddesi uyarınca:\n- Kişisel verilerinizin işlenip işlenmediğini öğrenme,\n- İşlenmişse buna ilişkin bilgi talep etme,\n- Düzeltme veya silinmesini isteme,\n- İtiraz etme ve zararın giderilmesini talep etme haklarına sahipsiniz.\nBu hakları kullanmak için bizimle [e-posta adresiniz] üzerinden iletişime geçebilirsiniz.`;
 
 const PaymentPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const cartItems = useSelector((state) => state.cart.items);
   const totalAmount = useSelector((state) => state.cart.totalAmount);
+  const addressInfo = useSelector((state) => state.cart.addressInfo);
   const [paymentMethod, setPaymentMethod] = useState("credit-card");
   const [cardData, setCardData] = useState({
     cardNumber: "",
@@ -28,8 +34,12 @@ const PaymentPage = () => {
   const [errors, setErrors] = useState({});
   const [isCardFlipped, setIsCardFlipped] = useState(false);
   const [agreementAccepted, setAgreementAccepted] = useState(false);
+  const [sozlesmeVisible, setSozlesmeVisible] = useState(false);
+  const [kvkkVisible, setKvkkVisible] = useState(false);
+  const [sozlesmeAccepted, setSozlesmeAccepted] = useState(false);
+  const [kvkkAccepted, setKvkkAccepted] = useState(false);
+  const router = useRouter();
 
-  // Format card number input
   const formatCardNumber = (value) => {
     const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
     const matches = v.match(/\d{4,16}/g);
@@ -45,35 +55,126 @@ const PaymentPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!agreementAccepted) {
-      alert('Lütfen mesafeli satış sözleşmesini kabul ediniz.');
+    if (!sozlesmeAccepted || !kvkkAccepted) {
+      alert('Lütfen Mesafeli Satış Sözleşmesi ve KVKK metnini kabul ediniz.');
       return;
     }
 
     setIsLoading(true);
-
-    // Simple validation
     const newErrors = {};
     if (!cardData.cardNumber) newErrors.cardNumber = "Kart numarası gereklidir.";
     if (!cardData.cardHolder) newErrors.cardHolder = "Kart sahibinin adı gereklidir.";
     if (!cardData.expDate) newErrors.expDate = "Son kullanma tarihi gereklidir.";
     if (!cardData.cvv) newErrors.cvv = "CVV gereklidir.";
-    setErrors(newErrors);
+    setErrors(newErrors);    if (Object.keys(newErrors).length === 0) {
+      try {
+        // Kart tarihini parse et
+        const [month, year] = cardData.expDate.split('/');
+          // VakıfBank ödeme API'sine istek gönder
+        const paymentData = {
+          cardNumber: cardData.cardNumber.replace(/\s/g, ''),
+          cardHolderName: cardData.cardHolder,
+          expiryMonth: month?.padStart(2, '0'),
+          expiryYear: year?.length === 2 ? '20' + year : year,
+          cvv: cardData.cvv,
+          amount: totalAmount,
+          orderId: `ORDER_${Date.now()}`,
+          customerInfo: {
+            email: '', // Kullanıcı email'i eklenebilir
+            phone: '', // Kullanıcı telefonu eklenebilir
+          },
+          installmentCount: 0, // Taksit sayısı
+          use3DSecure: true, // 3D Secure kullan
+          // Sepet bilgilerini ekle
+          cartItems: cartItems,
+          shippingAddress: addressInfo,
+        };
 
-    if (Object.keys(newErrors).length === 0) {
-      // Simulate payment processing
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setIsLoading(false);
-      alert("Ödeme başarılı!");
+        const response = await fetch('/api/user/payment/vakifbank-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(paymentData),
+        });
+
+        const result = await response.json();        if (result.success) {
+          if (result.requires3D) {
+            // 3D Secure yönlendirmesi için form oluştur ve submit et
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = result.redirectUrl;
+            document.body.appendChild(tempDiv);
+            
+            // Form'u otomatik submit et
+            const form = tempDiv.querySelector('form');
+            if (form) {
+              form.submit();
+            } else {
+              // Fallback: yeni pencerede aç
+              const paymentWindow = window.open('', 'vakifbank_3ds', 'width=600,height=700,scrollbars=yes,resizable=yes');
+              paymentWindow.document.write(result.redirectUrl);
+              paymentWindow.document.close();
+            }
+          } else {
+            // Direkt ödeme başarılı (test mode veya direkt ödeme)
+            console.log('Payment successful:', result);
+            alert('Ödeme başarıyla tamamlandı!');
+            router.push(`/payment/success?orderId=${result.orderId || result.transactionId}&transactionId=${result.transactionId}`);
+          }
+        }else {
+          throw new Error(result.message || 'Ödeme başarısız');
+        }
+      } catch (error) {
+        console.error('Ödeme hatası:', error);
+        router.push(`/payment/error?error=${encodeURIComponent(error.message)}`);
+        setIsLoading(false);
+      }
     } else {
       setIsLoading(false);
     }
   };
 
-  // Add input focus handlers
   const handleInputFocus = (inputName) => {
-    // Only flip the card when focusing on CVV
     setIsCardFlipped(inputName === 'cvv');
+  };
+
+  const isCardDataValid = () => {
+    // Card number validation (16 digits, removing spaces)
+    const cardNumberValid = cardData.cardNumber.replace(/\s/g, '').length === 16;
+    
+    // Card holder validation (not empty)
+    const cardHolderValid = cardData.cardHolder.trim().length > 0;
+    
+    // More flexible expiry date validation
+    const expDateValid = /^\d{1,2}\/\d{2}$/.test(cardData.expDate);
+    
+    // CVV validation (3 digits)
+    const cvvValid = /^\d{3}$/.test(cardData.cvv);
+    
+    return cardNumberValid && cardHolderValid && expDateValid && cvvValid;
+  };
+
+  // Expiry date input için event handler ekleyin:
+  const handleExpDateChange = (e) => {
+    let value = e.target.value.replace(/\D/g, '');
+    
+    // 2 karakterden fazlaysa ve / işareti yoksa ekle
+    if (value.length >= 2 && !value.includes('/')) {
+      value = value.slice(0, 2) + '/' + value.slice(2);
+    }
+    
+    // Maksimum uzunluk 5 karakter (MM/YY)
+    if (value.length <= 5) {
+      setCardData({ ...cardData, expDate: value });
+    }
+  };
+
+  // CVV input için event handler:
+  const handleCvvChange = (e) => {
+    const value = e.target.value.replace(/\D/g, '');
+    if (value.length <= 3) {
+      setCardData({ ...cardData, cvv: value });
+    }
   };
 
   return (
@@ -251,7 +352,7 @@ const PaymentPage = () => {
                           <Input
                             placeholder="AA/YY"
                             value={cardData.expDate}
-                            onChange={(e) => setCardData({ ...cardData, expDate: e.target.value })}
+                            onChange={handleExpDateChange}
                             className={`py-6 text-lg font-mono ${errors.expDate ? "border-red-500" : ""}`}
                             onFocus={() => handleInputFocus('expiry')}
                           />
@@ -263,7 +364,7 @@ const PaymentPage = () => {
                             type="text"
                             maxLength={3}
                             value={cardData.cvv}
-                            onChange={(e) => setCardData({ ...cardData, cvv: e.target.value })}
+                            onChange={handleCvvChange}
                             className={`py-6 text-lg font-mono ${errors.cvv ? "border-red-500" : ""}`}
                             onFocus={() => handleInputFocus('cvv')}
                             onBlur={() => setIsCardFlipped(false)}
@@ -272,18 +373,44 @@ const PaymentPage = () => {
                       </div>
                     </div>
 
-                    <div className="mt-6">
-                      <SalesAgreementCheckbox
-                        isChecked={agreementAccepted}
-                        onChange={setAgreementAccepted}
-                      />
+                    <div className="mt-6 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="sozlesme"
+                          checked={sozlesmeAccepted}
+                          onChange={e => setSozlesmeAccepted(e.target.checked)}
+                          className="accent-blue-600 w-5 h-5"
+                        />
+                        <label htmlFor="sozlesme" className="text-sm text-gray-700">
+                          <button type="button" className="underline text-blue-600 hover:text-blue-800" onClick={() => setSozlesmeVisible(true)}>
+                            Mesafeli Satış Sözleşmesi
+                          </button>
+                          'ni okudum ve kabul ediyorum.'
+                        </label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="kvkk"
+                          checked={kvkkAccepted}
+                          onChange={e => setKvkkAccepted(e.target.checked)}
+                          className="accent-blue-600 w-5 h-5"
+                        />
+                        <label htmlFor="kvkk" className="text-sm text-gray-700">
+                          <button type="button" className="underline text-blue-600 hover:text-blue-800" onClick={() => setKvkkVisible(true)}>
+                            KVKK Aydınlatma Metni
+                          </button>
+                          'ni okudum ve kabul ediyorum.'
+                        </label>
+                      </div>
                     </div>
 
                     <Button
                       type="submit"
-                      disabled={isLoading || !agreementAccepted}
+                      disabled={isLoading || !isCardDataValid() || !sozlesmeAccepted || !kvkkAccepted}
                       className={`w-full h-14 text-md ${
-                        !agreementAccepted 
+                        (!isCardDataValid() || !sozlesmeAccepted || !kvkkAccepted) 
                           ? 'bg-gray-400 cursor-not-allowed' 
                           : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800'
                       } text-white rounded-lg relative overflow-hidden`}
@@ -347,6 +474,26 @@ const PaymentPage = () => {
           </div>
         </div>
       </div>
+      <Modal
+        open={sozlesmeVisible}
+        onCancel={() => setSozlesmeVisible(false)}
+        footer={null}
+        title="Mesafeli Satış Sözleşmesi"
+        width={700}
+        centered
+      >
+        <pre className="whitespace-pre-wrap text-sm max-h-[60vh] overflow-y-auto font-sans">{MESAFELI_SOZLESME}</pre>
+      </Modal>
+      <Modal
+        open={kvkkVisible}
+        onCancel={() => setKvkkVisible(false)}
+        footer={null}
+        title="KVKK Aydınlatma Metni"
+        width={700}
+        centered
+      >
+        <pre className="whitespace-pre-wrap text-sm max-h-[60vh] overflow-y-auto font-sans">{KVKK_METNI}</pre>
+      </Modal>
     </div>
   );
 };

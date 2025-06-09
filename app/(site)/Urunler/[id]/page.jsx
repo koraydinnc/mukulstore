@@ -8,7 +8,7 @@ import Loading from "../../loading";
 import { useSelector } from "react-redux";
 
 const Page = () => {
-  const { id } = useParams();
+  const {id} = useParams();
   const sepet = useSelector ((state) => state.sepet);
   const { data, isLoading, error } = useGetProductDetailQuery(Number(id));
 
@@ -24,7 +24,6 @@ const Page = () => {
     return <div className="text-gray-600">Ürün bilgisi bulunamadı.</div>;
   }
 
-  console.log(data, 'urun detay data')
 
   return (
     <div>

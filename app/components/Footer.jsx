@@ -48,7 +48,7 @@ export default function Footer() {
   ];
 
   const contact = {
-    iletişi: '+90 541 806 61 55 ',
+    iletişi: '+90 545 542 56 61 ',
     email: 'mukulstore@gmail.com',
     address: 'Çay, özgür kundura, Ünye Cd. No:17, 55600 Terme/Samsun'
   };

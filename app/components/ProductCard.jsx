@@ -23,7 +23,6 @@ const ProductCard = ({ product }) => {
   const favorites = useSelector((state) => state.favorites.items);
   const cartItems = useSelector((state) => state.cart.items);
   const isFavorite = favorites.some((item) => item.id === product.id);
-  console.log(product);
   const handleAddToCart = () => {
     if (!selectedSize) {
       return openNotification({

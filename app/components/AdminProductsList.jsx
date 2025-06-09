@@ -29,7 +29,6 @@ const AdminProductsList = ({ data, refetch }) => {
       openNotification({ title: 'Başarılı', description: 'Ürün başarıyla silindi.', type: 'success' });
       refetch();
     } catch (error) {
-      console.log(error);
       openNotification({ title: 'Hata', description: error.data.message, type: 'error' });
     }
   };
@@ -81,7 +80,6 @@ const handleUpdate = async (values) => {
       uploadedImages = [...existingImages, ...uploadResult.imageUrls];
     }
 
-    console.log('Güncellenecek görsel listesi:', uploadedImages); // Debug için
 
     const updatedValues = {
       ...values,
@@ -91,16 +89,12 @@ const handleUpdate = async (values) => {
       images: uploadedImages
     };
 
-    // Debug için
-    console.log('Güncellenecek değerler:', updatedValues);
 
     const result = await updateProduct({ 
       id: currentProduct.id, 
       values: updatedValues 
     }).unwrap();
 
-    // Debug için
-    console.log('Güncelleme sonucu:', result);
 
     openNotification({ 
       title: 'Başarılı', 
@@ -121,7 +115,6 @@ const handleUpdate = async (values) => {
   }
 };
 
-  console.log(data, "data")
 
   return (
     <>

@@ -6,8 +6,8 @@ const WhatsAppContact = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const contactInfo = {
-    whatsapp: "+90 541 806 61 55",
-    phone: "+90 541 806 61 55",
+    whatsapp: "+90 545 542 56 61",
+    phone: "+90 545 542 56 61",
     email: "mukulstore@gmail.com",
     address: "Çay, özgür kundura, Ünye Cd. No:17, 55600 Terme/Samsun"
   };

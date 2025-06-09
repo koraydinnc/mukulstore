@@ -9,7 +9,6 @@ const AdminPhotosAdd = ({ onImageUpload, imageList = [], onChange }) => {
   const [loading, setLoading] = useState(false);
   const [fileList, setFileList] = useState([]);
 
-  console.log(fileList , "fileList")
 
   const handleUpload = async ({ file, onSuccess, onError }) => {
     try {

@@ -47,7 +47,6 @@ export default async function handler(req, res) {
 
           // URL al
           const downloadURL = await getDownloadURL(uploadResult.ref);
-          console.log(`Image ${index + 1} uploaded:`, downloadURL);
 
           return downloadURL;
         } catch (error) {

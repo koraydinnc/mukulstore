@@ -6,8 +6,8 @@ import Header from "../components/header";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import SepetDrawer from "@/app/components/SepetDrawer";
 import Footer from "../components/Footer";
+import CookieConsent from "@/components/CookieConsent";
 
-// Font optimizasyonu
 const poppins = Poppins({ 
   weight: ['400', '500', '600', '700'],
   subsets: ['latin'],
@@ -66,6 +66,7 @@ export default function RootLayout({ children }) {
       <body className={poppins.className}>
         <Providers>
           <Header />
+          <CookieConsent />
           <main className="relative">
             {children}
             <SepetDrawer />

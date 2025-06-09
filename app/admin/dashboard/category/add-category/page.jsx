@@ -14,7 +14,6 @@ const AddCategoryPage = () => {
       await addCategory(data).unwrap();
       alert('Kategori başarıyla eklendi.');
     } catch (error) {
-      console.log(error);
       alert('Kategori eklenirken bir hata oluştu.');
     }
   };

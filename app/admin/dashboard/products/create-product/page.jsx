@@ -143,7 +143,6 @@ export default function ProductAddPage() {
           }))
       };
 
-      console.log('Gönderilen form verisi:', formData);
 
       const productResponse = await createProduct(formData).unwrap();
       

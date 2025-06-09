@@ -4,9 +4,7 @@ import { jwtVerify } from 'jose'
 export async function middleware(request) {
   const token = request.cookies.get('adminToken')
 
-  console.log("middleware.js çalışıyor");
 
-  // Eğer token yoksa login sayfasına yönlendir
   if (!token) {
     return NextResponse.redirect(new URL('/admin/login', request.url))
   }

@@ -82,7 +82,6 @@ const SepetDrawer = () => {
       transition: { duration: 0.2 }
     }
   };
-  console.log(cartItems);
 
   return (
     <>

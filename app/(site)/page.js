@@ -45,7 +45,6 @@ export default function Home({params}) {
 
     let filtered = [...productsData.data];
 
-    // Kategori filtresi
     if (filters.category.length > 0) {
       filtered = filtered.filter(product => {
         return filters.category.some(cat => {
@@ -119,9 +118,7 @@ export default function Home({params}) {
         <BannerCampaign />
       </section>
   
-      <section>
-        <CarouselWelcome />
-      </section>
+    
   
       <section>
         <TrendProducts data={trendData} />

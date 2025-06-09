@@ -1,151 +1,133 @@
 "use client"
-import { useState } from "react";
-import { Form, Input, Select, Button, Space, Typography, Card } from "antd";
-import { motion } from "framer-motion";
-import Link from "next/link";
-import Breadcrumb from "@/app/components/Breadcrumb";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setAddressInfo } from "@/store/slices/cartSlice";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 
-const { Option } = Select;
-const { TextArea } = Input;
-const { Title } = Typography;
+const AddressForm = () => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    address: "",
+    city: "",
+    district: ""
+  });
 
-export default function AddressForm() {
-  const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-  const onFinish = (values) => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(setAddressInfo(form));
+    router.push("/Sepetim/Odeme");
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <Breadcrumb />
-        <motion.div
-          className="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-lg"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          <Title level={2} className="mb-6 text-center text-gray-800">
-            Teslimat Bilgileri
-          </Title>
-          <Card bordered={false} className="shadow-sm">
-            <Form
-              form={form}
-              layout="vertical"
-              onFinish={onFinish}
-              requiredMark={false}
-            >
-              <Space direction="vertical" size="large" className="w-full">
-                {/* Kişisel Bilgiler */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Form.Item
-                    name="firstName"
-                    label="Ad"
-                    rules={[{ required: true, message: "Lütfen adınızı girin" }]}
-                  >
-                    <Input placeholder="Adınız" className="rounded-lg" />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="lastName"
-                    label="Soyad"
-                    rules={[{ required: true, message: "Lütfen soyadınızı girin" }]}
-                  >
-                    <Input placeholder="Soyadınız" className="rounded-lg" />
-                  </Form.Item>
-                </div>
-
-                <Form.Item
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 py-12">
+      <Card className="w-full max-w-lg shadow-xl">
+        <CardHeader>
+          <CardTitle className="text-center text-2xl">Teslimat Adresi</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="firstName">Ad</Label>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  placeholder="Ad"
+                  value={form.firstName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="lastName">Soyad</Label>
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  placeholder="Soyad"
+                  value={form.lastName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="phone">Telefon</Label>
+                <Input
+                  id="phone"
                   name="phone"
-                  label="Telefon"
-                  rules={[
-                    { required: true, message: "Lütfen telefon numaranızı girin" },
-                    { pattern: /^[0-9]{10}$/, message: "Geçerli bir telefon numarası girin" }
-                  ]}
-                >
-                  <Input placeholder="5XX XXX XX XX" className="rounded-lg" />
-                </Form.Item>
-
-                <Form.Item
+                  placeholder="Telefon"
+                  value={form.phone}
+                  onChange={handleChange}
+                  required
+                  type="tel"
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">E-posta</Label>
+                <Input
+                  id="email"
                   name="email"
-                  label="E-posta"
-                  rules={[
-                    { required: true, message: "Lütfen e-posta adresinizi girin" },
-                    { type: "email", message: "Geçerli bir e-posta adresi girin" }
-                  ]}
-                >
-                  <Input placeholder="ornek@email.com" className="rounded-lg" />
-                </Form.Item>
-
-                {/* Adres Bilgileri */}
-                <Form.Item
+                  placeholder="E-posta"
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                  type="email"
+                />
+              </div>
+              <div>
+                <Label htmlFor="city">İl</Label>
+                <Input
+                  id="city"
                   name="city"
-                  label="İl"
-                  rules={[{ required: true, message: "Lütfen il seçin" }]}
-                >
-                  <Select placeholder="İl seçin" className="rounded-lg">
-                    <Option value="istanbul">İstanbul</Option>
-                    <Option value="ankara">Ankara</Option>
-                    <Option value="izmir">İzmir</Option>
-                    {/* Diğer iller */}
-                  </Select>
-                </Form.Item>
-
-                <Form.Item
+                  placeholder="İl"
+                  value={form.city}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="district">İlçe</Label>
+                <Input
+                  id="district"
                   name="district"
-                  label="İlçe"
-                  rules={[{ required: true, message: "Lütfen ilçe seçin" }]}
-                >
-                  <Select placeholder="İlçe seçin" className="rounded-lg">
-                    <Option value="kadikoy">Kadıköy</Option>
-                    <Option value="besiktas">Beşiktaş</Option>
-                    <Option value="sisli">Şişli</Option>
-                    {/* Diğer ilçeler */}
-                  </Select>
-                </Form.Item>
-
-                <Form.Item
-                  name="address"
-                  label="Açık Adres"
-                  rules={[{ required: true, message: "Lütfen açık adresinizi girin" }]}
-                >
-                  <TextArea
-                    rows={4}
-                    placeholder="Mahalle, sokak, apartman no, daire no vb."
-                    className="rounded-lg"
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  name="addressTitle"
-                  label="Adres Başlığı"
-                  rules={[{ required: true, message: "Lütfen adres başlığı girin" }]}
-                >
-                  <Input placeholder="Örn: Ev, İş" className="rounded-lg" />
-                </Form.Item>
-
-                <Form.Item className="mb-0">
-                  <Link href="/Sepetim/Odeme">
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      className="w-full bg-blue-600 hover:bg-blue-700 rounded-lg"
-                      loading={loading}
-                    >
-                      Devam Et
-                    </Button>
-                  </Link>
-                </Form.Item>
-              </Space>
-            </Form>
-          </Card>
-        </motion.div>
-      </div>
+                  placeholder="İlçe"
+                  value={form.district}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="address">Adres</Label>
+              <Textarea
+                id="address"
+                name="address"
+                placeholder="Adres"
+                value={form.address}
+                onChange={handleChange}
+                required
+                rows={3}
+              />
+            </div>
+            <Button type="submit" className="w-full h-12 text-base mt-2">Kaydet ve Devam Et</Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
-}
+};
+
+export default AddressForm;

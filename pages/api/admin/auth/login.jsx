@@ -35,7 +35,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ status: 1, token, message: 'Giriş başarılı!' });
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ status: 0, message: 'Bir Hata Oluştu!' });
+      return res.status(500).json({ status: 0, message: 'Bir Hata Oluştu!', error: error.message });
     }
   } else {
     return res.status(405).json({ status: 0, message: 'Yalnızca POST istekleri kabul edilir.' });

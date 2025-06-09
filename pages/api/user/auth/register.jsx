@@ -3,7 +3,6 @@ import prisma from '@/lib/prisma';
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { username, name, surname, email, password, confirmPassword } = req.body;
-    console.log("Incoming registration request:", { username, name, surname, email });
 
     if (!name || !email ||!surname|| !password || !confirmPassword || !username) {
             return res.status(400).json({ message: 'name,  surname , email ve password alanları boş bırakılamaz.' });

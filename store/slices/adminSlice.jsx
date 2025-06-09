@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit'
 import Cookies from 'js-cookie'
 
+const adminCookie = Cookies.get('admin');
 const initialState = {
-  admin: Cookies.get('admin') ? JSON.parse(Cookies.get('admin')) : null,
-  isAuthenticated: !!Cookies.get('admin'),
+  admin: adminCookie && adminCookie !== "undefined" ? JSON.parse(adminCookie) : null,
+  isAuthenticated: !!(adminCookie && adminCookie !== "undefined"),
   loading: false,
   error: null
 }

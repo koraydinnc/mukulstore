@@ -22,7 +22,6 @@ export default async function handler(req, res) {
 
 
 
-   console.log(sizes)
 
     try {
       const discountedPrice =
@@ -45,7 +44,6 @@ export default async function handler(req, res) {
               title,
               sizes
             },})
-     console.log(newProduct)
       res.status(201).json({ message: 'Ürün Oluşturuldu', status: 1, product: newProduct });
     } catch (error) {
       console.error('Error creating product:', error);

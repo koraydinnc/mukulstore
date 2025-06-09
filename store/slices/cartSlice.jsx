@@ -6,6 +6,7 @@ const initialState = {
   totalAmount: Cookies.get('cartTotal') ? Number(Cookies.get('cartTotal')) : 0,
   totalQuantity: Cookies.get('cartQuantity') ? Number(Cookies.get('cartQuantity')) : 0,
   selectedSize: null,
+  addressInfo: Cookies.get('addressInfo') ? JSON.parse(Cookies.get('addressInfo')) : null,
 };
 
 const cartSlice = createSlice({
@@ -84,14 +85,19 @@ const cartSlice = createSlice({
       state.items = [];
       state.totalQuantity = 0;
       state.totalAmount = 0;
-      
+      state.addressInfo = null;
       // Cookileri temizle
       Cookies.remove('cartItems');
       Cookies.remove('cartTotal');
       Cookies.remove('cartQuantity');
+      Cookies.remove('addressInfo');
+    },
+    setAddressInfo: (state, action) => {
+      state.addressInfo = action.payload;
+      Cookies.set('addressInfo', JSON.stringify(action.payload));
     },
   },
 });
 
-export const { addToCart, removeFromCart, updateQuantity, clearCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, updateQuantity, clearCart, setAddressInfo } = cartSlice.actions;
 export default cartSlice.reducer;

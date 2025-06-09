@@ -61,6 +61,11 @@ const menuItems = [
     title: 'Ayarlar',
     icon: <Settings className="h-4 w-4" />,
     href: '/admin/dashboard/settings'
+  },
+  {
+    title: 'Satışlar',
+    icon: <ShoppingBag className="h-4 w-4" />,
+    href: '/admin/dashboard/sales'
   }
 ];
 

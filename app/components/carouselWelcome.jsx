@@ -1,148 +1,87 @@
-'use client'
-import { Carousel } from 'antd';
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-import { useRef, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+"use client"
 
-const CarouselWelcome = () => {
-  const carouselRef = useRef();
-  const router = useRouter();
-  // Client-side rendering için loading state
-  const [isClient, setIsClient] = useState(false);
+import React from 'react'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Autoplay, EffectFade, Navigation, Pagination } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/effect-fade'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  const slides = [
-    {
-      id: 1,
-      image: "/banner/1.gif",
-      title: "Yeni Koleksiyon",
-      description: "En yeni ürünlerimizi keşfedin",
-      buttonText: "Koleksiyonu Keşfet"
-    },
-    {
-      id: 2,
-      image: "/banner/2.gif",
-      title: "Yaz İndirimi",
-      description: "Seçili ürünlerde %50'ye varan indirimler",
-      buttonText: "İndirimleri Gör"
-    },
-    {
-      id: 3,
-      image: "/banner/3.gif",
-      title: "Özel Fırsatlar",
-      description: "Sınırlı süre kampanyalarını kaçırmayın",
-      buttonText: "Fırsatları Yakala"
-    }
-  ];
-
-  const carouselSettings = {
-    autoplay: true,
-    effect: "fade",
-    dots: true,
-    autoplaySpeed: 4000,
-    dotPosition: "bottom",
-    pauseOnHover: false,
-    waitForAnimate: false,
-    lazyLoad: true,
-    beforeChange: (current, next) => {
-      // Gelecek slaytı önceden yükle
-      const nextSlide = document.querySelector(`[data-slide="${next}"]`);
-      if (nextSlide) {
-        nextSlide.style.opacity = "1";
-      }
-    }
-  };
-
-  // Server-side rendering sırasında boş div döndür
-  if (!isClient) {
-    return <div className="w-full aspect-[16/9] bg-gray-100" />;
-  }
-
+const BannerCampaign = () => {
   return (
-    <div className="relative group">
-      <Carousel 
-        ref={carouselRef} 
-        {...carouselSettings} 
-        className="w-full max-w-[1920px] mx-auto"
-      >
-        {slides.map((slide, index) => (
-          <div 
-            key={slide.id} 
-            className="relative aspect-[16/9] w-full" 
-            data-slide={index}
-          >
-            {/* Background Image */}
-            <div className="absolute inset-0">
-              <img
-                src={slide.image}
-                alt={slide.title}
-                className="w-full h-full object-cover brightness-[0.85]"
-                loading="lazy"
+    <div className="w-full py-6 px-2 sm:py-8 sm:px-4 md:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+      <div className="max-w-[1400px] mx-auto rounded-2xl overflow-hidden border border-gray-100">
+        <Swiper
+          modules={[Autoplay, EffectFade, Navigation, Pagination]}
+          effect="fade"
+          navigation
+          pagination={{ clickable: true, dynamicBullets: true }}
+          loop={true}
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
+          className="w-full rounded-2xl"
+        >
+          <SwiperSlide>
+            <div className="relative  sm:aspect-[16/6] w-fulloverflow-hidden">
+              <video
+                className="w-full h-full object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                poster="/banner/1.gif"
+                src="/banner/1.gif"
+                style={{ maxHeight: '600px', minHeight: '180px', width: '100%' }}
               />
             </div>
-            
-            {/* Content Overlay */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center text-white space-y-3 sm:space-y-4 animate-fadeIn px-4 max-w-[90%] sm:max-w-[80%] md:max-w-[70%]">
-                <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-wider leading-tight">
-                  {slide.title}
-                </h2>
-                <p className="text-sm sm:text-base md:text-lg lg:text-xl font-light max-w-2xl mx-auto">
-                  {slide.description}
-                </p>
-                <button 
-                  onClick={() => router.push('/Kategori/IndirimliUrunler')} 
-                  className="group relative inline-flex items-center justify-center px-6 py-2 sm:px-8 sm:py-3 md:px-10 md:py-4 
-                    overflow-hidden font-medium transition duration-300 ease-out border-2 border-white rounded-full 
-                    text-sm sm:text-base md:text-lg text-white hover:text-black shadow-md hover:shadow-xl"
-                >
-                  <span className="absolute inset-0 flex items-center justify-center w-full h-full text-black duration-300 -translate-x-full 
-                    bg-white group-hover:translate-x-0 ease">
-                    <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </span>
-                  <span className="absolute flex items-center justify-center w-full h-full text-white transition-all duration-300 
-                    transform group-hover:translate-x-full ease">
-                    {slide.buttonText}
-                  </span>
-                  <span className="relative invisible">{slide.buttonText}</span>
-                </button>
+          </SwiperSlide>
+
+          <SwiperSlide>
+            <div className="relative aspect-[16/7] sm:aspect-[16/6] w-full rounded-2xl overflow-hidden">
+              <img
+                src="/banner/2.gif"
+                alt="Kampanya"
+                className="w-full h-full object-cover max-h-[400px] min-h-[180px]"
+                loading="eager"
+                decoding="async"
+              />
+              <div className="absolute inset-0 bg-gradient-to-l from-blue-900/70 to-transparent flex items-center justify-end">
+                <div className="text-white p-4 sm:p-8 md:p-12 lg:p-16 max-w-2xl text-right">
+                  <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4">Sınırlı Süre Fırsatı!</h2>
+                  <p className="text-base sm:text-lg md:text-xl mb-4 sm:mb-6">⏰ Son 3 gün - Fırsatları Kaçırmayın!</p>
+                  <button className="bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-bold hover:bg-blue-700 transition transform hover:scale-105">
+                    İndirimleri Keşfet
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </Carousel>
+          </SwiperSlide>
 
-      {/* Navigation Buttons */}
-      <button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          carouselRef.current?.prev();
-        }}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/60 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        aria-label="Önceki"
-      >
-        <LeftOutlined className="text-xl" />
-      </button>
-      
-      <button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          carouselRef.current?.next();
-        }}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/60 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        aria-label="Sonraki"
-      >
-        <RightOutlined className="text-xl" />
-      </button>
+          <SwiperSlide>
+            <div className="relative aspect-[16/7] sm:aspect-[16/6] w-full rounded-2xl overflow-hidden">
+              <img
+                src="/banner/3.gif"
+                alt="Yeni Ürünler"
+                className="w-full h-full object-cover max-h-[400px] min-h-[180px]"
+                loading="eager"
+                decoding="async"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent flex items-center">
+                <div className="text-white p-4 sm:p-8 md:p-12 lg:p-16 max-w-2xl">
+                  <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4">Yeni Sezon Ürünleri</h2>
+                  <p className="text-base sm:text-lg md:text-xl mb-4 sm:mb-6">🛍️ En yeni koleksiyonlarımızı keşfedin</p>
+                  <button className="bg-white text-black px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-bold hover:bg-gray-100 transition transform hover:scale-105">
+                    Koleksiyonu Gör
+                  </button>
+                </div>
+              </div>
+            </div>
+          </SwiperSlide>
+        </Swiper>
+      </div>
     </div>
-  );
-};
+  )
+}
 
-export default CarouselWelcome;
+export default BannerCampaign

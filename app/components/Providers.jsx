@@ -1,13 +1,12 @@
 "use client";
 
 import { Provider } from 'react-redux';
-import { store } from '@/store/store';
+import store from '@/store/index';
 import { useEffect } from 'react';
 import Cookies from 'js-cookie';
 
 export function Providers({ children }) {
   useEffect(() => {
-    // Sayfa yüklendiğinde cookie'leri kontrol et
     const cartItems = Cookies.get('cartItems');
     const favorites = Cookies.get('favorites');
 

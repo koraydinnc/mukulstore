@@ -25,6 +25,9 @@ const Header = () => {
   const [openCategories, setOpenCategories] = useState({});
   const [openSiparis, setOpenSiparis] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [siparisNo, setSiparisNo] = useState("");
+  const [takipSonuc, setTakipSonuc] = useState(null);
+  const [takipHata, setTakipHata] = useState("");
   const router = useRouter();
   const dipsatch = useDispatch();
 
@@ -52,7 +55,6 @@ const Header = () => {
   };
   const cartItems = useSelector((state) => state.cart.items);
   const cartQuantity = useSelector((state) => state.cart.totalQuantity);
-  console.log(cartItems);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -62,7 +64,6 @@ const Header = () => {
 
   const handleRouteChange = (href) => {
     setIsOpen(false);
-    console.log(href);
     router.push(href);
   };
 
@@ -79,6 +80,27 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleSiparisSorgula = async () => {
+    setTakipSonuc(null);
+    setTakipHata("");
+    if (!siparisNo) {
+      setTakipHata("Lütfen sipariş numarasını girin.");
+      return;
+    }
+    try {
+      const res = await fetch(`/api/admin/orders-5534/${siparisNo}`);
+      if (!res.ok) {
+        setTakipHata("Sipariş bulunamadı.");
+        return;
+      }
+      const data = await res.json();
+      setTakipSonuc(data.order);
+    } catch (err) {
+      setTakipHata("Bir hata oluştu. Lütfen tekrar deneyin.");
+    }
+  };
+
   return (
     <>
       <motion.nav
@@ -177,20 +199,20 @@ const Header = () => {
                         ))}
                       </div>
                       <div className="px-4 py-3 mt-2 border-t border-gray-100">
-  <div className="rounded-lg overflow-hidden">
-    <Button
-      variant="default"
-      onClick={() => {
-        handleSiparisTakibi();
-        setIsOpen(false);
-      }}
-      className="w-full hover:bg-black hover:text-white text-black py-2.5 flex items-center justify-center gap-2"
-    >
-      <Search className="h-4 w-4" />
-      <span className="font-medium">Sipariş Takibi</span>
-    </Button>
-  </div>
-</div>
+                        <div className="rounded-lg overflow-hidden">
+                          <Button
+                            variant="default"
+                            onClick={() => {
+                              handleSiparisTakibi();
+                              setIsOpen(false);
+                            }}
+                            className="w-full hover:bg-black hover:text-white text-black py-2.5 flex items-center justify-center gap-2"
+                          >
+                            <Search className="h-4 w-4" />
+                            <span className="font-medium">Sipariş Takibi</span>
+                          </Button>
+                        </div>
+                      </div>
                     </nav>
                   </div>
                 </SheetContent>
@@ -263,44 +285,35 @@ const Header = () => {
                               type="text"
                               className="w-full pl-10 pr-4 py-3  border rounded-lg   transition-all"
                               placeholder="Sipariş numaranızı giriniz"
+                              value={siparisNo}
+                              onChange={e => setSiparisNo(e.target.value)}
                             />
                           </div>
                           <p className="text-xs text-gray-500 mt-1 pl-1">
                             Sipariş onay e-postanızda bulabilirsiniz
                           </p>
                         </div>
-
-                        <div className="mb-6">
-                          <label className="block text-sm font-medium mb-2 text-gray-700">
-                            E-posta Adresi
-                          </label>
-                          <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4 text-gray-400"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                />
-                              </svg>
+                        {takipHata && (
+                          <div className="text-red-500 text-center mb-2 text-sm">{takipHata}</div>
+                        )}
+                        {takipSonuc && (
+                          <div className="bg-green-50 border border-green-200 rounded p-3 mb-2 text-sm text-green-700">
+                            <div><b>Sipariş No:</b> {takipSonuc.orderNo}</div>
+                            <div><b>Durum:</b> {takipSonuc.status}</div>
+                            <div><b>Ödeme:</b> {takipSonuc.paymentStatus}</div>
+                            <div><b>Tarih:</b> {new Date(takipSonuc.createdAt).toLocaleString()}</div>
+                            <div><b>Adres:</b> {takipSonuc.shippingAddress?.address}</div>
+                            <div><b>Ürünler:</b>
+                              <ul className="list-disc ml-4">
+                                {takipSonuc.orderItems?.map(item => (
+                                  <li key={item.id}>{item.quantity} x {item.size} - {item.price}₺</li>
+                                ))}
+                              </ul>
                             </div>
-                            <input
-                              type="email"
-                              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg   transition-all"
-                              placeholder="Siparişte kullandığınız email"
-                            />
                           </div>
-                        </div>
-
+                        )}
                         <div className="flex items-center justify-center">
-                          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg shadow-sm transition-all duration-200 flex items-center justify-center gap-2">
+                          <Button type="button" onClick={handleSiparisSorgula} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg shadow-sm transition-all duration-200 flex items-center justify-center gap-2">
                             <Search className="h-4 w-4" />
                             Siparişi Sorgula
                           </Button>

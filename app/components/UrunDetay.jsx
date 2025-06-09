@@ -20,7 +20,6 @@ const UrunDetay = ({ data }) => {
   const [thumbCarouselRef, thumbEmbla] = useEmblaCarousel({ containScroll: "keepSnaps", dragFree: true, slidesToScroll: 1 });
 
   
-  data && console.log(data, 'urun detay data')
 
   useEffect(() => {
     if (!mainEmbla) return;
