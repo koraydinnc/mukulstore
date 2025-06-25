@@ -65,69 +65,147 @@ const TrendProducts = ({ data, refetch, isLoading }) => {
                         </div>
                     </div>
 
-                    {/* Products Skeleton Grid */}
-                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {/* Modern Products Skeleton Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {[...Array(4)].map((_, index) => (
                             <motion.div
                                 key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
                                 transition={{ 
-                                    duration: 0.4, 
-                                    delay: index * 0.1,
-                                    ease: "easeOut"
+                                    duration: 0.6, 
+                                    delay: index * 0.15,
+                                    ease: [0.25, 0.46, 0.45, 0.94]
                                 }}
-                                className="bg-white rounded-2xl overflow-hidden shadow-lg"
+                                className="group relative bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-100"
                             >
-                                {/* Image Skeleton */}
-                                <div className="relative aspect-[3/4] bg-gradient-to-b from-gray-100 to-gray-200 animate-pulse">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+                                {/* Floating Discount Badge Skeleton */}
+                                <div className="absolute top-4 left-4 z-20">
+                                    <div className="bg-gradient-to-r from-red-400 to-red-500 w-16 h-8 rounded-full animate-pulse opacity-60"></div>
+                                </div>
+
+                                {/* Floating Heart Button Skeleton */}
+                                <div className="absolute top-4 right-4 z-20">
+                                    <div className="w-10 h-10 bg-white/80 rounded-full animate-pulse"></div>
+                                </div>
+
+                                {/* Enhanced Image Skeleton */}
+                                <div className="relative aspect-[3/4] bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 overflow-hidden">
+                                    {/* Animated gradient overlay */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer"></div>
+                                    
+                                    {/* Geometric patterns for visual interest */}
+                                    <div className="absolute top-1/4 left-1/4 w-8 h-8 bg-white/20 rounded-full animate-pulse"></div>
+                                    <div className="absolute bottom-1/3 right-1/4 w-6 h-6 bg-white/15 rounded-full animate-pulse delay-300"></div>
+                                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 rounded-full animate-pulse delay-700"></div>
+
+                                    {/* Hover overlay effect */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent group-hover:from-black/10 transition-all duration-500"></div>
+
+                                    {/* Quick action buttons area */}
+                                    <div className="absolute bottom-4 left-4 right-4 flex gap-2 opacity-60">
+                                        <div className="w-10 h-10 bg-white/90 rounded-full animate-pulse"></div>
+                                        <div className="flex-1 h-10 bg-blue-500/80 rounded-full animate-pulse delay-200"></div>
+                                    </div>
                                 </div>
                                 
-                                {/* Content Skeleton */}
-                                <div className="p-4 space-y-3">
-                                    {/* Title */}
+                                {/* Enhanced Content Skeleton */}
+                                <div className="p-6 space-y-4">
+                                    {/* Product Title with better spacing */}
+                                    <div className="space-y-3">
+                                        <div className="bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 h-6 rounded-xl w-5/6 animate-pulse"></div>
+                                        <div className="bg-gradient-to-r from-gray-200 via-gray-250 to-gray-200 h-5 rounded-lg w-4/6 animate-pulse delay-100"></div>
+                                    </div>
+                                    
+                                    {/* Description with subtle animation */}
                                     <div className="space-y-2">
-                                        <div className="animate-pulse bg-gray-200 h-5 rounded-full w-4/5"></div>
-                                        <div className="animate-pulse bg-gray-200 h-4 rounded-full w-3/5"></div>
+                                        <div className="bg-gray-200 h-3.5 rounded-lg w-full animate-pulse delay-200"></div>
+                                        <div className="bg-gray-200 h-3.5 rounded-lg w-3/4 animate-pulse delay-300"></div>
+                                        <div className="bg-gray-200 h-3.5 rounded-lg w-1/2 animate-pulse delay-400"></div>
                                     </div>
                                     
-                                    {/* Description */}
-                                    <div className="space-y-1">
-                                        <div className="animate-pulse bg-gray-200 h-3 rounded-full w-full"></div>
-                                        <div className="animate-pulse bg-gray-200 h-3 rounded-full w-2/3"></div>
+                                    {/* Rating stars skeleton */}
+                                    <div className="flex items-center gap-1">
+                                        {[...Array(5)].map((_, i) => (
+                                            <div key={i} className="w-4 h-4 bg-yellow-200 rounded-sm animate-pulse" style={{animationDelay: `${i * 50}ms`}}></div>
+                                        ))}
+                                        <div className="ml-2 bg-gray-200 h-4 w-12 rounded animate-pulse delay-500"></div>
                                     </div>
                                     
-                                    {/* Price */}
-                                    <div className="flex items-center justify-between">
-                                        <div className="animate-pulse bg-gray-200 h-6 rounded-full w-20"></div>
-                                        <div className="animate-pulse bg-gray-200 h-4 rounded-full w-16"></div>
+                                    {/* Price section with better styling */}
+                                    <div className="flex items-center justify-between pt-2">
+                                        <div className="space-y-1">
+                                            <div className="bg-gradient-to-r from-blue-200 to-purple-200 h-7 rounded-xl w-24 animate-pulse"></div>
+                                            <div className="bg-gray-200 h-4 rounded-lg w-16 animate-pulse delay-200"></div>
+                                        </div>
+                                        <div className="bg-green-200 h-5 w-20 rounded-full animate-pulse delay-300"></div>
                                     </div>
                                     
-                                    {/* Size Selector */}
-                                    <div className="animate-pulse bg-gray-200 h-10 rounded-lg w-full"></div>
+                                    {/* Size selector with modern styling */}
+                                    <div className="space-y-2">
+                                        <div className="bg-gray-200 h-4 w-16 rounded animate-pulse"></div>
+                                        <div className="bg-gray-100 h-12 rounded-xl w-full animate-pulse delay-100 border-2 border-gray-200"></div>
+                                    </div>
                                     
-                                    {/* Buttons */}
-                                    <div className="flex gap-2">
-                                        <div className="animate-pulse bg-gray-200 h-10 rounded-lg flex-1"></div>
-                                        <div className="animate-pulse bg-gray-200 h-10 rounded-lg flex-1"></div>
+                                    {/* Action buttons with gradient */}
+                                    <div className="flex gap-3 pt-2">
+                                        <div className="bg-gradient-to-r from-blue-200 to-blue-300 h-12 rounded-xl flex-1 animate-pulse"></div>
+                                        <div className="bg-gradient-to-r from-purple-200 to-purple-300 h-12 rounded-xl flex-1 animate-pulse delay-200"></div>
                                     </div>
                                 </div>
+
+                                {/* Subtle border animation */}
+                                <div className="absolute inset-0 rounded-3xl border-2 border-transparent bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 animate-pulse"></div>
                             </motion.div>
                         ))}
                     </div>
                     
-                    {/* Loading Text with Animation */}
-                    <div className="text-center mt-8">
-                        <div className="inline-flex items-center gap-3 text-gray-500 font-medium">
-                            <div className="flex space-x-1">
-                                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-                                <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                    {/* Enhanced Loading Text with Modern Animation */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.8, duration: 0.6 }}
+                        className="text-center mt-12"
+                    >
+                        <div className="inline-flex items-center gap-4 bg-white/70 backdrop-blur-sm px-8 py-4 rounded-2xl shadow-lg border border-white/20">
+                            {/* Modern loading spinner */}
+                            <div className="relative">
+                                <div className="w-8 h-8 border-4 border-gray-200 rounded-full animate-spin border-t-blue-500"></div>
+                                <div className="absolute top-1 left-1 w-6 h-6 border-3 border-transparent rounded-full animate-spin border-t-purple-500" style={{animationDirection: 'reverse', animationDuration: '0.8s'}}></div>
                             </div>
-                            <span>Popüler ürünler yükleniyor...</span>
+                            
+                            {/* Animated dots */}
+                            <div className="flex space-x-2">
+                                <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full animate-pulse"></div>
+                                <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                                <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                            </div>
+                            
+                            {/* Loading text with typing effect */}
+                            <div className="text-gray-700 font-semibold text-lg">
+                                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                    Popüler ürünler yükleniyor
+                                </span>
+                                <span className="inline-flex">
+                                    <span className="animate-pulse delay-0">.</span>
+                                    <span className="animate-pulse delay-300">.</span>
+                                    <span className="animate-pulse delay-600">.</span>
+                                </span>
+                            </div>
                         </div>
-                    </div>
+                        
+                        {/* Progress bar */}
+                        <div className="mt-6 max-w-xs mx-auto">
+                            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
+                            </div>
+                        </div>
+                        
+                        {/* Subtitle */}
+                        <p className="mt-4 text-gray-500 text-sm max-w-md mx-auto">
+                            En trend ürünlerimizi sizin için hazırlıyoruz...
+                        </p>
+                    </motion.div>
                 </div>
             </motion.section>
         );
