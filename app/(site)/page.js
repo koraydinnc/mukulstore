@@ -49,8 +49,8 @@ export default function Home({params}) {
   const pageSize = 12; // Daha az ürün yükle
 
   // Priority loading - önce banner, sonra trend, son ürünler
+  // Featured parametresini kaldırarak sadece popular ürünleri getir
   const { data: trendData, isLoading: trendLoading } = useGetPopularProductsQuery({
-    featured: true,
     page: 1,
     limit: 4,
   }, {

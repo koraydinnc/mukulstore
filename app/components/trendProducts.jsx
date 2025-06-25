@@ -23,16 +23,113 @@ const TrendProducts = ({ data, refetch, isLoading }) => {
     const plugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: true }));
     const favorites = useSelector((state) => state.favorites.items);
  
-    const router = useRouter();    
+    const router = useRouter();
+
+    // Debug için console.log ekleyelim
+    console.log('TrendProducts - isLoading:', isLoading);
+    console.log('TrendProducts - data:', data);
+    console.log('TrendProducts - data?.data:', data?.data);
+    console.log('TrendProducts - data?.data?.length:', data?.data?.length);    
 
     if (isLoading || !data) {
         return (
-            <div className="w-full h-96 flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
-                <div className="text-center space-y-4">
-                    <Spin size="large" />
-                    <p className="text-gray-500 font-medium">Popüler ürünler yükleniyor...</p>
+            <motion.section 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="relative py-16 lg:py-24 overflow-hidden"
+            >
+                {/* Background with gradient and pattern */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+                    <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5"></div>
                 </div>
-            </div>
+                
+                {/* Decorative elements */}
+                <div className="absolute top-10 left-10 w-20 h-20 bg-blue-200 rounded-full blur-xl opacity-60"></div>
+                <div className="absolute bottom-10 right-10 w-32 h-32 bg-purple-200 rounded-full blur-xl opacity-60"></div>
+                
+                <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Header Skeleton */}
+                    <div className="text-center mb-12">
+                        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
+                            <TrendingUp className="w-4 h-4" />
+                            <span>Trend Ürünler</span>
+                        </div>
+                        
+                        <h2 className="text-3xl p-2 md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-4">
+                            Popüler Ürünler
+                        </h2>
+                        
+                        <div className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed space-y-2">
+                            <div className="animate-pulse bg-gray-200 h-4 rounded-full w-3/4 mx-auto"></div>
+                            <div className="animate-pulse bg-gray-200 h-4 rounded-full w-1/2 mx-auto"></div>
+                        </div>
+                    </div>
+
+                    {/* Products Skeleton Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        {[...Array(4)].map((_, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ 
+                                    duration: 0.4, 
+                                    delay: index * 0.1,
+                                    ease: "easeOut"
+                                }}
+                                className="bg-white rounded-2xl overflow-hidden shadow-lg"
+                            >
+                                {/* Image Skeleton */}
+                                <div className="relative aspect-[3/4] bg-gradient-to-b from-gray-100 to-gray-200 animate-pulse">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+                                </div>
+                                
+                                {/* Content Skeleton */}
+                                <div className="p-4 space-y-3">
+                                    {/* Title */}
+                                    <div className="space-y-2">
+                                        <div className="animate-pulse bg-gray-200 h-5 rounded-full w-4/5"></div>
+                                        <div className="animate-pulse bg-gray-200 h-4 rounded-full w-3/5"></div>
+                                    </div>
+                                    
+                                    {/* Description */}
+                                    <div className="space-y-1">
+                                        <div className="animate-pulse bg-gray-200 h-3 rounded-full w-full"></div>
+                                        <div className="animate-pulse bg-gray-200 h-3 rounded-full w-2/3"></div>
+                                    </div>
+                                    
+                                    {/* Price */}
+                                    <div className="flex items-center justify-between">
+                                        <div className="animate-pulse bg-gray-200 h-6 rounded-full w-20"></div>
+                                        <div className="animate-pulse bg-gray-200 h-4 rounded-full w-16"></div>
+                                    </div>
+                                    
+                                    {/* Size Selector */}
+                                    <div className="animate-pulse bg-gray-200 h-10 rounded-lg w-full"></div>
+                                    
+                                    {/* Buttons */}
+                                    <div className="flex gap-2">
+                                        <div className="animate-pulse bg-gray-200 h-10 rounded-lg flex-1"></div>
+                                        <div className="animate-pulse bg-gray-200 h-10 rounded-lg flex-1"></div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                    
+                    {/* Loading Text with Animation */}
+                    <div className="text-center mt-8">
+                        <div className="inline-flex items-center gap-3 text-gray-500 font-medium">
+                            <div className="flex space-x-1">
+                                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                                <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                            </div>
+                            <span>Popüler ürünler yükleniyor...</span>
+                        </div>
+                    </div>
+                </div>
+            </motion.section>
         );
     }
 
