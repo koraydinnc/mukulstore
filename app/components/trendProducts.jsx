@@ -19,13 +19,13 @@ import ProductCard from "./ProductCard";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
-const TrendProducts = ({ data, refetch }) => {
+const TrendProducts = ({ data, refetch, isLoading }) => {
     const plugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: true }));
     const favorites = useSelector((state) => state.favorites.items);
  
     const router = useRouter();    
 
-    if (!data) {
+    if (isLoading || !data) {
         return (
             <div className="w-full h-96 flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
                 <div className="text-center space-y-4">
@@ -94,7 +94,7 @@ const TrendProducts = ({ data, refetch }) => {
                         <span>Trend Ürünler</span>
                     </div>
                     
-                    <h2 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-4">
+                    <h2 className="text-3xl p-2 md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-4">
                         Popüler Ürünler
                     </h2>
                     

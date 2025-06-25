@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, memo, useEffect } from 'react';
+import { useState, useCallback, memo, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, ChevronDown, SlidersHorizontal, X, Check, RefreshCcw } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 
 
-const ProductsFilter = ({ onFilterChange, categories, totalResults = 0, onClearFiltersRef }) => {
+const ProductsFilter = forwardRef(({ onFilterChange, categories, totalResults = 0 }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState({
     category: [],
@@ -92,19 +92,10 @@ const ProductsFilter = ({ onFilterChange, categories, totalResults = 0, onClearF
     });
   }, []);
 
-  // Register clear filters callback
-  useEffect(() => {
-    if (onClearFiltersRef && typeof onClearFiltersRef === 'function') {
-      onClearFiltersRef(() => {
-        setActiveFilters({
-          category: [],
-          size: [],
-          priceRange: 'all',
-          sort: 'newest'
-        });
-      });
-    }
-  }, [onClearFiltersRef]);
+  // Expose clearFilters method to parent via ref
+  useImperativeHandle(ref, () => ({
+    clearFilters
+  }), [clearFilters]);
 
   return (
     <>
@@ -422,6 +413,8 @@ const ProductsFilter = ({ onFilterChange, categories, totalResults = 0, onClearF
       </AnimatePresence>
     </>
   );
-};
+});
+
+ProductsFilter.displayName = 'ProductsFilter';
 
 export default memo(ProductsFilter);

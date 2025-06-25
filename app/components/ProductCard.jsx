@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, memo, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { addToCart } from "@/store/slices/cartSlice";
@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import openNotification from "./Toaster";
 import { Badge, Button, Select, Skeleton, Tooltip } from "antd";
 
-const ProductCard = ({ product }) => {
+const ProductCard = memo(({ product }) => {
   const [selectedSize, setSelectedSize] = useState(null);
   const [imageLoading, setImageLoading] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
@@ -24,7 +24,38 @@ const ProductCard = ({ product }) => {
 
   const favorites = useSelector((state) => state.favorites.items);
   const cartItems = useSelector((state) => state.cart.items);
-  const isFavorite = favorites.some((item) => item.id === product.id);
+  
+  // Memoize expensive calculations
+  const isFavorite = useMemo(() => 
+    favorites.some((item) => item.id === product.id), 
+    [favorites, product.id]
+  );
+
+  const stockInfo = useMemo(() => {
+    const totalStock = product.stock || 0;
+    if (totalStock === 0)
+      return { status: "out", text: "Stokta Yok", color: "text-red-500" };
+    if (totalStock <= 3)
+      return {
+        status: "low",
+        text: `Son ${totalStock} adet!`,
+        color: "text-orange-500",
+      };
+    if (totalStock <= 10)
+      return {
+        status: "medium",
+        text: `${totalStock} adet`,
+        color: "text-yellow-600",
+      };
+    return { status: "good", text: "Stokta", color: "text-green-600" };
+  }, [product.stock]);
+
+  const imagePath = useMemo(() => {
+    const path = product.images?.[0];
+    if (!path) return "/placeholder.jpg";
+    if (path.includes("firebasestorage.googleapis.com")) return path;
+    return path.startsWith("/") ? path : `/uploads/${path}`;
+  }, [product.images]);
 
   const handleAddToCart = (e) => {
     e?.stopPropagation();
@@ -98,26 +129,7 @@ const ProductCard = ({ product }) => {
     return imagePath.startsWith("/") ? imagePath : `/uploads/${imagePath}`;
   };
 
-  const getStockInfo = () => {
-    const totalStock = product.stock || 0;
-    if (totalStock === 0)
-      return { status: "out", text: "Stokta Yok", color: "text-red-500" };
-    if (totalStock <= 3)
-      return {
-        status: "low",
-        text: `Son ${totalStock} adet!`,
-        color: "text-orange-500",
-      };
-    if (totalStock <= 10)
-      return {
-        status: "medium",
-        text: `${totalStock} adet`,
-        color: "text-yellow-600",
-      };
-    return { status: "good", text: "Stokta", color: "text-green-600" };
-  };
 
-  const stockInfo = getStockInfo();
 
   const cardVariants = {
     initial: {
@@ -210,17 +222,20 @@ const ProductCard = ({ product }) => {
 
           <motion.div variants={imageVariants} className="h-full w-full">
             <Image
-              src={getImagePath(product.images[0])}
+              src={imagePath}
               alt={product.title}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
-              className={`object-cover transition-all duration-500 ${
+              className={`object-cover transition-opacity duration-300 ${
                 imageLoading ? "opacity-0" : "opacity-100"
               }`}
               onLoad={() => setImageLoading(false)}
+              onError={() => setImageLoading(false)}
               priority={false}
-              quality={85}
+              quality={75}
               loading="lazy"
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
             />
           </motion.div>
 
@@ -390,6 +405,8 @@ const ProductCard = ({ product }) => {
       </Card>
     </motion.div>
   );
-};
+});
+
+ProductCard.displayName = 'ProductCard';
 
 export default ProductCard;

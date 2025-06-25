@@ -1,16 +1,21 @@
 'use client';
 
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { Spin } from 'antd';
 import { useRouter } from 'next/navigation';
 import ProductCard from './ProductCard';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-const ProductsList = ({ data, isLoading, pageSize = 20, pagination, setPage }) => {
+const ProductsList = memo(({ data, isLoading, pageSize = 12, pagination, setPage }) => {
   const router = useRouter();
 
-  const totalPages = Math.ceil(pagination?.totalCount / pageSize) || 1;
-  const currentPage = pagination?.currentPage || 1;
+  const paginationData = useMemo(() => {
+    const totalPages = Math.ceil(pagination?.totalCount / pageSize) || 1;
+    const currentPage = pagination?.currentPage || 1;
+    return { totalPages, currentPage };
+  }, [pagination?.totalCount, pagination?.currentPage, pageSize]);
+
+  const { totalPages, currentPage } = paginationData;
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -40,13 +45,14 @@ const ProductsList = ({ data, isLoading, pageSize = 20, pagination, setPage }) =
         <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-10">
           Tüm Ürünler
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 cursor-pointer gap-2 items-stretch">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 items-stretch">
           {data?.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onClick={() => handleProductClick(product.id)}
-            />
+            <div key={product.id} className="cursor-pointer">
+              <ProductCard
+                product={product}
+                onClick={() => handleProductClick(product.id)}
+              />
+            </div>
           ))}
         </div>
         {totalPages > 1 && (
@@ -98,6 +104,8 @@ const ProductsList = ({ data, isLoading, pageSize = 20, pagination, setPage }) =
       </div>
     </div>
   );
-};
+});
+
+ProductsList.displayName = 'ProductsList';
 
 export default ProductsList;

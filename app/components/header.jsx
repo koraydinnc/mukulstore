@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import {
   motion,
   AnimatePresence,
@@ -26,7 +26,7 @@ const Header = () => {
   const [openSiparis, setOpenSiparis] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollY = useRef(0);
   const [siparisNo, setSiparisNo] = useState("");
   const [takipSonuc, setTakipSonuc] = useState(null);
   const [takipHata, setTakipHata] = useState("");
@@ -79,22 +79,26 @@ const Header = () => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       
+      console.log('Scroll Y:', currentScrollY, 'Last Y:', lastScrollY.current, 'Header Visible:', isHeaderVisible);
+      
       // Header görünürlüğü kontrol et
-      if (currentScrollY < lastScrollY || currentScrollY < 100) {
+      if (currentScrollY < lastScrollY.current || currentScrollY < 100) {
         // Yukarı scroll yapıyor veya sayfa başında
+        console.log('Setting header visible: true');
         setIsHeaderVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+      } else if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
         // Aşağı scroll yapıyor ve sayfa başından uzakta
+        console.log('Setting header visible: false');
         setIsHeaderVisible(false);
       }
       
       setIsScrolled(currentScrollY > 0);
-      setLastScrollY(currentScrollY);
+      lastScrollY.current = currentScrollY;
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, [isHeaderVisible]);
 
   const handleSiparisSorgula = async () => {
     setTakipSonuc(null);
@@ -119,10 +123,14 @@ const Header = () => {
   return (
     <>
       <motion.nav
-        style={{ y }}
-        className={`bg-black shadow fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${
-          isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
-        }`}
+        animate={{
+          y: isHeaderVisible ? 0 : -100
+        }}
+        transition={{
+          duration: 0.3,
+          ease: "easeInOut"
+        }}
+        className="bg-black shadow fixed top-0 left-0 right-0 z-50"
       >
         <div className="relative">
           <motion.div

@@ -45,14 +45,14 @@ const CartItems = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative text-white hover:text-white/80">
           <ShoppingCart className="h-5 w-5" />
-          {totalQuantity > 0 && (
-            <Badge
-              variant="destructive"
-              className="absolute -right-2 -top-2 h-5 w-5 flex bg-white text-black justify-center rounded-full p-0 text-xs"
-            >
-              {totalQuantity}
-            </Badge>
-          )}
+          <Badge
+            variant="destructive"
+            className={`absolute -right-2 -top-2 h-5 w-5 flex bg-white text-black justify-center rounded-full p-0 text-xs transition-opacity duration-200 ${
+              totalQuantity > 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
+          >
+            {totalQuantity || 0}
+          </Badge>
         </Button>
       </DropdownMenuTrigger>
 

@@ -29,14 +29,14 @@ const Favorites = () => {
         >
           <motion.div>
             <Heart className="h-5 w-5 text-white group-hover:fill-red-500" />
-            {favorites?.length > 0 && (
-              <Badge
-                variant="destructive"
-                className="absolute text-black bg-white rounded-2xl -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0"
-              >
-                {favorites.length}
-              </Badge>
-            )}
+            <Badge
+              variant="destructive"
+              className={`absolute text-black bg-white rounded-2xl -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 transition-opacity duration-200 ${
+                favorites?.length > 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`}
+            >
+              {favorites?.length || 0}
+            </Badge>
           </motion.div>
         </Button>
       </DropdownMenuTrigger>
