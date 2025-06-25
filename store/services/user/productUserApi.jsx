@@ -16,7 +16,12 @@ export const productUserApi = createApi({
         url: "user/product/product-list",
         params: {
           page: params?.page || 1,
-          pageSize: params?.pageSize || 20,
+          pageSize: params?.pageSize || 12,
+          sort: params?.sort || 'newest',
+          category: params?.category,
+          size: params?.size,
+          priceRange: params?.priceRange,
+          search: params?.search,
         },
       }),
       providesTags: ["Product"],

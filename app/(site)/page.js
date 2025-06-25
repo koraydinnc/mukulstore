@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState, useCallback, useRef, Suspense } from 'react';
+import { useEffect, useState, useCallback, useRef, Suspense, useMemo } from 'react';
 import { useGetPopularProductsQuery, useGetProductsListQuery } from '@/store/services/user/productUserApi';
 import { useGetCategoriesQuery } from '@/store/services/admin/categoryApi';
 import Loading from './loading';
@@ -42,132 +42,101 @@ const ProductsList = dynamic(() => import('../components/ProductsList'), {
 
 export default function Home({params}) {
   const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState(null);
-  const [filteredProducts, setFilteredProducts] = useState([]);
   const [showProducts, setShowProducts] = useState(false);
+  const [activeFilters, setActiveFilters] = useState({
+    category: [],
+    size: [],
+    priceRange: 'all',
+    sort: 'newest'
+  });
   const filterRef = useRef();
-  const pageSize = 12; // Daha az ürün yükle
+  const pageSize = 12;
 
-  // Priority loading - önce banner, sonra trend, son ürünler
-  // Featured parametresini kaldırarak sadece popular ürünleri getir
+
   const { data: trendData, isLoading: trendLoading } = useGetPopularProductsQuery({
     page: 1,
     limit: 4,
   }, {
-    skip: false // İlk yükleme
+    skip: false 
   });
 
   const { data: productsData, isLoading: productsLoading } = useGetProductsListQuery({
     page,
-    limit: pageSize,
+    pageSize,
+    sort: activeFilters.sort,
+    category: activeFilters.category.join(','),
+    priceRange: activeFilters.priceRange,
   }, {
-    skip: !showProducts // Lazy load products
+    skip: !showProducts 
   });
 
   const { data: categoriesData, isLoading: categoriesLoading } = useGetCategoriesQuery(undefined, {
-    skip: !showProducts // Categories'i de lazy load et
+    skip: !showProducts 
   });
-  // Progressive loading - banner yüklendikten sonra ürünleri yükle
-  useEffect(() => {
+
+    useEffect(() => {
     const timer = setTimeout(() => {
       setShowProducts(true);
-    }, 1000); // Banner'dan sonra 1 saniye bekle
+    }, 1000); 
 
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    if (productsData) {
-      setFilteredProducts(productsData.data);
-      setPagination(productsData.pagination);
-    }
-  }, [productsData]);
+    setPage(1);
+  }, [activeFilters]);
 
 
 
   const handleFilterChange = useCallback((filters) => {
-    if (!productsData?.data) return;
+    setActiveFilters(filters);
+  }, []);
 
+
+  const filteredProducts = useMemo(() => {
+    if (!productsData?.data) return [];
+    
     let filtered = [...productsData.data];
-
-    if (filters.category.length > 0) {
+    
+      
+    if (activeFilters.size.length > 0) {
       filtered = filtered.filter(product => {
-        return filters.category.some(cat => {
-          const [mainCat] = cat.split('-');
-          return product.categoryId === parseInt(mainCat);
-        });
+        if (!product.sizes || !Array.isArray(product.sizes)) return false;
+        return activeFilters.size.some(filterSize => 
+          product.sizes.some(productSize => 
+            productSize.size === filterSize
+          )
+        );
       });
     }
-
-    // Beden filtresi
-    if (filters.size.length > 0) {
-      filtered = filtered.filter(product => 
-        filters.size.some(size => 
-          product.sizes.some(s => s.size === size)
-        )
-      );
-    }
-
-    // Fiyat aralığı filtresi
-    if (filters.priceRange !== 'all') {
-      const [min, max] = filters.priceRange.split('-').map(Number);
-      filtered = filtered.filter(product => {
-        const price = product.discountedPrice || product.price;
-        if (filters.priceRange === '5000-plus') {
-          return price >= 5000;
-        }
-        return price >= min && price <= max;
-      });
-    }
-
-    // Sıralama
-    if (filters.sort) {
-      filtered.sort((a, b) => {
-        const priceA = a.discountedPrice || a.price;
-        const priceB = b.discountedPrice || b.price;
-        
-        switch (filters.sort) {
-          case 'price-low':
-            return priceA - priceB;
-          case 'price-high':
-            return priceB - priceA;
-          case 'name-asc':
-            return a.title.localeCompare(b.title);
-          case 'name-desc':
-            return b.title.localeCompare(a.title);
-          case 'newest':
-            return new Date(b.createdAt) - new Date(a.createdAt);
-          default:
-            return 0;
-        }
-      });
-    }
-
-    setFilteredProducts(filtered);
-  }, [productsData?.data]);
+    
+    return filtered;
+  }, [productsData?.data, activeFilters.size]);
 
   const handleClearFilters = useCallback(() => {
+    setActiveFilters({
+      category: [],
+      size: [],
+      priceRange: 'all',
+      sort: 'newest'
+    });
     if (filterRef.current?.clearFilters) {
       filterRef.current.clearFilters();
     }
   }, []);
 
  
-  // Ana loading'i kaldır, sadece component loading'leri kullan
 
   return (
     <main className="overflow-x-hidden bg-white min-h-screen">
-      {/* Critical - Banner hemen yükle */}
       <section>
         <BannerCampaign />
       </section>
   
-      {/* Trend Products - Banner'dan sonra */}
       <section>
         <TrendProducts data={trendData} isLoading={trendLoading} />
       </section>
   
-      {/* Products Section - Progressive loading */}
       {showProducts && (
         <>
           <Suspense fallback={
@@ -180,7 +149,7 @@ export default function Home({params}) {
                 ref={filterRef}
                 onFilterChange={handleFilterChange}
                 categories={categoriesData?.categories || []}
-                totalResults={filteredProducts.length}
+                totalResults={filteredProducts?.length || 0}
               />
             </section>
           </Suspense>
@@ -192,7 +161,7 @@ export default function Home({params}) {
                   <div key={i} className="animate-pulse bg-gray-200 h-80 rounded-lg" />
                 ))}
               </div>
-            ) : filteredProducts.length === 0 ? (
+            ) : !filteredProducts?.length ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -207,6 +176,12 @@ export default function Home({params}) {
                 <p className="text-gray-500 text-center max-w-md mb-8">
                   Filtreleme kriterlerinizi değiştirerek daha fazla ürün görüntüleyebilirsiniz.
                 </p>
+                <button
+                  onClick={handleClearFilters}
+                  className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  Filtreleri Temizle
+                </button>
               </motion.div>
             ) : (
               <Suspense fallback={
@@ -217,8 +192,12 @@ export default function Home({params}) {
                 </div>
               }>
                 <ProductsList
-                  pagination={pagination}
-                  data={filteredProducts}
+                  pagination={{
+                    ...productsData?.pagination,
+                    totalCount: filteredProducts.length,
+                    totalPages: Math.ceil(filteredProducts.length / pageSize)
+                  }}
+                  data={filteredProducts.slice((page - 1) * pageSize, page * pageSize)}
                   isLoading={productsLoading}
                   page={page}
                   setPage={setPage}
