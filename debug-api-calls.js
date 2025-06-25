@@ -8,7 +8,6 @@
         const url = args[0];
         const options = args[1] || {};
         
-        // Log all API calls
         if (typeof url === 'string' && url.includes('/api/')) {
             console.log('🌐 API Call:', {
                 url: url,
@@ -17,7 +16,6 @@
                 stackTrace: new Error().stack
             });
             
-            // Alert if incorrect endpoint is called
             if (url.includes('/api/orders-5534/create') && !url.includes('/api/admin/orders-5534/create')) {
                 console.error('❌ INCORRECT ENDPOINT DETECTED:', url);
                 console.error('Stack trace:', new Error().stack);

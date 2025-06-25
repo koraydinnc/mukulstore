@@ -40,7 +40,7 @@ const ProductsList = ({ data, isLoading, pageSize = 20, pagination, setPage }) =
         <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-10">
           Tüm Ürünler
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 cursor-pointer  gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 cursor-pointer gap-2 items-stretch">
           {data?.map((product) => (
             <ProductCard
               key={product.id}
@@ -57,7 +57,7 @@ const ProductsList = ({ data, isLoading, pageSize = 20, pagination, setPage }) =
                 className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   currentPage === 1
                     ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 shadow-sm'
+                    : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 '
                 }`}
                 disabled={currentPage === 1}
               >
@@ -73,7 +73,7 @@ const ProductsList = ({ data, isLoading, pageSize = 20, pagination, setPage }) =
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                       currentPage === page
                         ? 'bg-blue-500 text-white'
-                        : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 shadow-sm'
+                        : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600'
                     }`}
                   >
                     {page}
@@ -85,7 +85,7 @@ const ProductsList = ({ data, isLoading, pageSize = 20, pagination, setPage }) =
                 className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   currentPage === totalPages
                     ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 shadow-sm'
+                    : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 '
                 }`}
                 disabled={currentPage === totalPages}
               >

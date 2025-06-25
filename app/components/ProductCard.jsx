@@ -1,29 +1,33 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { addToCart } from "@/store/slices/cartSlice";
 import {
   addToFavorites,
   removeFromFavorites,
 } from "@/store/slices/favoritesSlice";
 import { Card } from "@/components/ui/card";
-import { Heart, ShoppingCart, Loader2 } from "lucide-react";
+import { Heart, ShoppingCart, Loader2, Eye, Star } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import openNotification from "./Toaster";
-import { Badge, Button, Select, Skeleton } from "antd";
-import { SelectAllRounded } from "@mui/icons-material";
+import { Badge, Button, Select, Skeleton, Tooltip } from "antd";
 
 const ProductCard = ({ product }) => {
   const [selectedSize, setSelectedSize] = useState(null);
   const [imageLoading, setImageLoading] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+  const [showQuickView, setShowQuickView] = useState(false);
+
   const dispatch = useDispatch();
   const router = useRouter();
 
   const favorites = useSelector((state) => state.favorites.items);
   const cartItems = useSelector((state) => state.cart.items);
   const isFavorite = favorites.some((item) => item.id === product.id);
-  const handleAddToCart = () => {
+
+  const handleAddToCart = (e) => {
+    e?.stopPropagation();
     if (!selectedSize) {
       return openNotification({
         variant: "destructive",
@@ -52,12 +56,14 @@ const ProductCard = ({ product }) => {
     });
   };
 
-  const handleBuyNow = () => {
-    handleAddToCart();
+  const handleBuyNow = (e) => {
+    e?.stopPropagation();
+    handleAddToCart(e);
     router.push("/Sepetim");
   };
 
-  const toggleFavorite = () => {
+  const toggleFavorite = (e) => {
+    e?.stopPropagation();
     if (isFavorite) {
       dispatch(removeFromFavorites(product.id));
       openNotification({
@@ -79,233 +85,307 @@ const ProductCard = ({ product }) => {
     setSelectedSize(size === selectedSize ? null : size);
   };
 
-  const renderStockStatus = (stock) =>
-    stock < 10 ? (
-      <span className="text-xs text-red-600 font-semibold animate-pulse">
-        Son {stock} adet!
-      </span>
-    ) : (
-      <span className="text-sm text-gray-500">Stok: {stock}</span>
-    );
+  const handleQuickView = (e) => {
+    e?.stopPropagation();
+    router.push(`/Urunler/${product.id}`);
+  };
 
   const getImagePath = (imagePath) => {
     if (!imagePath) return "/placeholder.jpg";
-    // Firebase URL'lerini doğrudan kullan
     if (imagePath.includes("firebasestorage.googleapis.com")) {
       return imagePath;
     }
-    // Yerel dosyalar için
     return imagePath.startsWith("/") ? imagePath : `/uploads/${imagePath}`;
   };
 
+  const getStockInfo = () => {
+    const totalStock = product.stock || 0;
+    if (totalStock === 0)
+      return { status: "out", text: "Stokta Yok", color: "text-red-500" };
+    if (totalStock <= 3)
+      return {
+        status: "low",
+        text: `Son ${totalStock} adet!`,
+        color: "text-orange-500",
+      };
+    if (totalStock <= 10)
+      return {
+        status: "medium",
+        text: `${totalStock} adet`,
+        color: "text-yellow-600",
+      };
+    return { status: "good", text: "Stokta", color: "text-green-600" };
+  };
+
+  const stockInfo = getStockInfo();
+
   const cardVariants = {
+    initial: {
+      y: 0,
+    },
     hover: {
-      y: -5,
-      transition: { duration: 0.2 },
+      y: -8,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const imageVariants = {
+    initial: { scale: 1 },
+    hover: {
+      scale: 1.05,
+      transition: { duration: 0.4, ease: "easeOut" },
+    },
+  };
+
+  const overlayVariants = {
+    initial: { opacity: 0, y: 10 },
+    hover: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.2, ease: "easeOut" },
     },
   };
 
   return (
     <motion.div
       variants={cardVariants}
+      initial="initial"
       whileHover="hover"
-      className="h-full w-full"
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      className="h-full w-full group p-2"
     >
-      <Card
-        onClick={() => router.push(`/Urunler/${product.id}`)}
-        className="relative h-full overflow-hidden rounded-xl shadow-sm hover:shadow-xl transition-all duration-300"
-      >
-        {product.discountPercentage > 0 && (
-          <div className="absolute top-0 left-0 z-10">
-            <div
-              className="bg-red-500 text-white px-3 py-1.5 rounded-br-xl
-              shadow-lg transform hover:scale-105 transition-all duration-200"
+      <Card className="relative h-full overflow-hidden rounded-2xl bg-white border-0 transition-all duration-300 cursor-pointer flex flex-col">
+        {/* Discount Badge */}
+        <AnimatePresence>
+          {product.discountPercentage > 0 && (
+            <motion.div
+              initial={{ scale: 0, rotate: -12 }}
+              animate={{ scale: 1, rotate: -12 }}
+              className="absolute top-3 left-3 z-20"
             >
-              <div className="flex items-center gap-1">
-                <span className="text-base font-bold">
-                  %{product.discountPercentage}
-                </span>
-                <span className="text-xs uppercase tracking-wider">
-                  İndirim
-                </span>
+              <div className="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1.5 rounded-full ">
+                <div className="flex items-center gap-1">
+                  <span className="text-sm font-bold">
+                    -%{product.discountPercentage}
+                  </span>
+                </div>
               </div>
-            </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Stock Badge */}
+        {stockInfo.status !== "good" && (
+          <div className="absolute top-3 right-14 z-20">
+            <Badge
+              count={stockInfo.text}
+              style={{
+                backgroundColor:
+                  stockInfo.status === "out" ? "#ef4444" : "#f59e0b",
+                fontSize: "10px",
+                height: "20px",
+                borderRadius: "10px",
+              }}
+            />
           </div>
         )}
 
-        {/* Product Image Container - Updated image loading handling */}
-        <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
+        {/* Product Image Container */}
+        <div
+          className="relative aspect-[3/4] overflow-hidden bg-gradient-to-b from-gray-50 to-gray-100 flex-shrink-0"
+          onClick={() => router.push(`/Urunler/${product.id}`)}
+        >
           {imageLoading && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+              <div className="flex flex-col items-center gap-2">
+                <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+                <span className="text-xs text-gray-400">Yükleniyor...</span>
+              </div>
             </div>
           )}
-          <Image
-            src={getImagePath(product.images[0])}
-            alt={product.title}
-            fill
-            sizes="(max-width: 640px) 33vw, (max-width: 768px) 33vw, 33vw"
-            className={`object-cover transition-all duration-300 hover:scale-105 ${
-              imageLoading ? "opacity-0" : "opacity-100"
-            }`}
-            onLoad={() => setImageLoading(false)}
-            priority={false}
-            quality={75}
-            loading="lazy"
-          />
 
-          {/* Favorite Button - Boyutları ve görünürlüğü artırıldı */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleFavorite();
-            }}
-            className={`absolute top-2 right-2 w-8 h-8 sm:w-10 sm:h-10 rounded-full 
-              ${
-                isFavorite
-                  ? "bg-red-50 hover:bg-red-100"
-                  : "bg-transparent hover:bg-transparent"
-              } 
-              backdrop-blur-sm shadow-lg hover:shadow-xl
-              flex items-center justify-center transform
-              transition-all duration-300 ease-in-out z-20
-              group hover:scale-110 active:scale-95`}
-            aria-label={isFavorite ? "Favorilerden Çıkar" : "Favorilere Ekle"}
-          >
-            <Heart
-              className={`w-4 h-4 sm:w-5 sm:h-5
-                ${
-                  isFavorite
-                    ? "fill-red-500 text-red-500"
-                    : "stroke-gray-600 group-hover:stroke-red-500"
-                } 
-                transition-all duration-300 ease-in-out
-                group-hover:scale-110 group-active:scale-90`}
+          <motion.div variants={imageVariants} className="h-full w-full">
+            <Image
+              src={getImagePath(product.images[0])}
+              alt={product.title}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+              className={`object-cover transition-all duration-500 ${
+                imageLoading ? "opacity-0" : "opacity-100"
+              }`}
+              onLoad={() => setImageLoading(false)}
+              priority={false}
+              quality={85}
+              loading="lazy"
             />
-            {isFavorite && (
-              <motion.span
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"
+          </motion.div>
+
+          <motion.div
+            variants={overlayVariants}
+            className="absolute inset-0 bg-black/20 backdrop-blur-[1px]"
+          >
+            <div className="absolute bottom-4 left-4 right-4 flex gap-2">
+              <Tooltip title="Hızlı Görüntüle">
+                <Button
+                  type="primary"
+                  shape="circle"
+                  icon={<Eye className="w-4 h-4" />}
+                  onClick={handleQuickView}
+                  className="bg-white text-gray-800 border-0 hover:bg-gray-100 "
+                />
+              </Tooltip>
+
+              <Button
+                type="primary"
+                onClick={handleAddToCart}
+                disabled={!selectedSize || stockInfo.status === "out"}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 border-0 rounded-full  font-medium"
+                icon={<ShoppingCart className="w-4 h-4" />}
+              >
+                {selectedSize ? "Sepete Ekle" : "Beden Seç"}
+              </Button>
+            </div>
+          </motion.div>
+
+          <Tooltip
+            title={isFavorite ? "Favorilerden Çıkar" : "Favorilere Ekle"}
+          >
+            <motion.button
+              onClick={toggleFavorite}
+              className={`absolute top-3 right-3 w-10 h-10 rounded-full 
+                ${isFavorite ? "bg-red-50" : "bg-white/90 backdrop-blur-sm"} 
+                 flex items-center justify-center 
+                transform transition-all duration-300 ease-in-out z-30
+                hover:scale-110 active:scale-95`}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Heart
+                className={`w-5 h-5 ${
+                  isFavorite ? "fill-red-500 text-red-500" : "stroke-gray-600"
+                } transition-all duration-300`}
               />
-            )}
-          </button>
+            </motion.button>
+          </Tooltip>
         </div>
 
-        {/* Product Info */}
-        <div className="p-3 sm:p-4 space-y-3">
-          <div>
-            <h3 className="font-semibold text-sm sm:text-lg leading-tight line-clamp-2">
-              {product.title}
-            </h3>
-            <p className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2">
-              {product.description}
-            </p>
-          </div>
-          {/* Price Section - Responsive düzenleme */}
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg sm:text-2xl font-bold text-blue-600">
-              ₺{product.discountedPrice || product.price}
-            </span>
-            {product.discountedPrice && (
-              <span className="text-xs sm:text-sm line-through text-gray-400">
-                ₺{product.price}
-              </span>
+        <div className="p-5 flex flex-col flex-1">
+          <div className="flex-1 space-y-4">
+            <div className="space-y-2">
+              <h3 className="font-semibold text-xl leading-tight line-clamp-2 text-gray-900 group-hover:text-blue-600 transition-colors">
+                {product.title}
+              </h3>
+              <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                {product.description}
+              </p>
+            </div>
+
+            {/* Rating (if available) */}
+            {product.rating && (
+              <div className="flex items-center gap-1">
+                <div className="flex items-center">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-4 h-4 ${
+                        i < Math.floor(product.rating)
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "fill-gray-200 text-gray-200"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="text-sm text-gray-500">
+                  ({product.reviewCount || 0})
+                </span>
+              </div>
             )}
+
+            {/* Price Section */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-bold text-gray-900">
+                  ₺{product.discountedPrice || product.price}
+                </span>
+                {product.discountedPrice && (
+                  <span className="text-sm line-through text-gray-400">
+                    ₺{product.price}
+                  </span>
+                )}
+              </div>
+              <div className={`text-xs font-medium ${stockInfo.color}`}>
+                {stockInfo.text}
+              </div>
+            </div>
+
+            {/* Size Selection */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-white">Beden:</label>
+              <Select
+                placeholder="Beden seçiniz"
+                value={selectedSize}
+                onChange={handleSizeSelect}
+                onClick={(e) => e.stopPropagation()}
+                style={{ width: "100%" }}
+                className="h-12"
+                dropdownMatchSelectWidth={false}
+                optionLabelProp="label"
+                showSearch={false}
+                virtual={false}
+                getPopupContainer={(trigger) => trigger.parentNode}
+              >
+                {product.sizes?.map((size) => (
+                  <Select.Option
+                    key={size.size}
+                    value={size.size}
+                    disabled={size.stock === 0}
+                    label={size.size}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">{size.size}</span>
+                      {size.stock <= 3 && size.stock > 0 && (
+                        <span className="text-xs text-orange-500 ml-2">
+                          (Son {size.stock})
+                        </span>
+                      )}
+                      {size.stock === 0 && (
+                        <span className="text-xs text-gray-400 ml-2">
+                          (Stokta Yok)
+                        </span>
+                      )}
+                    </div>
+                  </Select.Option>
+                ))}
+              </Select>
+            </div>
           </div>
-          <div className="w-full">
-            <Select
-              placeholder="Beden Seçiniz"
-              value={selectedSize}
-              onChange={(value) => handleSizeSelect(value)}
-              onClick={(e) => e.stopPropagation()}
-              style={{ width: "100%" }}
-              className="h-12 sm:h-10"
-              dropdownMatchSelectWidth={false}
-              optionLabelProp="label"
-              showSearch={false}
-              virtual={false}
-              inputMode="none"
-              getPopupContainer={(trigger) => trigger.parentNode}
-            >
-              {product.sizes.map((size) => (
-                <Select.Option
-                  key={size.size}
-                  value={size.size}
-                  disabled={size.stock === 0}
-                  label={size.size}
-                >
-                  <div className="flex items-center justify-between">
-                    <span>{size.size}</span>
-                    {size.stock <= 3 && size.stock > 0 && (
-                      <span className="text-xs text-red-500 ml-2">
-                        (Son {size.stock})
-                      </span>
-                    )}
-                    {size.stock === 0 && (
-                      <span className="text-xs text-gray-400 ml-2">
-                        (Stokta Yok)
-                      </span>
-                    )}
-                  </div>
-                </Select.Option>
-              ))}
-            </Select>
-          </div>
-          {/* Action Buttons - Updated with stopPropagation */}
-          {/* Action Buttons - Simplified Design with Better Text Visibility */}
-          {/* Action Buttons - Mobile-optimized with icon-only on small screens */}
-          <div className="grid grid-cols-2 gap-2 pt-3">
+
+          {/* Action Buttons - Her zaman en altta */}
+          <div className="flex gap-2 pt-4 mt-auto">
             <Button
               type="primary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleAddToCart();
-              }}
-              className="h-11 bg-blue-600 hover:bg-blue-700 shadow-sm transition-all duration-200 flex items-center justify-center"
-              icon={<ShoppingCart className="h-[14px] w-[14px] sm:mr-1" />}
+              onClick={handleAddToCart}
+              disabled={!selectedSize || stockInfo.status === "out"}
+              className="flex-1 h-10 bg-blue-600 hover:bg-blue-700 border-0 rounded-lg font-medium  text-sm"
+              icon={<ShoppingCart className="w-4 h-4" />}
             >
-              <span className="hidden sm:inline text-[13px] font-medium">
-                Sepete Ekle
-              </span>
+              <span className="hidden sm:inline">Sepete Ekle</span>
+              <span className="sm:hidden">Sepet</span>
             </Button>
 
             <Button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleBuyNow();
-              }}
-              className="h-11 border-blue-500 text-blue-600 hover:border-blue-600 hover:bg-blue-50 shadow-sm transition-all duration-200 flex items-center justify-center"
-              icon={
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-[14px] h-[14px] sm:mr-1"
-                >
-                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                </svg>
-              }
+              onClick={handleBuyNow}
+              disabled={!selectedSize || stockInfo.status === "out"}
+              className="flex-1 h-10 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 rounded-lg font-medium text-sm"
             >
-              <span className="hidden sm:inline text-[13px] font-medium">
-                Hemen Al
-              </span>
+              <span className="hidden sm:inline">Hemen Al</span>
+              <span className="sm:hidden">Al</span>
             </Button>
           </div>
-          {/* Stock Status - Responsive yazı boyutu */}
-          {product.totalStock < 10 && (
-            <div className="text-center">
-              <span className="text-xs sm:text-sm text-red-600 font-medium animate-pulse">
-                Son {product.totalStock} ürün!
-              </span>
-            </div>
-          )}
         </div>
       </Card>
     </motion.div>

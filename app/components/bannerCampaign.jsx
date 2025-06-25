@@ -21,10 +21,10 @@ const BannerCampaign = () => {
         className="text-white font-bold tracking-wide whitespace-nowrap flex items-center gap-3 px-4"
       >
         <span className="inline-flex items-center">
-          ✨ Büyük Yaz Kampanyası!
+          ✨ Büyük Açılış Kampanyası!
         </span>
         <span className="inline-flex items-center">
-          🎁 Tüm ürünlerde %50'ye varan indirimler!
+          🎁 Tüm ürünlerde Kargo Bedeli Ücretsiz!
         </span>
         <span className="inline-flex items-center">
           ⏰ Sınırlı Süre - Fırsatları Kaçırmayın!

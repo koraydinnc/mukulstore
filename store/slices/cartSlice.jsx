@@ -67,18 +67,25 @@ const cartSlice = createSlice({
     },
 
     updateQuantity: (state, action) => {
-      const { id, quantity } = action.payload;
-      const item = state.items.find(item => item.id === id);
+      const { id, size, quantity } = action.payload;
+      const item = state.items.find(item => item.id === id && item.size === size);
       
-      const quantityDiff = quantity - item.quantity;
-      item.quantity = quantity;
-      item.totalPrice = item.price * quantity;
+      if (item) {
+        const quantityDiff = quantity - item.quantity;
+        item.quantity = quantity;
+        item.totalPrice = (item.discountedPrice || item.price) * quantity;
 
-      state.totalQuantity += quantityDiff;
-      state.totalAmount = state.items.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-      );
+        state.totalQuantity += quantityDiff;
+        state.totalAmount = state.items.reduce(
+          (total, item) => total + (item.discountedPrice || item.price) * item.quantity,
+          0
+        );
+
+        // Cookie güncelleme
+        Cookies.set('cartItems', JSON.stringify(state.items));
+        Cookies.set('cartTotal', state.totalAmount.toString());
+        Cookies.set('cartQuantity', state.totalQuantity.toString());
+      }
     },
 
     clearCart: (state) => {
