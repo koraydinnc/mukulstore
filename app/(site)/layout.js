@@ -62,21 +62,18 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="tr" className={poppins.variable}>
-      <body className={poppins.className}>
-        <Providers>
-          <Header />
-          <CookieConsent />
-          <main className="relative">
-            {children}
-            <SepetDrawer />
-          </main>
-          <title>Mukul Store</title>
-          <Footer />
-          <SpeedInsights />
-          <Toaster />
-        </Providers>
-      </body>
-    </html>
+    <div className={poppins.variable}>
+      <Providers>
+        <Header />
+        <CookieConsent />
+        <main className="relative">
+          {children}
+          <SepetDrawer />
+        </main>
+        <Footer />
+        <SpeedInsights />
+        <Toaster />
+      </Providers>
+    </div>
   );
 }

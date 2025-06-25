@@ -90,20 +90,21 @@ const ProductsFilter = ({ onFilterChange, categories, totalResults = 0, onClearF
       priceRange: 'all',
       sort: 'newest'
     });
-    onFilterChange({
-      category: [],
-      size: [],
-      priceRange: 'all',
-      sort: 'newest'
-    });
-  }, [onFilterChange]);
+  }, []);
 
   // Register clear filters callback
   useEffect(() => {
-    if (onClearFiltersRef) {
-      onClearFiltersRef(clearFilters);
+    if (onClearFiltersRef && typeof onClearFiltersRef === 'function') {
+      onClearFiltersRef(() => {
+        setActiveFilters({
+          category: [],
+          size: [],
+          priceRange: 'all',
+          sort: 'newest'
+        });
+      });
     }
-  }, [clearFilters, onClearFiltersRef]);
+  }, [onClearFiltersRef]);
 
   return (
     <>

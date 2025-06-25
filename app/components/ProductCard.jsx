@@ -332,7 +332,7 @@ const ProductCard = ({ product }) => {
                 onClick={(e) => e.stopPropagation()}
                 style={{ width: "100%" }}
                 className="h-12"
-                dropdownMatchSelectWidth={false}
+                popupMatchSelectWidth={false}
                 optionLabelProp="label"
                 showSearch={false}
                 virtual={false}
