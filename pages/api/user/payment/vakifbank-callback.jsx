@@ -18,7 +18,7 @@ function validateVakifBankResponse(data) {
 }
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
+  if (req.method !== 'POST' && req.method !== 'GET') {
     return res.status(405).json({ 
       success: false, 
       message: 'Method Not Allowed' 
@@ -26,6 +26,9 @@ export default async function handler(req, res) {
   }
 
   try {
+    // VakıfBank might send data via body (POST) or query (GET)
+    const data = req.method === 'GET' ? req.query : req.body;
+    
     const {
       MerchantId,
       TerminalId,
@@ -36,7 +39,24 @@ export default async function handler(req, res) {
       OrderId,
       Amount,
       ...otherParams
-    } = req.body;
+    } = data;
+
+    // Log the received data for debugging
+    console.log('VakıfBank callback data:', {
+      method: req.method,
+      MerchantId,
+      TerminalId,
+      ResponseCode,
+      OrderId,
+      TransactionId,
+      Amount
+    });
+
+    // Validate required fields
+    if (!OrderId || !ResponseCode) {
+      console.error('Missing required fields in VakıfBank callback');
+      return res.redirect(302, '/payment/error?error=missing_data');
+    }
 
     // Temel doğrulama (hash olmadan)
     if (!validateVakifBankResponse({ MerchantId, TerminalId, ResponseCode })) {
@@ -69,7 +89,8 @@ export default async function handler(req, res) {
       });
 
       // Kullanıcıyı başarı sayfasına yönlendir
-      return res.redirect(302, `/payment/success?orderId=${OrderId}&transactionId=${TransactionId}`);
+      const successUrl = `/payment/success?orderId=${OrderId || 'unknown'}&transactionId=${TransactionId || 'unknown'}`;
+      return res.redirect(302, successUrl);
     } else {
       // Başarısız ödeme
       await updateOrderStatus(OrderId, 'failed', {
@@ -79,7 +100,9 @@ export default async function handler(req, res) {
       });
 
       // Kullanıcıyı hata sayfasına yönlendir
-      return res.redirect(302, `/payment/error?orderId=${OrderId}&error=${encodeURIComponent(ResponseMessage)}`);
+      const errorMessage = ResponseMessage || 'Payment failed';
+      const errorUrl = `/payment/error?orderId=${OrderId || 'unknown'}&error=${encodeURIComponent(errorMessage)}`;
+      return res.redirect(302, errorUrl);
     }
 
   } catch (error) {
@@ -91,6 +114,12 @@ export default async function handler(req, res) {
 // Sipariş durumunu güncelleme ve sipariş oluşturma fonksiyonu
 async function updateOrderStatus(orderId, status, paymentDetails) {
   try {
+    // Validate orderId
+    if (!orderId) {
+      console.error('Order ID is required for updateOrderStatus');
+      return false;
+    }
+
     // Geçici depodan sipariş bilgilerini al
     const tempOrderData = tempOrderStorage.get(orderId);
     
