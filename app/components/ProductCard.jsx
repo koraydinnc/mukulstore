@@ -168,20 +168,20 @@ const ProductCard = memo(({ product }) => {
       whileHover="hover"
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className="h-full w-full group p-2"
+      className="h-full w-full group p-1 sm:p-2"
     >
-      <Card className="relative h-full overflow-hidden rounded-2xl bg-white border-0 transition-all duration-300 cursor-pointer flex flex-col">
+      <Card className="relative h-full overflow-hidden rounded-xl sm:rounded-2xl bg-white border-0 transition-all duration-300 cursor-pointer flex flex-col">
         {/* Discount Badge */}
         <AnimatePresence>
           {product.discountPercentage > 0 && (
             <motion.div
               initial={{ scale: 0, rotate: -12 }}
               animate={{ scale: 1, rotate: -12 }}
-              className="absolute top-3 left-3 z-20"
+              className="absolute top-2 left-2 sm:top-3 sm:left-3 z-20"
             >
-              <div className="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1.5 rounded-full ">
+              <div className="bg-gradient-to-r from-red-500 to-red-600 text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded-full">
                 <div className="flex items-center gap-1">
-                  <span className="text-sm font-bold">
+                  <span className="text-xs sm:text-sm font-bold">
                     -%{product.discountPercentage}
                   </span>
                 </div>
@@ -192,15 +192,16 @@ const ProductCard = memo(({ product }) => {
 
         {/* Stock Badge */}
         {stockInfo.status !== "good" && (
-          <div className="absolute top-3 right-14 z-20">
+          <div className="absolute top-2 right-10 sm:top-3 sm:right-14 z-20">
             <Badge
               count={stockInfo.text}
               style={{
                 backgroundColor:
                   stockInfo.status === "out" ? "#ef4444" : "#f59e0b",
                 fontSize: "10px",
-                height: "20px",
-                borderRadius: "10px",
+                height: "18px",
+                lineHeight: "18px",
+                padding: "0 6px"
               }}
             />
           </div>
@@ -271,7 +272,7 @@ const ProductCard = memo(({ product }) => {
           >
             <motion.button
               onClick={toggleFavorite}
-              className={`absolute top-3 right-3 w-10 h-10 rounded-full 
+              className={`absolute top-2 right-2 sm:top-3 sm:right-3 w-8 h-8 sm:w-10 sm:h-10 rounded-full 
                 ${isFavorite ? "bg-red-50" : "bg-white/90 backdrop-blur-sm"} 
                  flex items-center justify-center 
                 transform transition-all duration-300 ease-in-out z-30
@@ -280,7 +281,7 @@ const ProductCard = memo(({ product }) => {
               whileTap={{ scale: 0.95 }}
             >
               <Heart
-                className={`w-5 h-5 ${
+                className={`w-4 h-4 sm:w-5 sm:h-5 ${
                   isFavorite ? "fill-red-500 text-red-500" : "stroke-gray-600"
                 } transition-all duration-300`}
               />
@@ -288,13 +289,13 @@ const ProductCard = memo(({ product }) => {
           </Tooltip>
         </div>
 
-        <div className="p-5 flex flex-col flex-1">
-          <div className="flex-1 space-y-4">
-            <div className="space-y-2">
-              <h3 className="font-semibold text-xl leading-tight line-clamp-2 text-gray-900 group-hover:text-blue-600 transition-colors">
+        <div className="p-3 sm:p-5 flex flex-col flex-1">
+          <div className="flex-1 space-y-2 sm:space-y-4">
+            <div className="space-y-1 sm:space-y-2">
+              <h3 className="font-semibold text-sm sm:text-xl leading-tight line-clamp-2 text-gray-900 group-hover:text-blue-600 transition-colors">
                 {product.title}
               </h3>
-              <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+              <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 leading-relaxed">
                 {product.description}
               </p>
             </div>
@@ -322,31 +323,32 @@ const ProductCard = memo(({ product }) => {
 
             {/* Price Section */}
             <div className="flex items-center justify-between">
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-gray-900">
+              <div className="flex items-baseline gap-1 sm:gap-2">
+                <span className="text-lg sm:text-2xl font-bold text-gray-900">
                   ₺{product.discountedPrice || product.price}
                 </span>
                 {product.discountedPrice && (
-                  <span className="text-sm line-through text-gray-400">
+                  <span className="text-xs sm:text-sm line-through text-gray-400">
                     ₺{product.price}
                   </span>
                 )}
               </div>
-              <div className={`text-xs font-medium ${stockInfo.color}`}>
+              <div className={`text-[10px] sm:text-xs font-medium ${stockInfo.color}`}>
                 {stockInfo.text}
               </div>
             </div>
 
             {/* Size Selection */}
-            <div className="space-y-3">
-              <label className="text-sm font-medium text-white">Beden:</label>
+            <div className="space-y-2 sm:space-y-3">
+              <label className="text-xs sm:text-sm font-medium text-gray-700">Beden:</label>
               <Select
                 placeholder="Beden seçiniz"
                 value={selectedSize}
                 onChange={handleSizeSelect}
                 onClick={(e) => e.stopPropagation()}
                 style={{ width: "100%" }}
-                className="h-12"
+                className="h-8 sm:h-12"
+                size="small"
                 popupMatchSelectWidth={false}
                 optionLabelProp="label"
                 showSearch={false}
@@ -380,25 +382,25 @@ const ProductCard = memo(({ product }) => {
           </div>
 
           {/* Action Buttons - Her zaman en altta */}
-          <div className="flex gap-2 pt-4 mt-auto">
+          <div className="flex gap-1.5 sm:gap-2 pt-3 sm:pt-4 mt-auto">
             <Button
               type="primary"
               onClick={handleAddToCart}
               disabled={!selectedSize || stockInfo.status === "out"}
-              className="flex-1 h-10 bg-blue-600 hover:bg-blue-700 border-0 rounded-lg font-medium  text-sm"
-              icon={<ShoppingCart className="w-4 h-4" />}
+              className="flex-1 h-8 sm:h-10 bg-blue-600 hover:bg-blue-700 border-0 rounded-md sm:rounded-lg font-medium text-xs sm:text-sm px-1 sm:px-3"
+              icon={<ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4" />}
             >
               <span className="hidden sm:inline">Sepete Ekle</span>
-              <span className="sm:hidden">Sepet</span>
+              <span className="sm:hidden text-[10px]">Sepet</span>
             </Button>
 
             <Button
               onClick={handleBuyNow}
               disabled={!selectedSize || stockInfo.status === "out"}
-              className="flex-1 h-10 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 rounded-lg font-medium text-sm"
+              className="flex-1 h-8 sm:h-10 border border-blue-600 sm:border-2 text-blue-600 hover:bg-blue-50 rounded-md sm:rounded-lg font-medium text-xs sm:text-sm px-1 sm:px-3"
             >
               <span className="hidden sm:inline">Hemen Al</span>
-              <span className="sm:hidden">Al</span>
+              <span className="sm:hidden text-[10px]">Al</span>
             </Button>
           </div>
         </div>

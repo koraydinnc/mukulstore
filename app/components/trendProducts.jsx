@@ -65,7 +65,8 @@ const TrendProducts = ({ data, refetch, isLoading }) => {
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={sectionVariants}
-            className="relative py-16 lg:py-24 overflow-hidden z-10"
+            className="relative py-16 lg:py-24 overflow-hidden"
+            style={{ zIndex: 1 }}
         >
             {/* Background with gradient and pattern */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -76,7 +77,7 @@ const TrendProducts = ({ data, refetch, isLoading }) => {
             <div className="absolute top-10 left-10 w-20 h-20 bg-blue-200 rounded-full blur-xl opacity-60"></div>
             <div className="absolute bottom-10 right-10 w-32 h-32 bg-purple-200 rounded-full blur-xl opacity-60"></div>
             
-            <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 z-20">
+            <div className="relative container mx-auto px-4 sm:px-6 lg:px-8" style={{ zIndex: 2 }}>
                 {/* Section Header */}
                 <motion.div 
                     variants={itemVariants}
@@ -107,76 +108,41 @@ const TrendProducts = ({ data, refetch, isLoading }) => {
 
                 {/* Content Section */}
                 {isLoading || !data?.data?.length ? (
-                    /* Loading Skeleton */
-                    <div className="relative">
-                        {/* Carousel Navigation Skeletons */}
-                        <div className="absolute top-1/2 -left-6 transform -translate-y-1/2 w-12 h-12 bg-white/90 rounded-full shadow-lg animate-pulse z-10"></div>
-                        <div className="absolute top-1/2 -right-6 transform -translate-y-1/2 w-12 h-12 bg-white/90 rounded-full shadow-lg animate-pulse z-10"></div>
-                        
-                        {/* Carousel Track Skeleton */}
-                        <div className="overflow-hidden">
-                            <div className="flex space-x-6">
-                                {[...Array(4)].map((_, index) => (
-                                    <motion.div
-                                        key={`skeleton-${index}`}
-                                        initial={{ opacity: 0, y: 40, scale: 0.8 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        transition={{ 
-                                            duration: 0.8, 
-                                            delay: index * 0.2,
-                                            ease: [0.16, 1, 0.3, 1]
-                                        }}
-                                        className="flex-shrink-0 w-72 relative group"
-                                    >
-                                        {/* Skeleton Card */}
-                                        <div className="relative bg-white rounded-3xl overflow-hidden shadow-2xl border border-gray-100/50">
-                                            {/* Image Skeleton */}
-                                            <div className="relative aspect-[4/5] bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 overflow-hidden">
-                                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer"></div>
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <div className="w-24 h-24 bg-white/40 rounded-3xl animate-pulse"></div>
-                                                </div>
-                                            </div>
-                                            
-                                            {/* Content Skeleton */}
-                                            <div className="p-6 space-y-4">
-                                                <div className="space-y-3">
-                                                    <div className="bg-gray-300 h-6 rounded-xl w-5/6 animate-pulse"></div>
-                                                    <div className="bg-gray-200 h-5 rounded-lg w-4/6 animate-pulse"></div>
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <div className="bg-gray-200 h-4 rounded-lg w-full animate-pulse"></div>
-                                                    <div className="bg-gray-200 h-4 rounded-lg w-3/4 animate-pulse"></div>
-                                                </div>
-                                                <div className="flex space-x-2 pt-2">
-                                                    <div className="bg-blue-300 h-12 rounded-xl flex-1 animate-pulse"></div>
-                                                    <div className="bg-purple-300 h-12 rounded-xl flex-1 animate-pulse"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </div>
+                    /* Simple Loading Skeleton */
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="relative"
+                    >
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {[...Array(4)].map((_, index) => (
+                                <div key={index} className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 animate-pulse">
+                                    {/* Image Skeleton */}
+                                    <div className="aspect-[4/5] bg-gray-200"></div>
+                                    
+                                    {/* Content Skeleton */}
+                                    <div className="p-4 space-y-3">
+                                        <div className="bg-gray-200 h-4 rounded w-3/4"></div>
+                                        <div className="bg-gray-200 h-3 rounded w-full"></div>
+                                        <div className="bg-gray-200 h-3 rounded w-2/3"></div>
+                                        <div className="bg-gray-200 h-5 rounded w-1/2"></div>
+                                        <div className="bg-gray-200 h-9 rounded-lg"></div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                         
-                        {/* Loading Text */}
-                        <motion.div 
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.8, duration: 0.6 }}
-                            className="text-center mt-12"
-                        >
-                            <div className="inline-flex items-center gap-4 bg-white/70 backdrop-blur-sm px-8 py-4 rounded-2xl shadow-lg">
-                                <div className="w-8 h-8 border-4 border-gray-200 rounded-full animate-spin border-t-blue-500"></div>
-                                <span className="text-gray-700 font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                                    Popüler ürünler yükleniyor...
-                                </span>
+                        {/* Simple Loading Text */}
+                        <div className="text-center mt-8">
+                            <div className="inline-flex items-center gap-3 text-gray-600">
+                                <div className="w-5 h-5 border-2 border-gray-300 rounded-full animate-spin border-t-blue-500"></div>
+                                <span>Popüler ürünler yükleniyor...</span>
                             </div>
-                        </motion.div>
-                    </div>
+                        </div>
+                    </motion.div>
                 ) : (
                     /* Real Content */
-                    <motion.div variants={itemVariants} className="relative z-30">
+                    <motion.div variants={itemVariants} className="relative" style={{ zIndex: 3 }}>
                         <Carousel
                             plugins={[plugin.current]}
                             className="w-full"

@@ -1,15 +1,18 @@
+import ProductSkeleton from '../components/ProductSkeleton';
+
 export default function Loading() {
     return (
-<div className="flex items-center justify-center h-screen bg-gray-100">
-  <div className="relative w-24 h-24">
-    <div className="absolute inset-0 rounded-full border-4 border-t-transparent border-blue-500 animate-spin"></div>
-    <img
-      src="/logo.png" 
-      alt="Logo"
-      className="absolute bg-black rounded-xl inset-0 w-16 h-16 m-auto"
-    />
-  </div>
-</div>
-
+        <div className="min-h-screen bg-gray-50 py-8">
+            <div className="container mx-auto px-4">
+                {/* Header Skeleton */}
+                <div className="text-center mb-12">
+                    <div className="animate-pulse bg-gray-200 h-8 rounded-lg w-64 mx-auto mb-4"></div>
+                    <div className="animate-pulse bg-gray-200 h-4 rounded-lg w-48 mx-auto"></div>
+                </div>
+                
+                {/* Products Skeleton */}
+                <ProductSkeleton count={12} />
+            </div>
+        </div>
     )
 }

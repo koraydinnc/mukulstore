@@ -4,6 +4,7 @@ import { useGetPopularProductsQuery, useGetProductsListQuery } from '@/store/ser
 import { useGetCategoriesQuery } from '@/store/services/admin/categoryApi';
 import Loading from './loading';
 import BannerCampaign from '../components/bannerCampaign';
+import ProductSkeleton from '../components/ProductSkeleton';
 import { PackageSearch } from 'lucide-react';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
@@ -12,11 +13,7 @@ import dynamic from 'next/dynamic';
 const TrendProducts = dynamic(() => import('../components/trendProducts'), {
   loading: () => (
     <div className="container mx-auto py-8 px-4">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="animate-pulse bg-gray-200 h-64 rounded-lg" />
-        ))}
-      </div>
+      <ProductSkeleton count={4} gridCols="grid-cols-2 md:grid-cols-4" />
     </div>
   ),
   ssr: false
@@ -24,18 +21,14 @@ const TrendProducts = dynamic(() => import('../components/trendProducts'), {
 
 const ProductsFilter = dynamic(() => import('../components/ProductsFilter'), {
   loading: () => (
-    <div className="animate-pulse h-16 bg-gray-200 rounded-lg" />
+    <div className="animate-pulse h-16 bg-gray-100 rounded-lg border" />
   ),
   ssr: false
 });
 
 const ProductsList = dynamic(() => import('../components/ProductsList'), {
   loading: () => (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {[...Array(8)].map((_, i) => (
-        <div key={i} className="animate-pulse bg-gray-200 h-80 rounded-lg" />
-      ))}
-    </div>
+    <ProductSkeleton count={8} />
   ),
   ssr: false
 });
@@ -50,7 +43,7 @@ export default function Home({params}) {
     sort: 'newest'
   });
   const filterRef = useRef();
-  const pageSize = 12;
+  const pageSize = 4;
 
 
   const { data: trendData, isLoading: trendLoading } = useGetPopularProductsQuery({
@@ -92,13 +85,13 @@ export default function Home({params}) {
     setActiveFilters(filters);
   }, []);
 
-
-  const filteredProducts = useMemo(() => {
+  // Frontend'de sadece size filtrelemesi yapıyoruz, diğerleri API'de
+  const displayProducts = useMemo(() => {
     if (!productsData?.data) return [];
     
     let filtered = [...productsData.data];
     
-      
+    // Size filtrelemesi frontend'de yapılıyor
     if (activeFilters.size.length > 0) {
       filtered = filtered.filter(product => {
         if (!product.sizes || !Array.isArray(product.sizes)) return false;
@@ -112,6 +105,20 @@ export default function Home({params}) {
     
     return filtered;
   }, [productsData?.data, activeFilters.size]);
+
+  // Size filtresi varsa frontend pagination, yoksa API pagination kullan
+  const useFrontendPagination = activeFilters.size.length > 0;
+  const finalTotalCount = useFrontendPagination ? displayProducts.length : (productsData?.pagination?.totalCount || 0);
+  const finalTotalPages = useFrontendPagination ? Math.ceil(displayProducts.length / pageSize) : (productsData?.pagination?.totalPages || 1);
+  const finalCurrentData = useFrontendPagination ? displayProducts.slice((page - 1) * pageSize, page * pageSize) : displayProducts;
+
+  const paginationData = {
+    totalCount: finalTotalCount,
+    totalPages: finalTotalPages,
+    currentPage: page,
+    hasNext: page < finalTotalPages,
+    hasPrev: page > 1
+  };
 
   const handleClearFilters = useCallback(() => {
     setActiveFilters({
@@ -141,7 +148,7 @@ export default function Home({params}) {
         <>
           <Suspense fallback={
             <div className="container mx-auto px-4 py-8">
-              <div className="animate-pulse h-16 bg-gray-200 rounded-lg" />
+              <div className="animate-pulse h-16 bg-gray-100 rounded-lg border" />
             </div>
           }>
             <section className="container mx-auto px-4 py-8">
@@ -149,19 +156,15 @@ export default function Home({params}) {
                 ref={filterRef}
                 onFilterChange={handleFilterChange}
                 categories={categoriesData?.categories || []}
-                totalResults={filteredProducts?.length || 0}
+                totalResults={finalTotalCount}
               />
             </section>
           </Suspense>
   
           <section className="container mx-auto px-4">
             {productsLoading || categoriesLoading ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[...Array(8)].map((_, i) => (
-                  <div key={i} className="animate-pulse bg-gray-200 h-80 rounded-lg" />
-                ))}
-              </div>
-            ) : !filteredProducts?.length ? (
+              <ProductSkeleton count={8} />
+            ) : !finalCurrentData?.length ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -184,20 +187,10 @@ export default function Home({params}) {
                 </button>
               </motion.div>
             ) : (
-              <Suspense fallback={
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {[...Array(8)].map((_, i) => (
-                    <div key={i} className="animate-pulse bg-gray-200 h-80 rounded-lg" />
-                  ))}
-                </div>
-              }>
+              <Suspense fallback={<ProductSkeleton count={8} />}>
                 <ProductsList
-                  pagination={{
-                    ...productsData?.pagination,
-                    totalCount: filteredProducts.length,
-                    totalPages: Math.ceil(filteredProducts.length / pageSize)
-                  }}
-                  data={filteredProducts.slice((page - 1) * pageSize, page * pageSize)}
+                  pagination={paginationData}
+                  data={finalCurrentData}
                   isLoading={productsLoading}
                   page={page}
                   setPage={setPage}
