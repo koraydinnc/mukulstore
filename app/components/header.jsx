@@ -345,7 +345,7 @@ const Header = () => {
             </nav>
 
             <div className="flex items-center gap-4">
-              <SearchBar />
+              <SearchBar className="hidden md:block" />
               <CartItems />
               <Favorites />
               
