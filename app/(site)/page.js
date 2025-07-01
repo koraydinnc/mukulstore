@@ -28,7 +28,7 @@ const ProductsFilter = dynamic(() => import('../components/ProductsFilter'), {
 
 const ProductsList = dynamic(() => import('../components/ProductsList'), {
   loading: () => (
-    <ProductSkeleton count={8} />
+    <ProductSkeleton count={20} />
   ),
   ssr: false
 });
@@ -43,7 +43,7 @@ export default function Home({params}) {
     sort: 'newest'
   });
   const filterRef = useRef();
-  const pageSize = 4;
+  const pageSize = 20;
 
 
   const { data: trendData, isLoading: trendLoading } = useGetPopularProductsQuery({
@@ -163,7 +163,7 @@ export default function Home({params}) {
   
           <section className="container mx-auto px-4">
             {productsLoading || categoriesLoading ? (
-              <ProductSkeleton count={8} />
+              <ProductSkeleton count={20} />
             ) : !finalCurrentData?.length ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -187,7 +187,7 @@ export default function Home({params}) {
                 </button>
               </motion.div>
             ) : (
-              <Suspense fallback={<ProductSkeleton count={8} />}>
+              <Suspense fallback={<ProductSkeleton count={20} />}>
                 <ProductsList
                   pagination={paginationData}
                   data={finalCurrentData}

@@ -56,9 +56,8 @@ export default async function handler(req, res) {
             // Search filter
             if (search) {
                 whereCondition.OR = [
-                    { name: { contains: search, mode: 'insensitive' } },
+                    { title: { contains: search, mode: 'insensitive' } },
                     { description: { contains: search, mode: 'insensitive' } },
-                    { brand: { contains: search, mode: 'insensitive' } }
                 ];
             }
 
@@ -72,10 +71,10 @@ export default async function handler(req, res) {
                     orderBy = { price: 'desc' };
                     break;
                 case 'name-asc':
-                    orderBy = { name: 'asc' };
+                    orderBy = { title: 'asc' };
                     break;
                 case 'name-desc':
-                    orderBy = { name: 'desc' };
+                    orderBy = { title: 'desc' };
                     break;
                 case 'newest':
                 default:

@@ -68,9 +68,7 @@ const ProductsList = memo(({ data, isLoading, pageSize = 12, pagination, setPage
             </div>
           ))}
         </div>
-        {/* Always show pagination info */}
         <div className="mt-8 sm:mt-12 lg:mt-16 flex flex-col items-center gap-4 sm:gap-6">
-          {/* Page Info - Always visible */}
           <div className="text-center px-4">
             <p className="text-xs sm:text-sm font-medium text-gray-600">
               {totalPages > 1 ? (

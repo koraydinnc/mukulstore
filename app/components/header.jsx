@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import CartItems from "./CartItems";
 import { useGetCategoriesQuery } from "@/store/services/user/categoryUserApi";
 import { Modal } from "antd";
+import SearchBar from "./SearchBar";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -79,16 +80,10 @@ const Header = () => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       
-      console.log('Scroll Y:', currentScrollY, 'Last Y:', lastScrollY.current, 'Header Visible:', isHeaderVisible);
       
-      // Header görünürlüğü kontrol et
       if (currentScrollY < lastScrollY.current || currentScrollY < 100) {
-        // Yukarı scroll yapıyor veya sayfa başında
-        console.log('Setting header visible: true');
         setIsHeaderVisible(true);
       } else if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
-        // Aşağı scroll yapıyor ve sayfa başından uzakta
-        console.log('Setting header visible: false');
         setIsHeaderVisible(false);
       }
       
@@ -138,7 +133,6 @@ const Header = () => {
             style={{ scaleX }}
           />
 
-          {/* Main header content */}
           <div className="container mx-auto flex h-24 items-center justify-between">
             <div className="flex items-center flex-1 md:flex-none">
               <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -351,13 +345,14 @@ const Header = () => {
             </nav>
 
             <div className="flex items-center gap-4">
+              <SearchBar />
               <CartItems />
               <Favorites />
+              
             </div>
           </div>
         </div>
       </motion.nav>
-      <div className="h-24" /> {/* Header'ın yüksekliği kadar boşluk */}
     </>
   );
 };
